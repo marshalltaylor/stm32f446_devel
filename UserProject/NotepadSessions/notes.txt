@@ -20,7 +20,7 @@ HAL.xml
 
 
 
-
+These actions now have targets, 'openocd' and 'deploy'
 C:\Users\marshall>
 openocd -f "e:\github\Midi_Clock\UserProject\usbDebug.cfg" -c "init; reset halt"
 

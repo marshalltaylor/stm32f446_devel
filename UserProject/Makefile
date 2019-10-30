@@ -170,6 +170,14 @@ make_directories:
 	mkdir -p $(BUILD_DIR)/ARDUINO
 	mkdir -p $(BUILD_DIR)/HAL
 
+openocd:
+	cygstart cmd /k tools\launch_openocd.bat
+
+deploy:
+	cygstart cmd /k tools\launch_gdb.bat
+#TODO: run in cygwin for better experince
+#	cygstart /bin/bash -c "C:/STM32/gcc-arm-none-eabi/bin/arm-none-eabi-gdb -x gdbinit.txt build/output.elf"
+
 info:
 	@echo "***** ***** ***** PROJECT ***** ***** *****"
 	@echo PROJECT_C_SOURCES
