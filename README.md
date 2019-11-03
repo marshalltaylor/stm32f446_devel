@@ -25,11 +25,11 @@ C:/STM32/gcc-arm-none-eabi/bin/arm-none-eabi-gdb -x gdbinit.txt build/output.elf
 ```
 
 ## Hardware
-_Reroute HID serial to uart 6. 115200 baud_
-Open jumpers SB13 and SB14
-Close jumpers SB62 and SB63
-Link CN3, RX to CN10, pin 4
-Link CN3, TX to CN10, pin 19
+Reroute HID serial to uart 6. 115200 baud
+* Open jumpers SB13 and SB14
+* Close jumpers SB62 and SB63
+* Link CN3, RX to CN10, pin 4
+* Link CN3, TX to CN10, pin 19
 
-_Uart 2 is midi. 31500 baud_
-Arduino pins D0/1
+Uart 2 is midi. 31500 baud
+*Arduino pins D0/1
