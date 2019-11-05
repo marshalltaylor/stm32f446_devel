@@ -74,7 +74,6 @@
 void _Error_Handler(char *, int);
 
 /* USER CODE BEGIN Private defines */
-uint32_t SysTick_Config(uint32_t ticks);
 int millis(void);
 int main_bsp(void);
 

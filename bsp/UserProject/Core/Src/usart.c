@@ -383,10 +383,10 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
 DebugObject_t usrUartDB;
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
-	traceWrite(YELLOW, 1);
+	//traceWrite(YELLOW, 1);
   if(UartHandle->Instance==USART2)
   {
-	traceWrite(CYAN, 1);
+	//traceWrite(CYAN, 1);
 	D01_UART.rxDataBuffer[D01_UART.rxDataBuffer_last] = D01_UART.rxCharBuffer;
 	D01_UART.rxDataBuffer_last++;
 	if( D01_UART.rxDataBuffer_last >= RX_BUFFER_SIZE )
@@ -395,7 +395,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 	}
 	//Queue another rx transfer
 	usrUartDB.param4[usrUartDB.i] = (int)HAL_UART_Receive_IT(&huart2, (uint8_t *)&D01_UART.rxCharBuffer, 1);
-	traceWrite(CYAN, 0);
+	//traceWrite(CYAN, 0);
 	usrUartDB.param1[usrUartDB.i] = (int)UartHandle->Instance;
 	usrUartDB.param2[usrUartDB.i] = (int)D01_UART.rxDataBuffer_last;
 	usrUartDB.param3[usrUartDB.i] = (int)D01_UART.rxCharBuffer;
@@ -415,7 +415,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 	usrUartDB.param2[usrUartDB.i] = (int)VCP_UART.rxDataBuffer_last;
 	usrUartDB.param3[usrUartDB.i] = (int)VCP_UART.rxCharBuffer;
   }  
-  traceWrite(YELLOW, 0);
+  //traceWrite(YELLOW, 0);
   usrUartDB.i++;
   usrUartDB.i &= 0x1F;
 }

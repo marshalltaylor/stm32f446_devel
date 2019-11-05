@@ -208,7 +208,7 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 //void HAL_TIM_IRQHandler(TIM_HandleTypeDef *htim)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	traceWrite(VIOLET, 1);
+	//traceWrite(VIOLET, 1);
 
 	if(htim->Instance==TIM2)
 	{
@@ -230,7 +230,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			timer3TickCallback();
 		}
 	}
-	traceWrite(VIOLET, 0);
+	//traceWrite(VIOLET, 0);
 }
 /* USER CODE END 1 */
 

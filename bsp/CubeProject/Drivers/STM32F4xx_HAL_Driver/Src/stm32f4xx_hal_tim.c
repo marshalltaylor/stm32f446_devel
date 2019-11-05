@@ -355,7 +355,6 @@ HAL_StatusTypeDef HAL_TIM_Base_Start_IT(TIM_HandleTypeDef *htim)
   
   /* Enable the TIM Update interrupt */
   __HAL_TIM_ENABLE_IT(htim, TIM_IT_UPDATE);
-  return HAL_OK;
       
   /* Enable the Peripheral */
   __HAL_TIM_ENABLE(htim);

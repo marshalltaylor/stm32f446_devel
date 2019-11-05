@@ -1815,6 +1815,7 @@ __STATIC_INLINE void NVIC_SystemReset(void)
  */
 
 #if (__Vendor_SysTickConfig == 0U)
+
 /**
   \brief   System Tick Configuration
   \details Initializes the System Timer and its interrupt, and starts the System Tick Timer.

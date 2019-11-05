@@ -91,40 +91,42 @@ int main_bsp(void)
   /* USER CODE END Init */
 
   /* Configure the system clock */
-  SystemClock_Config();
+  //SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
 
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_DMA_Init();
-  MX_ADC1_Init();
-  MX_SPI1_Init();
-  MX_USART2_UART_Init();
-  MX_USART6_UART_Init();
-  MX_TIM2_Init();
+  //MX_GPIO_Init();
+  //MX_DMA_Init();
+  //MX_ADC1_Init();
+  //MX_SPI1_Init();
+  //MX_USART2_UART_Init();
+  //MX_USART6_UART_Init();
+  //MX_TIM2_Init();
   //MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-	volatile uint32_t trashbag = 2;
-	while(1)
-	{
-		trashbag++;
-	}
+//	volatile uint32_t trashbag = 2;
+//	while(1)
+//	{
+//		trashbag++;
+//	}
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  while (1)
+  {
 
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-  return -1;
+
+  }
   /* USER CODE END 3 */
 
 }
-
 /**
   * @brief System Clock Configuration
   * @retval None
@@ -192,31 +194,6 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-uint32_t SysTick_Config(uint32_t ticks)
-{
-  if ((ticks - 1UL) > SysTick_LOAD_RELOAD_Msk)
-  {
-    return (1UL);                                                   /* Reload value impossible */
-  }
-
-  SysTick->LOAD  = (uint32_t)(ticks - 1UL);                         /* set reload register */
-  NVIC_SetPriority (SysTick_IRQn, (1UL << __NVIC_PRIO_BITS) - 1UL); /* set Priority for Systick Interrupt */
-  SysTick->VAL   = 0UL;                                             /* Load the SysTick Counter Value */
-  SysTick->CTRL  = SysTick_CTRL_CLKSOURCE_Msk |
-                   SysTick_CTRL_TICKINT_Msk   |
-                   SysTick_CTRL_ENABLE_Msk;                         /* Enable SysTick IRQ and SysTick Timer */
-  return (0UL);                                                     /* Function successful */
-}
-
-void HAL_SYSTICK_Callback(void)
-{
-  SYSTICK_VALUE++;
-};
-
-int millis()
-{
-	return SYSTICK_VALUE;
-};
 
 /* USER CODE END 4 */
 

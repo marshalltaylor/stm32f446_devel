@@ -2,16 +2,19 @@
 REPO_ROOT = ../..
 
 C_SOURCES =  \
-main.c \
-App.cpp
+startup_stm32f446xx.s \
+main.c
+# \
+#App.cpp
 
 SOURCE_DIRS = .\
 
 C_INCLUDES = \
-$(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Include \
-$(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Device/ST/STM32F4xx/Include \
+$(REPO_ROOT)/bsp \
+$(REPO_ROOT)/bsp/UserProject/Core/Inc \
 $(REPO_ROOT)/bsp/CubeProject/Drivers/STM32F4xx_HAL_Driver/Inc \
-$(REPO_ROOT)/bsp/UserProject/Core/Inc
+$(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Include \
+$(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Device/ST/STM32F4xx/Include
 
 STATIC_LIBS = \
 $(REPO_ROOT)/bsp/build/bsp.a

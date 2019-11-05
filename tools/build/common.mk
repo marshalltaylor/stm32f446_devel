@@ -59,10 +59,10 @@ CFLAGS += -fmax-errors=1
 CPPFLAGS = $(CFLAGS) -std=c++11 -fno-rtti
 
 # assembler
-ASFLAGS = -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -g
+ASFLAGS = -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -g -v
 
-# linker -lstdc++ -lsupc++ 
-LDFLAGS = -v -lc -g -lm -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=nosys.specs -specs=nano.specs -T$(LINKER_FILE) -Wl,-Map=$(BUILD_DIR)/output.map -Wl,--gc-sections -fno-lto
+# linker -lstdc++ -lsupc++  -Wl,--gc-sections
+LDFLAGS = -v -lc -g -lm -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=nosys.specs -specs=nano.specs -T$(LINKER_FILE) -Wl,-Map=$(BUILD_DIR)/output.map -fno-lto
 
 # binaries
 HEX = $(CP) -O ihex
@@ -98,7 +98,7 @@ $(BUILD_DIR)/obj/%.o: %.c
 
 $(BUILD_DIR)/obj/%.o: %.s
 	@echo "#### Compiling: $<"
-	$(CC) -c $(CFLAGS) $(addprefix -I,$(C_INCLUDES)) $< -o $@
+	$(CC) -c $(ASFLAGS) $(addprefix -I,$(C_INCLUDES)) $< -o $@
 	@echo
 
 # Archiver
