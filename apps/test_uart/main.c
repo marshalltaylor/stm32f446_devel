@@ -22,7 +22,7 @@ int main(void)
 	//AppEntry();
 	while (1)
 	{
-		//bspToggleLED();
+		bspToggleLED();
 		crapDelay(1);
 	}
 }

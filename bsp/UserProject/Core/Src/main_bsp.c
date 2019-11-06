@@ -78,8 +78,21 @@ void SystemClock_Config(void);
 int main_bsp(void)
 {
   /* USER CODE BEGIN 1 */
+	void * addr;
+	uint32_t intVectors[20];
+	UNUSED(intVectors);
+	for(int i = 0; i < 20; i++)
+	{
+		addr = (void*)(0x08000000 + (4*i));
+		intVectors[i] = (uint32_t)*(uint32_t**)addr;
+	}
 
-  /* USER CODE END 1 */
+
+
+
+
+
+	/* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
 
@@ -91,14 +104,14 @@ int main_bsp(void)
   /* USER CODE END Init */
 
   /* Configure the system clock */
-  //SystemClock_Config();
+  SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
 
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  //MX_GPIO_Init();
+  MX_GPIO_Init();
   //MX_DMA_Init();
   //MX_ADC1_Init();
   //MX_SPI1_Init();
@@ -115,17 +128,17 @@ int main_bsp(void)
   /* USER CODE END 2 */
 
   /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-
-  /* USER CODE END WHILE */
-
-  /* USER CODE BEGIN 3 */
-
-  }
-  /* USER CODE END 3 */
-
+//  /* USER CODE BEGIN WHILE */
+//  while (1)
+//  {
+//
+//  /* USER CODE END WHILE */
+//
+//  /* USER CODE BEGIN 3 */
+//
+//  }
+//  /* USER CODE END 3 */
+return 0;
 }
 /**
   * @brief System Clock Configuration

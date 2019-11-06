@@ -98,6 +98,7 @@ $(BUILD_DIR)/obj/%.o: %.c
 
 $(BUILD_DIR)/obj/%.o: %.s
 	@echo "#### Compiling: $<"
+	@echo "$(shell cygpath -w -a $<)"
 	$(CC) -c $(ASFLAGS) $(addprefix -I,$(C_INCLUDES)) $< -o $@
 	@echo
 
@@ -105,12 +106,13 @@ $(BUILD_DIR)/obj/%.o: %.s
 $(BUILD_DIR)/%.a: build_dirs $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS))
 	@echo "#### Creating archive"
 	$(AR) rcs $@ $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS))
+	$(OBJD) -S --disassemble $@ > $@.dump
 	@echo
 
 # linker
-$(BUILD_DIR)/output.elf: build_dirs $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS))
+$(BUILD_DIR)/output.elf: build_dirs $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS)) $(addprefix $(BUILD_DIR)/obj/, $(STARTUP_OBJECT))
 	@echo "#### Linking into elf"
-	$(CC) -o $(TARGET_EXEC) $(LDFLAGS) $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS)) $(STATIC_LIBS)
+	$(CC) -o $(TARGET_EXEC) $(LDFLAGS) $(addprefix $(BUILD_DIR)/obj/, $(SOURCE_OBJECTS)) $(STATIC_LIBS) $(addprefix $(BUILD_DIR)/obj/, $(STARTUP_OBJECT))
 	$(SZ) $@
 	$(OBJD) -S --disassemble $(TARGET_EXEC) > $(TARGET_EXEC).dump
 	@echo

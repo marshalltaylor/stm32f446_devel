@@ -2,9 +2,13 @@
 REPO_ROOT = ../..
 
 C_SOURCES =  \
-startup_stm32f446xx.s \
 main.c
+
+STARTUP_SOURCES =  \
+startup_test.s \
+
 # \
+#startup_stm32f446xx.s \
 #App.cpp
 
 SOURCE_DIRS = .\
@@ -20,8 +24,10 @@ STATIC_LIBS = \
 $(REPO_ROOT)/bsp/build/bsp.a
 
 #PROJECT_OBJECTS
-OBJECTS = $(patsubst %s,%o,$(patsubst %c,%o,$(patsubst %cpp,%o,$(C_SOURCES))))
-
+#OBJECTS = $(patsubst %s,%o,$(patsubst %c,%o,$(patsubst %cpp,%o,$(C_SOURCES))))
+SOURCE_OBJECTS = $(patsubst %c,%o,$(patsubst %cpp,%o,$(C_SOURCES)))
+STARTUP_OBJECT = $(patsubst %s,%o,$(STARTUP_SOURCES))
+OBJECTS = $(SOURCE_OBJECTS) $(STARTUP_OBJECT)
 default: all
 
 include $(REPO_ROOT)/tools/build/catalog.mk
@@ -47,5 +53,5 @@ deploy:
 
 info:
 	@echo "***** ***** ***** DEBUG ***** ***** *****"
-	@echo $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS))
-	@echo 
+	@echo $(SOURCE_OBJECTS) $(STARTUP_OBJECT)
+	@echo $(OBJECTS)
