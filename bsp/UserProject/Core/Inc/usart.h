@@ -58,6 +58,8 @@ extern UART_HandleTypeDef huart6;
 #define TX_BUFFER_SIZE 256
 #define RX_BUFFER_SIZE 256
 
+#define UARTS_MONITORED 7
+
 typedef struct UartInstance
 {
 	UART_HandleTypeDef* huart;
@@ -81,15 +83,30 @@ typedef struct UartInstance
 
 extern void _Error_Handler(char *, int);
 
+// Called from hal init
 void MX_USART2_UART_Init(void);
 void MX_USART6_UART_Init(void);
 
 /* USER CODE BEGIN Prototypes */
+
+// Write a byte to the passed UartInstance_t
 void halUartWrite(uint8_t data, UartInstance_t * UART);
+
+// Look at "first" rxDataBuffer value
 uint8_t halUartPeek(UartInstance_t * UART);
+
+// Look at "first" and advance ptr if not end
 uint8_t halUartRead(UartInstance_t * UART);
+
+// Get number of bytes read.
+// This should be used to check if data is available before using
+// the other usart routines. 
 uint16_t halUartReadBytesAvailable(UartInstance_t * UART);
+
+// Reconfig interrupt or whatever.
 void emergencyRestart(void);
+void restartHuartIfNeeded(void);
+
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

@@ -153,7 +153,10 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
-#include "debugPins.h"
+#include "debugUtilities.h"
+
+// Include up to rx isr monitor
+#include "usart.h"
 
 /** @addtogroup STM32F4xx_HAL_Driver
   * @{
@@ -1515,7 +1518,7 @@ HAL_StatusTypeDef HAL_UART_AbortReceive_IT(UART_HandleTypeDef *huart)
   return HAL_OK;
 }
 
-DebugObject_t halUartDB;
+//DebugObject_t halUartDB;
 /**
   * @brief  This function handles UART interrupt request.
   * @param  huart pointer to a UART_HandleTypeDef structure that contains
@@ -1529,21 +1532,23 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
    uint32_t cr3its     = READ_REG(huart->Instance->CR3);
    uint32_t errorflags = 0x00U;
    uint32_t dmarequest = 0x00U;
-  halUartDB.i++;
-  halUartDB.i &= 0x1F;
-  
-  halUartDB.param1[halUartDB.i] = huart->Instance;
-  halUartDB.param2[halUartDB.i] = errorflags;
-  halUartDB.param3[halUartDB.i] = huart->RxState;
+  //halUartDB.i++;
+  //halUartDB.i &= 0x1F;
+  //debugLogRecord(__LINE__, (uint32_t)huart->Instance, "ISR Entry");
+  //halUartDB.param1[halUartDB.i] = (uint32_t)huart->Instance;
+  //halUartDB.param2[halUartDB.i] = (uint32_t)errorflags;
+  //halUartDB.param3[halUartDB.i] = (uint32_t)huart->RxState;
   
   /* If no error occurs */
   errorflags = (isrflags & (uint32_t)(USART_SR_PE | USART_SR_FE | USART_SR_ORE | USART_SR_NE));
+  //debugLogRecord(__LINE__, errorflags, "eflags");
   if(errorflags == RESET)
   {
     /* UART in mode Receiver -------------------------------------------------*/
     if(((isrflags & USART_SR_RXNE) != RESET) && ((cr1its & USART_CR1_RXNEIE) != RESET))
     {
-        halUartDB.param3[halUartDB.i] = UART_Receive_IT(huart);
+        //halUartDB.param3[halUartDB.i] = UART_Receive_IT(huart);
+		UART_Receive_IT(huart);
       return;
     }
   }  

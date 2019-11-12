@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file    stm32f4xx_hal_uart.h
+  * @file    custom_stm32f4xx_hal_uart.h
   * @author  MCD Application Team
   * @brief   Header file of UART HAL module.
   ******************************************************************************
@@ -34,8 +34,8 @@
   */ 
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F4xx_HAL_UART_H
-#define __STM32F4xx_HAL_UART_H
+#ifndef __Custom_STM32F4xx_HAL_UART_H
+#define __Custom_STM32F4xx_HAL_UART_H
 
 #ifdef __cplusplus
  extern "C" {

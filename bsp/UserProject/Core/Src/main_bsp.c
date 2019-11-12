@@ -112,13 +112,13 @@ int main_bsp(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  //MX_DMA_Init();
-  //MX_ADC1_Init();
-  //MX_SPI1_Init();
-  //MX_USART2_UART_Init();
-  //MX_USART6_UART_Init();
-  //MX_TIM2_Init();
-  //MX_TIM3_Init();
+  MX_DMA_Init();
+  MX_ADC1_Init();
+  MX_SPI1_Init();
+  MX_USART2_UART_Init();
+  MX_USART6_UART_Init();
+  MX_TIM2_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 //	volatile uint32_t trashbag = 2;
 //	while(1)
@@ -207,7 +207,15 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_SYSTICK_Callback(void)
+{
+  SYSTICK_VALUE++;
+};
 
+int millis()
+{
+	return SYSTICK_VALUE;
+};
 /* USER CODE END 4 */
 
 /**

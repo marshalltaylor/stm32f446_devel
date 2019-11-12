@@ -44,7 +44,7 @@ UserProject/Core/Src/main_bsp.c \
 UserProject/Core/Src/gpio.c \
 UserProject/Core/Src/adc.c \
 UserProject/Core/Src/adc_ext.c \
-UserProject/Core/Src/debugPins.c \
+UserProject/Core/Src/debugUtilities.c \
 UserProject/Core/Src/display_clock.c \
 UserProject/Core/Src/dma.c \
 UserProject/Core/Src/spi.c \
@@ -58,7 +58,7 @@ CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c \
-CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c \
+UserProject/AltDrivers/custom_stm32f4xx_hal_uart.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c \
@@ -73,11 +73,15 @@ CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c \
 UserProject/Core/Src/system_stm32f4xx.c
 
+# List of directories which contain C_SOURCES.
+# This list is created within the BUILD_DIR and used for artifacts
 SOURCE_DIRS = \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src \
+UserProject/AltDrivers \
 UserProject/Core/Src
 
 C_INCLUDES = .\
+UserProject/AltDrivers \
 UserProject/Core/Inc \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Inc \
 CubeProject/Drivers/CMSIS/Include \
@@ -97,4 +101,4 @@ all: $(BUILD_DIR)/$(OUTPUT_LIB_NAME)
 info:
 	@echo "***** ***** ***** DEBUG ***** ***** *****"
 	@echo $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS))
-	@echo 
+	@echo $(addprefix -I,$(C_INCLUDES))

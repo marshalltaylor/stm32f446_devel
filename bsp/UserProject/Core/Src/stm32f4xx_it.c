@@ -36,7 +36,7 @@
 #include "stm32f4xx_it.h"
 
 /* USER CODE BEGIN 0 */
-#include "debugPins.h" // traceWrite(NAVY, 1);
+#include "debugUtilities.h" // traceWrite(NAVY, 1);
 
 /* USER CODE END 0 */
 

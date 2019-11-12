@@ -39,7 +39,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "tim.h"
-#include "debugPins.h"
+#include "debugUtilities.h"
 
 /* USER CODE BEGIN 0 */
 uint32_t usTicks = 0;

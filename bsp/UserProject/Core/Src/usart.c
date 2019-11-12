@@ -44,10 +44,15 @@
 #include "dma.h"
 
 /* USER CODE BEGIN 0 */
-#include "stm32f4xx_hal_uart.h"
-#include "debugPins.h" // traceWrite(NAVY, 1);
+#include "custom_stm32f4xx_hal_uart.h"
+#include "debugUtilities.h" // traceWrite(NAVY, 1);
 UartInstance_t VCP_UART;
 UartInstance_t D01_UART;
+
+
+bool uartNeedsRestarted[UARTS_MONITORED] = {0};
+
+
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart2;
@@ -380,7 +385,8 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
   *         you can add your own implementation.
   * @retval None
   */
-DebugObject_t usrUartDB;
+//DebugObject_t usrUartDB;
+uint32_t restartedCount = 0;
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
 	//traceWrite(YELLOW, 1);
@@ -394,11 +400,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 		D01_UART.rxDataBuffer_last = 0;
 	}
 	//Queue another rx transfer
-	usrUartDB.param4[usrUartDB.i] = (int)HAL_UART_Receive_IT(&huart2, (uint8_t *)&D01_UART.rxCharBuffer, 1);
-	//traceWrite(CYAN, 0);
-	usrUartDB.param1[usrUartDB.i] = (int)UartHandle->Instance;
-	usrUartDB.param2[usrUartDB.i] = (int)D01_UART.rxDataBuffer_last;
-	usrUartDB.param3[usrUartDB.i] = (int)D01_UART.rxCharBuffer;
+	uint32_t result = (uint32_t)HAL_UART_Receive_IT(&huart2, (uint8_t *)&D01_UART.rxCharBuffer, 1);
+	if(result == 0x02)
+	{
+		//debugLogRecord(__LINE__, result, "restart");
+		uartNeedsRestarted[2] = true;
+	}
   }
   else if(UartHandle->Instance==USART6)
   {
@@ -410,19 +417,21 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 		VCP_UART.rxDataBuffer_last = 0;
 	}
 	//Queue another rx transfer
-	usrUartDB.param4[usrUartDB.i] = (int)HAL_UART_Receive_IT(&huart6, (uint8_t *)&VCP_UART.rxCharBuffer, 1);
-	usrUartDB.param1[usrUartDB.i] = (int)UartHandle->Instance;
-	usrUartDB.param2[usrUartDB.i] = (int)VCP_UART.rxDataBuffer_last;
-	usrUartDB.param3[usrUartDB.i] = (int)VCP_UART.rxCharBuffer;
+	uint32_t result = (uint32_t)HAL_UART_Receive_IT(&huart6, (uint8_t *)&VCP_UART.rxCharBuffer, 1);
+	if(result == 0x02)
+	{
+		uartNeedsRestarted[6] = true;
+		restartedCount++;
+		debugLogRecord(__LINE__, restartedCount, "restart");
+	}
   }  
-  //traceWrite(YELLOW, 0);
-  usrUartDB.i++;
-  usrUartDB.i &= 0x1F;
+  //TODO: Put restart code if status = 0x02
 }
 
 void emergencyRestart(void)
 {
 	HAL_UART_Receive_IT(&huart6, (uint8_t*)&VCP_UART.rxCharBuffer, 1);
+	while(1);
 }
 
 /**
@@ -452,7 +461,47 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *UartHandle)
 		}
 		UartHandle->ErrorCode &= ~HAL_UART_ERROR_DMA;
 	}
-	//while(1);
+	uartNeedsRestarted[6] = true;
+	restartedCount++;
+	debugLogRecord(__LINE__, (uint32_t)UartHandle->ErrorCode, "error");
+}
+
+//Right now, invoked from ISR
+//Could be invoked on a schedule
+void restartHuartIfNeeded(void)
+{
+	//debugLogRecord(__LINE__, 0xFF, "rsISR");
+	for(int i = 0; i < UARTS_MONITORED; i++)
+	{
+		if(uartNeedsRestarted[i])
+		{
+			debugLogRecord(__LINE__, i, "handle");
+			uartNeedsRestarted[i] = false; // may be overridden
+			switch( i )
+			{
+				case 2:
+				{
+					uint32_t result = (uint32_t)HAL_UART_Receive_IT(&huart2, (uint8_t *)&D01_UART.rxCharBuffer, 1);
+					if(result != HAL_OK)
+					{
+						uartNeedsRestarted[i] = true;
+					}
+				}
+				break;
+				case 6:
+				{
+					uint32_t result = (uint32_t)HAL_UART_Receive_IT(&huart6, (uint8_t *)&VCP_UART.rxCharBuffer, 1);
+					if(result != HAL_OK)
+					{
+						uartNeedsRestarted[i] = true;
+					}
+				}
+				break;
+				default:
+				while(1);
+			}
+		}
+	}
 }
 
 void HAL_UART_AbortCpltCallback (UART_HandleTypeDef *huart){while(1);};

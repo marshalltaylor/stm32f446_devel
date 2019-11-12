@@ -7,10 +7,11 @@ static bool ledState = false;
 
 void bspInit(void)
 {
+	// Without this garbage sysTick_Handler won't be linked?
 	volatile void * trash = SysTick_Handler;
-	trash++;
+	UNUSED(trash);
+
 	main_bsp();
-	SysTick_Handler();
 }
 
 void bspToggleLED(void)
