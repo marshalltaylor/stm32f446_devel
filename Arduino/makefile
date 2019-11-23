@@ -36,6 +36,7 @@ Libs/arduino_midi_library/src \
 $(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Include \
 $(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Device/ST/STM32F4xx/Include \
 $(REPO_ROOT)/bsp/CubeProject/Drivers/STM32F4xx_HAL_Driver/Inc \
+$(REPO_ROOT)/bsp/UserProject/AltDrivers \
 $(REPO_ROOT)/bsp/UserProject/Core/Inc
 
 #PROJECT_OBJECTS
@@ -43,7 +44,7 @@ OBJECTS = $(patsubst %s,%o,$(patsubst %c,%o,$(patsubst %cpp,%o,$(C_SOURCES))))
 
 OUTPUT_LIB_NAME = Arduino.a
 
-default: all
+default: info all
 
 include $(REPO_ROOT)/tools/build/common.mk
 

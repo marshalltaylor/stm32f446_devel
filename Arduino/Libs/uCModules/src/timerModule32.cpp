@@ -36,7 +36,7 @@ TimerClass32::TimerClass32( uint32_t intervalVar )
 void TimerClass32::update( uint32_t usTicksInput )
 {
     //Check if overflow has occurred
-    if( (int32_t) usTicksInput < lastService )  //overflow has occurred
+    if( usTicksInput < lastService )  //overflow has occurred
     {
         //Adjust as if nothing ever happened
         lastService = lastService - maxTimer;

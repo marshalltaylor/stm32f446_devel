@@ -7,11 +7,12 @@
 //#include "tim.h"
 //#include "usart.h"
 //#include "gpio.h"
-#include "main_bsp.h"
 
 #include <stdint.h>
 #include <stdbool.h>
 #include "App.h"
+#include "bsp.h"
+#include "main.h"
 
 /* Private variables ---------------------------------------------------------*/
 
@@ -24,7 +25,7 @@ void SystemClock_Config(void);
 
 int main(void)
 {
-	main_bsp();
+	bspInit();
 	
 	AppEntry();
 	

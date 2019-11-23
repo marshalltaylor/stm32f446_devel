@@ -21,8 +21,8 @@
 class TimerClass32
 {
     int8_t flag;
-    int32_t lastService;
-    int32_t interval;
+    uint32_t lastService;
+    uint32_t interval;
 public:
     TimerClass32( uint32_t );
     void update( uint32_t usTicksInput );

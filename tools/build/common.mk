@@ -46,7 +46,7 @@ OBJD = $(GCC_PATH)/arm-none-eabi-objdump
 # c
 #  -DUSE_HAL_DRIVER -DSTM32F7xx  '-D__weak=__attribute__((weak))' '-D__packed=__attribute__((__packed__))' -fmessage-length=0 -Og -ffunction-sections
 # -v
-CFLAGS = -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -DSTM32F4xx -DSTM32F446xx -g -Wall -Werror -c -O0
+CFLAGS = -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -DSTM32F4xx -DSTM32F446xx -g -Wall -Werror -c -O2
 
 # Generate dependency information
 CFLAGS += -MMD -MP -MF "$(@:$(BUILD_DIR)/obj/%.o=$(BUILD_DIR)/dep/%.d)"
@@ -61,8 +61,9 @@ CPPFLAGS = $(CFLAGS) -std=c++11 -fno-rtti
 # assembler
 ASFLAGS = -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -g -v
 
-# linker -lstdc++ -lsupc++  -Wl,--gc-sections
-LDFLAGS = -v -lc -g -lm -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=nosys.specs -specs=nano.specs -T$(LINKER_FILE) -Wl,-Map=$(BUILD_DIR)/output.map -fno-lto
+# linker -lstdc++ -lsupc++  -Wl,--gc-sections  -fno-lto
+LDFLAGS = -v -lc -g -lm -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=nosys.specs -specs=nano.specs -T$(LINKER_FILE) -Wl,-Map=$(BUILD_DIR)/output.map -Wl,--gc-sections
+#LDFLAGS = -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -specs=nano.specs -T$(LINKER_FILE) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 
 # binaries
 HEX = $(CP) -O ihex
@@ -99,7 +100,7 @@ $(BUILD_DIR)/obj/%.o: %.c
 $(BUILD_DIR)/obj/%.o: %.s
 	@echo "#### Compiling: $<"
 	@echo "$(shell cygpath -w -a $<)"
-	$(CC) -c $(ASFLAGS) $(addprefix -I,$(C_INCLUDES)) $< -o $@
+	$(AS) -c $(ASFLAGS) $(addprefix -I,$(C_INCLUDES)) $< -o $@
 	@echo
 
 # Archiver
@@ -107,24 +108,6 @@ $(BUILD_DIR)/%.a: build_dirs $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS))
 	@echo "#### Creating archive"
 	$(AR) rcs $@ $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS))
 	$(OBJD) -S --disassemble $@ > $@.dump
-	@echo
-
-# linker
-$(BUILD_DIR)/output.elf: build_dirs $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS)) $(addprefix $(BUILD_DIR)/obj/, $(STARTUP_OBJECT))
-	@echo "#### Linking into elf"
-	$(CC) -o $(TARGET_EXEC) $(LDFLAGS) $(addprefix $(BUILD_DIR)/obj/, $(SOURCE_OBJECTS)) $(STATIC_LIBS) $(addprefix $(BUILD_DIR)/obj/, $(STARTUP_OBJECT))
-	$(SZ) $@
-	$(OBJD) -S --disassemble $(TARGET_EXEC) > $(TARGET_EXEC).dump
-	@echo
-
-$(BUILD_DIR)/output.hex: build_dirs $(TARGET_EXEC)
-	@echo "#### Elf to hex"
-	$(HEX) $< $@
-	@echo
-
-$(BUILD_DIR)/output.bin: build_dirs $(TARGET_EXEC)
-	@echo "#### Elf to bin"
-	$(BIN) $< $@
 	@echo
 
 # Directory creation

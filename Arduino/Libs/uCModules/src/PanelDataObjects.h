@@ -10,7 +10,7 @@ class DataObject
 public:
 	DataObject( void );
 	uint8_t * data;
-	int size;
+	uint32_t size;
 };
 //Specific types are used to create local instances that construct
 //with the correct size.

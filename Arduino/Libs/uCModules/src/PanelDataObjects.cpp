@@ -91,7 +91,7 @@ void dumpObject( DataObject * inputObjectPtr )
 	//Serial.print("Obj Addr: 0x");
 	//Serial.println((uint32_t)&(*inputObjectPtr), HEX);
 	uint8_t * bytePtr = (uint8_t *)inputObjectPtr;
-	for( int i = 0; i < sizeof(*inputObjectPtr); i++ )
+	for( uint32_t i = 0; i < sizeof(*inputObjectPtr); i++ )
 	{
 		//Serial.print("0x");
 		//Serial.print(*bytePtr,HEX);
@@ -102,7 +102,7 @@ void dumpObject( DataObject * inputObjectPtr )
 	
 	//Serial.print("Containted data: ");
 	bytePtr = (uint8_t *)inputObjectPtr->data;
-	for( int i = 0; i < inputObjectPtr->size; i++ )
+	for( uint32_t i = 0; i < inputObjectPtr->size; i++ )
 	{
 		//Serial.print("0x");
 		//Serial.print(*bytePtr,HEX);

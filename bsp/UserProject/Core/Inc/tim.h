@@ -57,12 +57,17 @@ extern TIM_HandleTypeDef htim2;
 
 extern void (*timer3TickCallback)( void );
 
+void startTim4Isr(void);
+void stopTim4Isr(void);
+void timer4TickCallback(void);
+
 /* USER CODE END Private defines */
 
 extern void _Error_Handler(char *, int);
 
 void MX_TIM2_Init(void);
 void MX_TIM3_Init(void);
+void MX_TIM4_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 

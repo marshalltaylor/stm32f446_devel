@@ -36,7 +36,7 @@ int main(void)
 		if( millis() > nextSecond )
 		{
 			nextSecond = millis() + 1000;
-			bspToggleLED();
+			//bspToggleLED();
 		}
 		restartHuartIfNeeded();
 

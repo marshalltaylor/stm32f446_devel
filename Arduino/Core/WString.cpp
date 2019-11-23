@@ -110,14 +110,14 @@ String::String(unsigned long value, unsigned char base)
 String::String(float value, unsigned char decimalPlaces)
 {
 	init();
-	char buf[33];
+	char buf[33]__unused;
 //	*this = dtostrf(value, (decimalPlaces + 2), decimalPlaces, buf);
 }
 
 String::String(double value, unsigned char decimalPlaces)
 {
 	init();
-	char buf[33];
+	char buf[33]__unused;
 //	*this = dtostrf(value, (decimalPlaces + 2), decimalPlaces, buf);
 }
 
@@ -324,7 +324,7 @@ unsigned char String::concat(unsigned long num)
 
 unsigned char String::concat(float num)
 {
-	char buf[20];
+	char buf[20]__unused;
 //	char* string = dtostrf(num, 4, 2, buf);
 //	return concat(string, strlen(string));
 return 0;
@@ -332,7 +332,7 @@ return 0;
 
 unsigned char String::concat(double num)
 {
-	char buf[20];
+	char buf[20]__unused;
 //	char* string = dtostrf(num, 4, 2, buf);
 //	return concat(string, strlen(string));
 return 0;

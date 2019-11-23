@@ -46,9 +46,9 @@
 /* USER CODE BEGIN 0 */
 #include "custom_stm32f4xx_hal_uart.h"
 #include "debugUtilities.h" // traceWrite(NAVY, 1);
+#include "tim.h"
 UartInstance_t VCP_UART;
 UartInstance_t D01_UART;
-
 
 bool uartNeedsRestarted[UARTS_MONITORED] = {0};
 
@@ -403,8 +403,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 	uint32_t result = (uint32_t)HAL_UART_Receive_IT(&huart2, (uint8_t *)&D01_UART.rxCharBuffer, 1);
 	if(result == 0x02)
 	{
-		//debugLogRecord(__LINE__, result, "restart");
+		restartedCount++;
+		debugLogRecord(__LINE__, result, "restart");
 		uartNeedsRestarted[2] = true;
+		startTim4Isr();
 	}
   }
   else if(UartHandle->Instance==USART6)
@@ -420,8 +422,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 	uint32_t result = (uint32_t)HAL_UART_Receive_IT(&huart6, (uint8_t *)&VCP_UART.rxCharBuffer, 1);
 	if(result == 0x02)
 	{
-		uartNeedsRestarted[6] = true;
 		restartedCount++;
+		uartNeedsRestarted[6] = true;
+		startTim4Isr();
 		debugLogRecord(__LINE__, restartedCount, "restart");
 	}
   }  
@@ -463,6 +466,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *UartHandle)
 	}
 	uartNeedsRestarted[6] = true;
 	restartedCount++;
+	startTim4Isr();
 	debugLogRecord(__LINE__, (uint32_t)UartHandle->ErrorCode, "error");
 }
 
@@ -470,6 +474,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *UartHandle)
 //Could be invoked on a schedule
 void restartHuartIfNeeded(void)
 {
+	bool AnyRestartsNeeded = false;
 	//debugLogRecord(__LINE__, 0xFF, "rsISR");
 	for(int i = 0; i < UARTS_MONITORED; i++)
 	{
@@ -485,6 +490,7 @@ void restartHuartIfNeeded(void)
 					if(result != HAL_OK)
 					{
 						uartNeedsRestarted[i] = true;
+						AnyRestartsNeeded = true;
 					}
 				}
 				break;
@@ -494,6 +500,7 @@ void restartHuartIfNeeded(void)
 					if(result != HAL_OK)
 					{
 						uartNeedsRestarted[i] = true;
+						AnyRestartsNeeded = true;
 					}
 				}
 				break;
@@ -501,6 +508,25 @@ void restartHuartIfNeeded(void)
 				while(1);
 			}
 		}
+	}
+	if(!AnyRestartsNeeded)
+	{
+		stopTim4Isr();
+	}
+}
+#include "bsp.h"
+uint32_t t4ticks = 0;
+uint32_t t4seconds = 0;
+void timer4TickCallback(void)
+{
+	restartHuartIfNeeded();
+	//t4ticks++;
+	t4seconds++;
+	//if(t4ticks > 999)
+	{
+		//Toggle LED
+		bspToggleLED();
+	//	t4ticks = 0;
 	}
 }
 

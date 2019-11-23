@@ -71,10 +71,10 @@
 #ifdef __cplusplus
  extern "C" {
 #endif
-void _Error_Handler(char *, int);
+void _Error_Handler(char *, int)__attribute__((used));
 
 /* USER CODE BEGIN Private defines */
-int millis(void);
+uint32_t millis(void);
 int main_bsp(void);
 
 /* USER CODE END Private defines */

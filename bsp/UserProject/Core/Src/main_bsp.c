@@ -119,6 +119,7 @@ int main_bsp(void)
   MX_USART6_UART_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 //	volatile uint32_t trashbag = 2;
 //	while(1)
@@ -212,7 +213,7 @@ void HAL_SYSTICK_Callback(void)
   SYSTICK_VALUE++;
 };
 
-int millis()
+uint32_t millis()
 {
 	return SYSTICK_VALUE;
 };

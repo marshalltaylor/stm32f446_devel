@@ -68,14 +68,14 @@
 /* #define USE_FULL_ASSERT    1U */
 
 /* USER CODE BEGIN Private defines */
-int millis(void);
+//int millis(void);
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
  extern "C" {
 #endif
 void _Error_Handler(char *, int);
-
+int main(void);
 #define Error_Handler() _Error_Handler(__FILE__, __LINE__)
 #ifdef __cplusplus
 }

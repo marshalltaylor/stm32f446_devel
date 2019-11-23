@@ -35,6 +35,24 @@ include $(REPO_ROOT)/tools/build/catalog.mk
 
 include $(REPO_ROOT)/tools/build/common.mk
 
+# linker
+$(BUILD_DIR)/output.elf: build_dirs $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS)) $(addprefix $(BUILD_DIR)/obj/, $(STARTUP_OBJECT))
+	@echo "#### Linking into elf"
+	$(PP) -o $(TARGET_EXEC) $(LDFLAGS) $(addprefix $(BUILD_DIR)/obj/, $(SOURCE_OBJECTS)) $(STATIC_LIBS) $(addprefix $(BUILD_DIR)/obj/, $(STARTUP_OBJECT))
+	$(SZ) $@
+	$(OBJD) -S --disassemble $(TARGET_EXEC) > $(TARGET_EXEC).dump
+	@echo
+
+$(BUILD_DIR)/output.hex: build_dirs $(TARGET_EXEC)
+	@echo "#### Elf to hex"
+	$(HEX) $< $@
+	@echo
+
+$(BUILD_DIR)/output.bin: build_dirs $(TARGET_EXEC)
+	@echo "#### Elf to bin"
+	$(BIN) $< $@
+	@echo
+
 .PHONY: $(STATIC_LIBS)
 
 all: $(STATIC_LIBS) $(TARGET_EXEC)

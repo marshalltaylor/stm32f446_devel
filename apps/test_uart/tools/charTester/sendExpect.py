@@ -28,18 +28,18 @@ class TreadTestSerial (threading.Thread):
     super(TreadTestSerial, self).__init__()
     self.port = port
     self.comObj = comObj
-    self.minDelay = 0.045
-    self.maxDelay = 0.055
+    self.minDelay = 0.02
+    self.maxDelay = 0.080
     self.incDelay = 0.0001
-    self.cycleTime = 0.2
+    self.cycleTime = 0.3
 
   def run(self):
     self.outputDelay = self.minDelay
     while True:
       logging.info("Start Cycle, delay = %f", self.outputDelay)
-      self.port.write("1234")
+      self.port.write("12345678")
       time.sleep(self.outputDelay)
-      self.port.write("5678\n")
+      self.port.write("ABCDEFGH\n")
       
       time.sleep(self.cycleTime - self.outputDelay)
       
@@ -47,7 +47,7 @@ class TreadTestSerial (threading.Thread):
       if( self.outputDelay > self.maxDelay ):
         self.outputDelay = self.minDelay
         
-      if self.comObj.rxBuffer != "12345678\n":
+      if self.comObj.rxBuffer != "12345678ABCDEFGH\n":
         print("No match")
         print self.comObj.rxBuffer
         sys.exit()

@@ -63,9 +63,10 @@ private:
 	PStates state;
 private:
 	
-	char knobTempoStr[3];
-	char knob1Str[3];
-	char knob3Str[3];
+	//Unsure on lenghth effect
+	char knobTempoStr[8];
+	char knob1Str[8];
+	char knob3Str[8];
 	
 	
 	//knob1/glide
