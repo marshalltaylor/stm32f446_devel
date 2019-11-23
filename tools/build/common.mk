@@ -46,7 +46,7 @@ OBJD = $(GCC_PATH)/arm-none-eabi-objdump
 # c
 #  -DUSE_HAL_DRIVER -DSTM32F7xx  '-D__weak=__attribute__((weak))' '-D__packed=__attribute__((__packed__))' -fmessage-length=0 -Og -ffunction-sections
 # -v
-CFLAGS = -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -DSTM32F4xx -DSTM32F446xx -g -Wall -Werror -c -O2
+CFLAGS = -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -DSTM32F4xx -DSTM32F446xx -g -Wall -Werror -c -O0
 
 # Generate dependency information
 CFLAGS += -MMD -MP -MF "$(@:$(BUILD_DIR)/obj/%.o=$(BUILD_DIR)/dep/%.d)"
@@ -62,7 +62,7 @@ CPPFLAGS = $(CFLAGS) -std=c++11 -fno-rtti
 ASFLAGS = -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -g -v
 
 # linker -lstdc++ -lsupc++  -Wl,--gc-sections  -fno-lto
-LDFLAGS = -v -lc -g -lm -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=nosys.specs -specs=nano.specs -T$(LINKER_FILE) -Wl,-Map=$(BUILD_DIR)/output.map -Wl,--gc-sections
+LDFLAGS = -v -lc -g -lm -lstdc++ -lsupc++ -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=nosys.specs -specs=nano.specs -T$(LINKER_FILE) -Wl,-Map=$(BUILD_DIR)/output.map -Wl,--gc-sections
 #LDFLAGS = -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -specs=nano.specs -T$(LINKER_FILE) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 
 # binaries
