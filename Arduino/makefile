@@ -22,17 +22,17 @@ Libs/uCModules/src/timeKeeper.cpp \
 Libs/uCModules/src/timeKeeper32.cpp \
 Libs/uCModules/src/timerModule.cpp \
 Libs/uCModules/src/timerModule32.cpp \
-Libs/arduino_midi_library/src/MIDI.cpp
+Libs/arduino_midi/src/MIDI.cpp
 
 SOURCE_DIRS = \
 Core \
 Libs/uCModules/src \
-Libs/arduino_midi_library/src
+Libs/arduino_midi/src
 
 C_INCLUDES = \
 Core \
 Libs/uCModules/src \
-Libs/arduino_midi_library/src \
+Libs/arduino_midi/src \
 $(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Include \
 $(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Device/ST/STM32F4xx/Include \
 $(REPO_ROOT)/bsp/CubeProject/Drivers/STM32F4xx_HAL_Driver/Inc \

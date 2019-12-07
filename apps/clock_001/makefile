@@ -25,7 +25,7 @@ $(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Device/ST/STM32F4xx/Include \
 $(REPO_ROOT)/bsp/UserProject/AltDrivers \
 $(REPO_ROOT)/Arduino/Core \
 $(REPO_ROOT)/Arduino/Libs/uCModules/src \
-$(REPO_ROOT)/Arduino/Libs/arduino_midi_library/src
+$(REPO_ROOT)/Arduino/Libs/arduino_midi/src
 
 STATIC_LIBS = \
 $(REPO_ROOT)/Arduino/build/Arduino.a \

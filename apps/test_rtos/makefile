@@ -3,12 +3,7 @@ REPO_ROOT = ../..
 
 C_SOURCES =  \
 main.c \
-BlinkerPanel.cpp \
-MidiClockDisplay.cpp \
-midiTime.cpp \
-SegmentVideo.cpp \
 sketch.cpp \
-StatusPanel.cpp \
 os.c
 
 STARTUP_SOURCES =  \
@@ -30,7 +25,6 @@ $(REPO_ROOT)/Arduino/Libs/uCModules/src \
 $(REPO_ROOT)/Arduino/Libs/arduino_midi/src \
 $(REPO_ROOT)/FreeRTOS \
 $(REPO_ROOT)/FreeRTOS/Source/include \
-$(REPO_ROOT)/FreeRTOS/Source/CMSIS_RTOS \
 $(REPO_ROOT)/FreeRTOS/Source/portable/GCC/ARM_CM4F
 
 STATIC_LIBS = \
