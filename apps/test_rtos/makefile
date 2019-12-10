@@ -3,6 +3,8 @@ REPO_ROOT = ../..
 
 C_SOURCES =  \
 main.c \
+taskTest.cpp \
+taskConsole.cpp \
 sketch.cpp \
 os.c
 
@@ -83,4 +85,4 @@ deploy:
 info:
 	@echo "***** ***** ***** DEBUG ***** ***** *****"
 	@echo $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS))
-	@echo $(C_INCLUDES) 
+	#@echo $(C_INCLUDES) 

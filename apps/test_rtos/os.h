@@ -1,5 +1,5 @@
-#ifdef cplusplus
-extern "C" {
+#ifdef __cplusplus
+ extern "C" {
 #endif
 
 void osInit(void);

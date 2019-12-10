@@ -5,10 +5,8 @@
 extern "C" {
 #endif
 
-void taskMidi(void);
-void taskConsole(void);
-void taskPanel(void);
-void taskHardware(void);
+void taskConsoleStart(void * argument);
+void taskTestStart(void * argument);
 
 #ifdef __cplusplus
 }

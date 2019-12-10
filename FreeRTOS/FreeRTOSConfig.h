@@ -103,10 +103,15 @@
 #define configMINIMAL_STACK_SIZE                 ((uint16_t)128)
 #define configTOTAL_HEAP_SIZE                    ((size_t)15360)
 #define configMAX_TASK_NAME_LEN                  ( 16 )
-#define configUSE_16_BIT_TICKS                   0
+#define configUSE_16_BIT_TICKS                   1 // Set to 1 so that we can observe rollover in a reasonable time
 #define configUSE_MUTEXES                        1
 #define configQUEUE_REGISTRY_SIZE                8
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION  1
+
+/* Debug: Turn on run-time stats and stuff */
+#define configUSE_TRACE_FACILITY				 1
+//#define configGENERATE_RUN_TIME_STATS            1 //TODO NEeds internal timer something something portCONFIGURE_TIMER_FOR_RUN_TIME_STATS
+
 
 /* Co-routine definitions. */
 #define configUSE_CO_ROUTINES                    0
