@@ -110,8 +110,13 @@
 
 /* Debug: Turn on run-time stats and stuff */
 #define configUSE_TRACE_FACILITY				 1
-//#define configGENERATE_RUN_TIME_STATS            1 //TODO NEeds internal timer something something portCONFIGURE_TIMER_FOR_RUN_TIME_STATS
+#define configGENERATE_RUN_TIME_STATS            1 //TODO Needs internal timer something something portCONFIGURE_TIMER_FOR_RUN_TIME_STATS
+#define configUSE_STATS_FORMATTING_FUNCTIONS 1
 
+extern void vConfigureTimerForRunTimeStats( void ); //os.c
+extern uint32_t ulGetFastRunTimeTicks( void ); //external (bsp)
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() vConfigureTimerForRunTimeStats()
+#define portGET_RUN_TIME_COUNTER_VALUE() ulGetFastRunTimeTicks()
 
 /* Co-routine definitions. */
 #define configUSE_CO_ROUTINES                    0

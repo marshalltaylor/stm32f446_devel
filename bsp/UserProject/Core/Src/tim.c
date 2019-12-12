@@ -55,6 +55,7 @@
 
 /* USER CODE BEGIN 0 */
 uint32_t usTicks = 0;
+uint32_t fastRunTimeTicks = 0;
 
 //  The lock works like this:
 //
@@ -303,6 +304,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 	if(htim->Instance == TIM2)
 	{
+		//Routine 1: fast arbitrary run time ticker
+		fastRunTimeTicks++;
+
+		//Routine 2: 10us resolution timer
 		if(usTicks >= ( maxTimer + maxInterval ))
 		{
 			usTicks = usTicks - maxTimer;

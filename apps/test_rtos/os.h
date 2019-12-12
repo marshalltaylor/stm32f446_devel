@@ -4,6 +4,8 @@
 
 void osInit(void);
 
+void vConfigureTimerForRunTimeStats( void );
+
 #ifdef cplusplus
 }
 #endif

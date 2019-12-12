@@ -66,6 +66,9 @@
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 volatile uint32_t SYSTICK_VALUE;
+
+extern uint32_t fastRunTimeTicks; //from tim.c
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -224,10 +227,16 @@ void HAL_SYSTICK_Callback(void)
   SYSTICK_VALUE++;
 };
 
-uint32_t millis()
+uint32_t millis(void)
 {
 	return SYSTICK_VALUE;
 };
+
+uint32_t ulGetFastRunTimeTicks(void)
+{
+	return fastRunTimeTicks;
+};
+
 /* USER CODE END 4 */
 
 /**

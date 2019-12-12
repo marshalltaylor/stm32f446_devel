@@ -75,6 +75,7 @@ void _Error_Handler(char *, int)__attribute__((used));
 
 /* USER CODE BEGIN Private defines */
 uint32_t millis(void);
+uint32_t ulGetFastRunTimeTicks(void);
 int main_bsp(void);
 void HAL_SYSTICK_Callback(void);
 

@@ -3,8 +3,6 @@
 #include "task.h"
 //#include "main_bsp.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */     
 #include "sketch.h"
 #include "bsp.h"
 #include "osTasks.h"
@@ -43,8 +41,6 @@ void MX_FREERTOS_Init(void)
 	}
 }
 
-/* Private application code --------------------------------------------------*/
-/* USER CODE BEGIN Application */
 void osInit(void)
 {
 	// Run arduino like setup lop
@@ -59,6 +55,9 @@ void osInit(void)
 	vTaskStartScheduler();
 }
 
-/* USER CODE END Application */
+/* Defined in main.c. */
+void vConfigureTimerForRunTimeStats( void )
+{
+	//This is called once, usually for HW timer config (done at bsp init)
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+}
