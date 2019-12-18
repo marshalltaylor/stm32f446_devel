@@ -5,14 +5,14 @@
 
 #include "sketch.h"
 #include "bsp.h"
-#include "osTasks.h"
 
 #include "timers.h"
 #include "queue.h"
 #include "semphr.h"
 #include "event_groups.h"
 
-#include "osTasks.h"
+#include "taskCommon.h"
+#include "taskLog.h"
 
 extern void xPortSysTickHandler(void);
 
@@ -28,17 +28,27 @@ void MX_FREERTOS_Init(void)
 	//	xTaskCreate( vCompeteingIntMathTask1, "IntMath1", intgSTACK_SIZE, ( void * ) &( usTaskCheck[ 0 ] ), uxPriority, NULL );
 
 	BaseType_t retVal;
-	retVal = xTaskCreate( taskConsoleStart, "config", 1024, (void*) 1, tskIDLE_PRIORITY, NULL);
+
+	logQueue = xQueueCreate( 10, sizeof( strMsg_t* ) );
+
+	retVal = xTaskCreate( taskLogStart, "log", 1024, (void*) 1, tskIDLE_PRIORITY, NULL);
     if (retVal != pdPASS)
 	{
 		while(1);
 	}
 
-	retVal = xTaskCreate( taskTestStart, "test", 1024, (void*) 1, tskIDLE_PRIORITY, NULL);
+	retVal = xTaskCreate( taskConsoleStart, "config", 512, (void*) 1, tskIDLE_PRIORITY, NULL);
     if (retVal != pdPASS)
 	{
 		while(1);
 	}
+
+	retVal = xTaskCreate( taskTestStart, "test", 128, (void*) 1, tskIDLE_PRIORITY, NULL);
+    if (retVal != pdPASS)
+	{
+		while(1);
+	}
+
 }
 
 void osInit(void)

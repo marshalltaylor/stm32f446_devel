@@ -5,6 +5,7 @@ C_SOURCES =  \
 main.c \
 taskTest.cpp \
 taskConsole.cpp \
+taskLog.cpp \
 sketch.cpp \
 os.c
 

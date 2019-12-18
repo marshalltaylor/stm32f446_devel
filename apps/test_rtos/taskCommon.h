@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+extern bool genTestLog;
+
 void taskConsoleStart(void * argument);
 void taskTestStart(void * argument);
 

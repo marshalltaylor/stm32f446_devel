@@ -1,25 +1,33 @@
+//FreeRTOS system
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+
+//FreeRTOS app
+#include "taskLog.h"
+#include "taskCommon.h"
+
+//Arduino
 #include "Arduino.h"
 #include "interface.h"
-#include <MIDI.h>
-#include "adc_ext.h"
 
+#include <MIDI.h>
 #include "timerModule32.h"
+
+//BSP
+#include "adc_ext.h"
+//#include "main_bsp.h"
 
 #define Serial Serial6
 
-#include "FreeRTOS.h"
-#include "task.h"
-//#include "main_bsp.h"
-
-
-TaskStatus_t pxTaskStatusArray[3];
+TaskStatus_t pxTaskStatusArray[5];
 static uint16_t actionBitmap = 0;
 
 void taskConsolePrint(void)
 {
 	volatile UBaseType_t uxArraySize, x;
 	unsigned long ulTotalRunTime, ulStatsAsPercentage;
-	char pcWriteBuffer[128];
+	char pcWriteBuffer[64];
 	
 	/* get num of tasks */
 	uxArraySize = uxTaskGetNumberOfTasks();
@@ -69,7 +77,7 @@ void taskConsolePrint(void)
        }
     }
 }
-
+//strMsg_t globoMsg = {0};
 extern "C" void taskConsoleStart(void * argument)
 {
 	uint32_t nextUpdate = 0;
@@ -91,6 +99,55 @@ extern "C" void taskConsoleStart(void * argument)
 				{
 					Serial6.println();
 					taskConsolePrint();
+					break;
+				}
+				case '!':
+				{
+					Serial6.print("3");
+					delay( 100 );
+					Serial6.print("2");
+					delay( 100 );
+					Serial6.print("1");
+					delay( 100 );
+
+					strMsg_t * msg = new strMsg_t();
+
+					//char buffer[32];
+					//sprintf( buffer, "New: %p\n", &msg);
+					//Serial6.println(buffer);
+
+					msg->id = -1;
+					msg->data[0] = '\0';
+					if(pdPASS != xQueueSend( logQueue, &msg, 0 ))
+					{
+						Serial6.println(".dud");
+						delete msg;
+					}
+					break;
+				}
+				case 'H':
+				{
+					strMsg_t * msg = new strMsg_t();
+
+					msg->id = 0;
+					sprintf( msg->data, "Hello world!\n");
+					if(pdPASS != xQueueSend( logQueue, &msg, 0 ))
+					{
+						//TODO: error on send
+						delete msg;
+					}
+					break;
+				}
+				case 'g':
+				{
+					if(genTestLog)
+					{
+						genTestLog = false;
+					}
+					else
+					{
+						genTestLog = true;
+					}
 					break;
 				}
 				case 't':
