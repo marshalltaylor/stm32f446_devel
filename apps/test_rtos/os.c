@@ -31,6 +31,17 @@ void MX_FREERTOS_Init(void)
 
 	logQueue = xQueueCreate( 10, sizeof( strMsg_t* ) );
 
+    /* Attempt to create the event group. */
+    xTestEventGroup = xEventGroupCreate();
+
+    /* Was the event group created successfully? */
+    if( xTestEventGroup == NULL )
+    {
+        /* The event group was not created because there was insufficient
+        FreeRTOS heap available. */
+		while(1);
+    }
+
 	retVal = xTaskCreate( taskLogStart, "log", 1024, (void*) 1, tskIDLE_PRIORITY, NULL);
     if (retVal != pdPASS)
 	{

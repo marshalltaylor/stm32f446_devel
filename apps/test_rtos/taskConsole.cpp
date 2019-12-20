@@ -2,6 +2,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
+#include "event_groups.h"
 
 //FreeRTOS app
 #include "taskLog.h"
@@ -21,7 +22,6 @@
 #define Serial Serial6
 
 TaskStatus_t pxTaskStatusArray[5];
-static uint16_t actionBitmap = 0;
 
 void taskConsolePrint(void)
 {
@@ -138,18 +138,6 @@ extern "C" void taskConsoleStart(void * argument)
 					}
 					break;
 				}
-				case 'g':
-				{
-					if(genTestLog)
-					{
-						genTestLog = false;
-					}
-					else
-					{
-						genTestLog = true;
-					}
-					break;
-				}
 				case 't':
 				{
 					//Test delay times
@@ -177,15 +165,26 @@ extern "C" void taskConsoleStart(void * argument)
 				{
 					if(((c >= '0')&&(c <= '9'))||(c == '`'))
 					{
-						if(c != '`')
+						EventBits_t uxBits = xEventGroupGetBits(xTestEventGroup);
+						if((c != '`')&&(c != '8')&&(c != '9'))
 						{
-							actionBitmap ^= 0x0001 << (c - '0');
+							uint8_t testKeyMask = 0x0001 << (c - '0');
+							uxBits ^= testKeyMask;
+							if( (uxBits >> (c - '0')) & 0x0001 )
+							{
+								xEventGroupSetBits(xTestEventGroup, testKeyMask );
+							}
+							else
+							{
+								xEventGroupClearBits(xTestEventGroup, testKeyMask );
+							}
+
 						}
 						for(int i = 1; i <= 9; i++)
 						{
-							Serial6.print((actionBitmap >> i)&0x0001);
+							Serial6.print((uxBits >> i)&0x0001);
 						}
-						Serial6.println(actionBitmap&0x0001);
+						Serial6.println(uxBits&0x0001);
 					}
 					else
 					{

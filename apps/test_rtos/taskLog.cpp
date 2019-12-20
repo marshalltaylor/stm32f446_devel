@@ -22,7 +22,7 @@ extern "C" void taskLogStart(void * argument)
 	while(1)
 	{
 		strMsg_t * msg = NULL;
-		if(xQueueReceive( logQueue, &msg, 0 ) == pdPASS)
+		while(xQueueReceive( logQueue, &msg, 0 ) == pdPASS)
 		{
 			//print output
 			switch( msg->id )
