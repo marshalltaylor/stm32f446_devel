@@ -48,7 +48,7 @@ void MX_FREERTOS_Init(void)
 		while(1);
 	}
 
-	retVal = xTaskCreate( taskConsoleStart, "config", 512, (void*) 1, tskIDLE_PRIORITY, NULL);
+	retVal = xTaskCreate( taskConsoleStart, "console", 512, (void*) 1, tskIDLE_PRIORITY, NULL);
     if (retVal != pdPASS)
 	{
 		while(1);
@@ -74,11 +74,4 @@ void osInit(void)
 	
 	// Start os and don't come back
 	vTaskStartScheduler();
-}
-
-/* Defined in main.c. */
-void vConfigureTimerForRunTimeStats( void )
-{
-	//This is called once, usually for HW timer config (done at bsp init)
-
 }

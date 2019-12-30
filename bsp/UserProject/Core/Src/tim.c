@@ -340,6 +340,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	}
 	//traceWrite(VIOLET, 0);
 }
+
+/* Defined in main.c. */
+void vConfigureTimerForRunTimeStats( void )
+{
+	//This is called once, usually for HW timer config (done at bsp init)
+
+}
+
 /* USER CODE END 1 */
 
 /**
