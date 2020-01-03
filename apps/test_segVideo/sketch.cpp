@@ -13,8 +13,6 @@
 
 #define Serial Serial6
 
-MidiClockDisplay Segments;
-
 MidiClock extMidiClock;
 MidiClock intMidiClock;
 MidiClockSocket clockSocket;
@@ -80,7 +78,7 @@ extern "C" {
 void setup(void)
 {
 	// Start the fake Arduino interface stuff
-	interface_init();
+	// interface_init();
 
 	//pinMode(D6, OUTPUT);
 	Serial2.begin(9600, 6);
@@ -109,17 +107,6 @@ void setup(void)
     MIDI.setHandleNoteOff(handleNoteOff);
     MIDI.begin(MIDI_CHANNEL_OMNI);
 	
-	uint8_t AllZeros[11];
-	//uint8_t AllOnes[11];
-	for(int i = 0; i < 11; i++)
-	{
-		AllZeros[i] = 0x00;
-		//AllOnes[i] = 0xFF;
-	}
-	Segments.valueMask_layer.write(AllZeros, AllZeros);
-	Segments.fg_layer.write(AllZeros, AllZeros);
-	Segments.noise_layer.write(AllZeros, AllZeros);
-	
 }
 
 void taskMidi(void)
@@ -138,10 +125,10 @@ void taskHardware(void)
 void taskPanel(void)
 {
 	mainPanel.tickStateMachine(10);
-	Segments.tickValueStateMachine();	
-
-	Segments.processEffects();
-	Segments.writeNextFrame();
+//	Segments.tickValueStateMachine();	
+//
+//	Segments.processEffects();
+//	Segments.writeNextFrame();
 
 	udelay(5000);
 	

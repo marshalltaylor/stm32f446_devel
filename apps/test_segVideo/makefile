@@ -3,11 +3,15 @@ REPO_ROOT = ../..
 
 C_SOURCES =  \
 main.c \
+App.cpp \
 BlinkerPanel.cpp \
 MidiClockDisplay.cpp \
 midiTime.cpp \
 sketch.cpp \
 StatusPanel.cpp \
+taskTest.cpp \
+taskConsole.cpp \
+taskLog.cpp \
 os.c
 
 STARTUP_SOURCES =  \

@@ -12,7 +12,7 @@
 #include <stdbool.h>
 #include "bsp.h"
 #include "main.h"
-#include "os.h"
+#include "App.h"
 
 /* Private variables ---------------------------------------------------------*/
 
@@ -26,9 +26,8 @@ void SystemClock_Config(void);
 int main(void)
 {
 	bspInit();
-	
-	//Init and run operating system.  This starts all tasks
-	osInit();
+
+	AppEntry();
 	
 	/* We should never get here as control is now taken by the scheduler */
 	while (1)

@@ -5,9 +5,6 @@
  extern "C" {
 #endif
 
-#include "stm32f4xx_hal.h"
-#include "main_bsp.h"
-
 int AppEntry(void);
 
 #ifdef __cplusplus
