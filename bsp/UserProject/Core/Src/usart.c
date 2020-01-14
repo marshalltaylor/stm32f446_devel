@@ -52,7 +52,6 @@ UartInstance_t D01_UART;
 
 bool uartNeedsRestarted[UARTS_MONITORED] = {0};
 
-
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart2;

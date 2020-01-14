@@ -5,7 +5,6 @@
 #include "bsp.h"
 
 static bool ledState = false;
-sysTickCallback_t sysTickCallbackPointer; // Supplied externally by bsp.h
 
 void bspInit(void)
 {
@@ -20,10 +19,4 @@ void bspToggleLED(void)
 {
 	ledState =! ledState;
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, ledState);
-}
-
-void bspRegisterSysTickCallback(sysTickCallback_t cbFn)
-{
-	//This needs to save the os tick callback
-	sysTickCallbackPointer = cbFn;
 }

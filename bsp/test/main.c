@@ -38,7 +38,6 @@ int main(void)
 			nextSecond = millis() + 1000;
 			//bspToggleLED();
 		}
-		restartHuartIfNeeded();
 
 		//crapDelay(8);
 		//halUartWrite('X', &VCP_UART);
@@ -51,7 +50,6 @@ void crapDelay( int16_t msInput )
 	startTime = millis();
 	while(millis() < startTime + msInput)
 	{
-		restartHuartIfNeeded();
 	}
 	//int32_t i;
 	//int32_t j;

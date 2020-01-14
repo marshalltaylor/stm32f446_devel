@@ -37,8 +37,8 @@
 
 /* USER CODE BEGIN 0 */
 #include "debugUtilities.h" // traceWrite(NAVY, 1);
-#include "bsp.h"
-
+//#include "bsp.h"
+#include "bsp_private.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/

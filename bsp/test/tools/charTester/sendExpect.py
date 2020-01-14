@@ -61,7 +61,7 @@ if __name__ == "__main__":
   
   print("I started all by myself!")
   
-  port = serial.Serial("/dev/ttyS38", baudrate=115200, timeout=3.0)
+  port = serial.Serial("/dev/ttyS36", baudrate=115200, timeout=3.0)
 
   format = "%(asctime)s: %(message)s"
   logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")

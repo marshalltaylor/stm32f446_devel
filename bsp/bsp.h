@@ -24,10 +24,11 @@ Timer Functions
 Mostly defined in tim.c
 
 */
-typedef void (*sysTickCallback_t)(void);
+typedef void (*bspTimerCallback_t)(void);
 
-extern sysTickCallback_t sysTickCallbackPointer;
-void bspRegisterSysTickCallback(sysTickCallback_t cbFn);
+//TODO GET RID OF extern sysTickCallback_t sysTickCallbackPointer;
+
+void bspRegisterSysTickCallback(bspTimerCallback_t cbFn);
 
 /*
 

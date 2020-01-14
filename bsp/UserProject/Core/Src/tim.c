@@ -54,6 +54,9 @@
 #include "debugUtilities.h"
 
 /* USER CODE BEGIN 0 */
+
+#include "bsp.h"
+
 uint32_t usTicks = 0;
 uint32_t fastRunTimeTicks = 0;
 
@@ -69,7 +72,14 @@ uint8_t usTicksLocked = 1; //start locked out
 uint32_t maxTimer = 60000000;
 uint32_t maxInterval = 2000000;
 
-void (*timer3TickCallback)( void );
+bspTimerCallback_t timer3TickCallback;
+bspTimerCallback_t sysTickCallbackPointer;
+
+void bspRegisterSysTickCallback(bspTimerCallback_t cbFn)
+{
+	//This needs to save the os tick callback
+	sysTickCallbackPointer = cbFn;
+}
 
 /* USER CODE END 0 */
 
