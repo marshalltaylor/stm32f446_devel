@@ -236,8 +236,8 @@ extern "C" void taskConsoleStart(void * argument)
 		}
 		// Clock segment driver
 		vTaskDelay( 5 );
-		Segments.tickValueStateMachine();	
-        
+		Segments.tickValueStateMachine(millis());	
+
 		Segments.processEffects();
 		Segments.writeNextFrame();
 		

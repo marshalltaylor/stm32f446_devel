@@ -1,11 +1,12 @@
 # STM32F4xx bsp uart test
 REPO_ROOT = ../..
 
+#Unused:
+#BlinkerPanel.cpp
+#MidiClockDisplay.cpp
 C_SOURCES =  \
 main.c \
 App.cpp \
-BlinkerPanel.cpp \
-MidiClockDisplay.cpp \
 midiTime.cpp \
 sketch.cpp \
 StatusPanel.cpp \
@@ -39,7 +40,7 @@ $(REPO_ROOT)/FreeRTOS/Source/portable/GCC/ARM_CM4F
 
 STATIC_LIBS = \
 $(REPO_ROOT)/Arduino/build/Arduino.a \
-$(REPO_ROOT)/drivers/build/drivers.a \
+$(REPO_ROOT)/drivers/SegmentVideo/build/SegmentVideo.a \
 $(REPO_ROOT)/bsp/build/bsp.a \
 $(REPO_ROOT)/FreeRTOS/build/FreeRTOS.a
 

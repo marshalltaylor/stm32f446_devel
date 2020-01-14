@@ -1,6 +1,6 @@
 #include "Arduino.h"
 #include "interface.h"
-#include "BlinkerPanel.h"
+//#include "BlinkerPanel.h"
 #include "StatusPanel.h"
 #include <MIDI.h>
 #include "adc_ext.h"
@@ -19,7 +19,7 @@ MidiClockSocket clockSocket;
 
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial2, MIDI);
 
-BlinkerPanel mainPanel;
+//BlinkerPanel mainPanel;
 StatusPanel statusPanel;
 
 uint16_t debugCounter = 0;
@@ -91,7 +91,7 @@ void setup(void)
 	//timer3TickCallback = &MidiClock::hwTimerCallback;
 	timer3TickCallback = hwTimerCallback;
 	//Go to fresh state
-	mainPanel.reset();
+	//mainPanel.reset();
 	statusPanel.reset();
 	
 	clockSocket.SetBeatCallback(statusPanel.BeatCallback);
@@ -109,30 +109,20 @@ void setup(void)
 	
 }
 
-void taskMidi(void)
-{
-	MIDI.read();
-}
-
-void taskHardware(void)
-{
-	convertADC();
-	//intMidiClock.service();
-	statusPanel.tickStateMachine(400);
-	udelay(400);
-}
-
-void taskPanel(void)
-{
-	mainPanel.tickStateMachine(10);
-//	Segments.tickValueStateMachine();	
+//void taskMidi(void)
+//{
+//	MIDI.read();
+//}
 //
-//	Segments.processEffects();
-//	Segments.writeNextFrame();
+//void taskHardware(void)
+//{
+//	convertADC();
+//	//intMidiClock.service();
+//	statusPanel.tickStateMachine(400);
+//	udelay(400);
+//}
+//
 
-	udelay(5000);
-	
-}
 
 //#if defined(__arm__)
 //extern "C" char* sbrk(int incr);
@@ -142,37 +132,37 @@ void taskPanel(void)
 //}
 //#endif
 
-void taskConsole(void)
-{
-	if(Serial6.available())
-	{
-		Serial6.println((char)Serial6.read());
-	}
-	//if( usTicksLocked == 0 )
-	//{
-	//	mainPanelTimer.update(usTicks);
-	//	debugTimer.update(usTicks);
-	//	statusPanelTimer.update(usTicks);
-	//	segmentVideoTimer.update(usTicks);
-	//	//Done?  Lock it back up
-	//	usTicksLocked = 1;
-	//}  //The ISR will unlock.
-    //
-	//if(debugTimer.flagStatus() == PENDING)
-	//{
-		delay(5000);
-		//User code
-		char buffer[200] = {0};
-		sprintf(buffer, "__DEBUG______\nintPlayState = %d, extPlayState = %d\nbeatLedState = %d, playLedState = %d\n\n", intMidiClock.getState(), extMidiClock.getState(), statusPanel.getBeatLedState(), statusPanel.getPlayLedState());
-		//sprintf(buffer, "__DEBUG__\n");
-		//sprintf(buffer, "__DEBUG__ [%d]\n", (int16_t)millis());
-		Serial6.print(buffer);
-		//Serial6.println(mainPanel.getState());
-		//Serial6.print("Playing: ");
-	//}
-
-	
-}
+//void taskConsole(void)
+//{
+//	if(Serial6.available())
+//	{
+//		Serial6.println((char)Serial6.read());
+//	}
+//	//if( usTicksLocked == 0 )
+//	//{
+//	//	mainPanelTimer.update(usTicks);
+//	//	debugTimer.update(usTicks);
+//	//	statusPanelTimer.update(usTicks);
+//	//	segmentVideoTimer.update(usTicks);
+//	//	//Done?  Lock it back up
+//	//	usTicksLocked = 1;
+//	//}  //The ISR will unlock.
+//    //
+//	//if(debugTimer.flagStatus() == PENDING)
+//	//{
+//		delay(5000);
+//		//User code
+//		char buffer[200] = {0};
+//		sprintf(buffer, "__DEBUG______\nintPlayState = %d, extPlayState = %d\nbeatLedState = %d, playLedState = %d\n\n", intMidiClock.getState(), extMidiClock.getState(), statusPanel.getBeatLedState(), statusPanel.getPlayLedState());
+//		//sprintf(buffer, "__DEBUG__\n");
+//		//sprintf(buffer, "__DEBUG__ [%d]\n", (int16_t)millis());
+//		Serial6.print(buffer);
+//		//Serial6.println(mainPanel.getState());
+//		//Serial6.print("Playing: ");
+//	//}
+//
+//	
+//}
 
 
 #ifdef __cplusplus

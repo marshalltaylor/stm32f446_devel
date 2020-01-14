@@ -16,6 +16,6 @@ $(REPO_ROOT)/Arduino/build/Arduino.a:
 	@echo "######## Building $(REPO_ROOT)/Arduino"
 	$(MAKE) -C $(REPO_ROOT)/Arduino
 
-$(REPO_ROOT)/drivers/build/drivers.a:
-	@echo "######## Building $(REPO_ROOT)/drivers"
-	$(MAKE) -C $(REPO_ROOT)/drivers
+$(REPO_ROOT)/drivers/SegmentVideo/build/SegmentVideo.a:
+	@echo "######## Building $(REPO_ROOT)/drivers/SegmentVideo"
+	$(MAKE) -C $(REPO_ROOT)/drivers/SegmentVideo

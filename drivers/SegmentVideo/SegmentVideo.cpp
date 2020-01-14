@@ -1,4 +1,4 @@
-#include "display_clock.h"
+#include "display_clock.h" // in bsp
 #include "SegmentVideo.h"
 
 SegmentFrameBuffer::SegmentFrameBuffer(void){
@@ -31,7 +31,7 @@ BufferChannels SegmentFrameBuffer::read( void )
 	return retVar;
 }
 
-
+// Put a new frame into the frame buffer
 void SegmentFrameBuffer::write(const uint8_t * onData, const uint8_t * offData)
 {
 	if(nextToWrite == outputPtr)
@@ -108,8 +108,8 @@ void SegmentVideo::writeNextFrame(void)
 		outputFrame[i] &= ~nextValueMaskFrame.offBufferPtr[i];
 		outputFrame[i] |= nextValueMaskFrame.onBufferPtr[i];
 		//outputFrame[i] = nextFGFrame.onBufferPtr[i];
-		outputFrame[i] &= ~nextNoiseFrame.offBufferPtr[i];
-		outputFrame[i] |= nextNoiseFrame.onBufferPtr[i];
+		//outputFrame[i] &= ~nextNoiseFrame.offBufferPtr[i];
+		//outputFrame[i] |= nextNoiseFrame.onBufferPtr[i];
 	}	
 	writeDisplay(outputFrame);
 }

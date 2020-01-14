@@ -1,7 +1,8 @@
+// bsp
 #include "display_clock.h"
+// driver
 #include "SegmentVideo.h"
 #include "MidiClockDisplay.h"
-#include "Arduino.h"
 // normal_distribution
 #include <iostream>
 #include <string>
@@ -107,7 +108,7 @@ void MidiClockDisplay::processEffects(void)
 		noise_layer.write(maskBitmaps[3], maskBitmaps[2]);
 		noise_layer.write(maskBitmaps[3], maskBitmaps[2]);
 		noise_layer.write(maskBitmaps[3], maskBitmaps[2]);
-		noise_layer.write(maskBitmaps[3], maskBitmaps[3]);
+		noise_layer.write(maskBitmaps[3], maskBitmaps[3]); // why is this different?
 	}
 	else if(number < 0.8)
 	{
@@ -124,21 +125,43 @@ void MidiClockDisplay::processEffects(void)
 
 void MidiClockDisplay::showNewValue( const char * input )
 {
-	if( input == currentValue )
-	{
-		displaySMTK.uClear();
-		// buffer it to frames
-		displayDrawValue(currentValue);
-	}
-	else
-	{
-		newValueRequested = true;
-		nextValue = input;
-	}		
+	restartTimer = true;
+	// buffer it to frames
+	displayDrawValue(input);
+	newValueRequested = true;
+	nextValue = input;
+//	if( input == currentValue )
+//	{
+//		restartTimer = true;
+//		// buffer it to frames
+//		displayDrawValue(currentValue);
+//	}
+//	else
+//	{
+//		displayDrawValue(currentValue);
+//		newValueRequested = true;
+//		nextValue = input;
+//	}		
 }
 
-void MidiClockDisplay::tickValueStateMachine( void )
+//Arduino
+#include "Arduino.h"
+#include "interface.h"
+
+#define Serial Serial6
+
+void MidiClockDisplay::tickValueStateMachine( uint32_t sysTime )
 {
+	//TODO: should be using bsp or below, need to clean logging
+	//Serial.print("State: ");
+	//Serial.println(displayState);
+	
+	if( restartTimer )
+	{
+		startTime = sysTime;
+		restartTimer = false;
+	}
+
 	switch( displayState )
 	{
 		case init:
@@ -165,7 +188,7 @@ void MidiClockDisplay::tickValueStateMachine( void )
 				{
 					valueMask_layer.write(maskBitmaps[ALL_ZEROS], &ValueFadeMap[i][0]);
 				}
-				displaySMTK.uClear();
+				startTime = sysTime;
 				displayState = waitForFadeIn;
 			}
 		}
@@ -180,7 +203,7 @@ void MidiClockDisplay::tickValueStateMachine( void )
 		break;
 		case waitForTimeout:
 		{
-			if(( displaySMTK.uGet() > 2500000 ) || newValueRequested)
+			if( sysTime > (2500 + startTime) || newValueRequested)
 			{
 				displayState = fadeOut;
 			}

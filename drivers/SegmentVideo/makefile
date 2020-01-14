@@ -1,23 +1,25 @@
 # STM32F4xx bsp
-REPO_ROOT = ..
+REPO_ROOT = ../..
 
-C_SOURCES =  \
-SegmentVideo/SegmentVideo.cpp
+C_SOURCES = \
+SegmentVideo.cpp \
+MidiClockDisplay.cpp
 
-SOURCE_DIRS = \
-SegmentVideo
+SOURCE_DIRS = ./ \
 
 C_INCLUDES = \
 $(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Include \
 $(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Device/ST/STM32F4xx/Include \
 $(REPO_ROOT)/bsp/CubeProject/Drivers/STM32F4xx_HAL_Driver/Inc \
 $(REPO_ROOT)/bsp/UserProject/AltDrivers \
-$(REPO_ROOT)/bsp/UserProject/Core/Inc
+$(REPO_ROOT)/bsp/UserProject/Core/Inc \
+$(REPO_ROOT)/Arduino/Core \
+
 
 #PROJECT_OBJECTS
 OBJECTS = $(patsubst %s,%o,$(patsubst %c,%o,$(patsubst %cpp,%o,$(C_SOURCES))))
 
-OUTPUT_LIB_NAME = drivers.a
+OUTPUT_LIB_NAME = SegmentVideo.a
 
 default: info all
 

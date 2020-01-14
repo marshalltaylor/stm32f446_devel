@@ -2,7 +2,6 @@
 #define MIDICLOCKDISPLAY_H
 #include <stdint.h>
 #include "SegmentVideo.h"
-#include "timeKeeper32.h"
 
 typedef enum displayStates
 {
@@ -32,12 +31,13 @@ public:
 	bool debugNoise = false;
 	
 	//State machine
-	void tickValueStateMachine( void );
+	void tickValueStateMachine( uint32_t sysTime );
 	uint8_t getValueState( void );
 	
-	TimeKeeper32 displaySMTK;
 private:
+	uint32_t startTime = 0;
 	bool newValueRequested = false;
+	bool restartTimer = false;
 	const char * currentValue;
 	const char * nextValue;
 	const char blankValue[4] = "   ";
