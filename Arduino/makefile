@@ -33,6 +33,7 @@ C_INCLUDES = \
 Core \
 Libs/uCModules/src \
 Libs/arduino_midi/src \
+$(REPO_ROOT)/bsp \
 $(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Include \
 $(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Device/ST/STM32F4xx/Include \
 $(REPO_ROOT)/bsp/CubeProject/Drivers/STM32F4xx_HAL_Driver/Inc \

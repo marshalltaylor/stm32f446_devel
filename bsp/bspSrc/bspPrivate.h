@@ -1,7 +1,7 @@
 #ifndef BSP_PRIVATE_H
 #define BSP_PRIVATE_H
 
-#ifdef cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -13,7 +13,7 @@ extern bspTimerCallback_t sysTickCallbackPointer;
 
 //Used for uart monitoring right now
 //extern bspTimerCallback_t timer4TickCallback;
-#ifdef cplusplus
+#ifdef __cplusplus
 }
 #endif
 

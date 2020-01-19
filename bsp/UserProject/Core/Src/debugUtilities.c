@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include "stm32f4xx_hal.h"
 #include "gpio.h"
-#include "main_bsp.h"
+#include "main_cubemx.h"
 #include "debugUtilities.h"
 
 void traceWrite(SCOPE_COLORS_T trace, bool state)

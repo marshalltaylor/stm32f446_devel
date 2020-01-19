@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdarg.h>
 #include "bsp.h"
+
 /* Private variables ---------------------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
@@ -19,7 +20,6 @@ uint32_t nextSecond = 0;
 int main(void)
 {
 	bspInit();
-	
 
 	//Run the loopback test for python interaction
 	//runLoopback();
@@ -28,22 +28,21 @@ int main(void)
 	nextSecond = millis() + 1000;
 	while (1)
 	{
-		if( halUartReadBytesAvailable(&VCP_UART) )
+		if( bspSerialConsoleBytesAvailable() )
 		{
 			crapDelay(50);
-			while( halUartReadBytesAvailable(&VCP_UART) )
+			while( bspSerialConsoleBytesAvailable() )
 			{
-				halUartWrite(halUartRead(&VCP_UART), &VCP_UART);
+				bspSerialConsoleWrite(bspSerialConsoleRead());
 			}
 		}
 		if( millis() > nextSecond )
 		{
-			nextSecond = millis() + 1000;
+			nextSecond = nextSecond + 1000;
 			//bspToggleLED();
+			bspSerialConsolePrintf("number = %d\n", nextSecond); 
 		}
-		bsp_printf("number = %d\n", 42); 
-		//halUartWrite('X', &VCP_UART);
-		crapDelay(1000);
+		crapDelay(10);
 	}
 }
 
@@ -51,12 +50,12 @@ void runLoopback( void )
 {
 	while (1)
 	{
-		if( halUartReadBytesAvailable(&VCP_UART) )
+		if( bspSerialConsoleBytesAvailable() )
 		{
 			crapDelay(50);
-			while( halUartReadBytesAvailable(&VCP_UART) )
+			while( bspSerialConsoleBytesAvailable() )
 			{
-				halUartWrite(halUartRead(&VCP_UART), &VCP_UART);
+				bspSerialConsoleWrite(bspSerialConsoleRead());
 			}
 		}
 	}

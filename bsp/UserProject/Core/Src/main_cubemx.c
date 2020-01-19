@@ -47,7 +47,7 @@
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
-#include "main_bsp.h"
+#include "main_cubemx.h"
 #include "stm32f4xx_hal.h"
 #include "adc.h"
 #include "dma.h"
@@ -66,8 +66,6 @@
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 volatile uint32_t SYSTICK_VALUE;
-
-extern uint32_t fastRunTimeTicks; //from tim.c
 
 /* USER CODE END PV */
 
@@ -89,7 +87,7 @@ void MX_FREERTOS_Init(void);
   *
   * @retval None
   */
-int main_bsp(void)
+int main_cubemx(void)
 {
   /* USER CODE BEGIN 1 */
 	void * addr;
@@ -135,24 +133,20 @@ int main_bsp(void)
   MX_TIM3_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
-//	volatile uint32_t trashbag = 2;
-//	while(1)
-//	{
-//		trashbag++;
-//	}
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
-//  /* USER CODE BEGIN WHILE */
-//  while (1)
-//  {
-//
-//  /* USER CODE END WHILE */
-//
-//  /* USER CODE BEGIN 3 */
-//
-//  }
-//  /* USER CODE END 3 */
+  /* USER CODE BEGIN WHILE */
+  //while (1)
+  //{
+
+  /* USER CODE END WHILE */
+
+  /* USER CODE BEGIN 3 */
+
+  //}
+  /* USER CODE END 3 */
 return 0;
 }
 /**
@@ -225,16 +219,6 @@ void SystemClock_Config(void)
 void HAL_SYSTICK_Callback(void)
 {
   SYSTICK_VALUE++;
-};
-
-uint32_t millis(void)
-{
-	return SYSTICK_VALUE;
-};
-
-uint32_t ulGetFastRunTimeTicks(void)
-{
-	return fastRunTimeTicks;
 };
 
 /* USER CODE END 4 */

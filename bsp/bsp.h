@@ -1,10 +1,9 @@
 #ifndef BSP_H
 #define BSP_H
 
-// All external access to STM bsp functions
-#include "usart.h"
+// This file is an interface and should not include other files
 
-#ifdef cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -14,7 +13,7 @@ General
 
 */
 void bspInit(void);
-void bspToggleLED(void);
+void bspIOToggleLED(void);
 
 /*
 
@@ -24,9 +23,10 @@ Timer Functions
 Mostly defined in tim.c
 
 */
-typedef void (*bspTimerCallback_t)(void);
+uint32_t millis(void);
+uint32_t ulGetFastRunTimeTicks(void);
 
-//TODO GET RID OF extern sysTickCallback_t sysTickCallbackPointer;
+typedef void (*bspTimerCallback_t)(void);
 
 void bspRegisterSysTickCallback(bspTimerCallback_t cbFn);
 
@@ -38,12 +38,13 @@ Serial
 
 #define MAX_PRINTF_LEN 256
 
-extern UartInstance_t VCP_UART;
-extern UartInstance_t D01_UART;
+void bspSerialConsolePrintf(const char* fmt, ...);
+uint8_t bspSerialConsolePeek(void);
+void bspSerialConsoleWrite(uint8_t data);
+uint8_t bspSerialConsoleRead(void);
+uint16_t bspSerialConsoleBytesAvailable(void);
 
-void bsp_printf(const char* fmt, ...);
-
-#ifdef cplusplus
+#ifdef __cplusplus
 }
 #endif
 

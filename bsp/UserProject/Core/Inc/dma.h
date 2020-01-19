@@ -46,7 +46,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
-#include "main_bsp.h"
+#include "main_cubemx.h"
 
 /* DMA memory to memory transfer handles -------------------------------------*/
 extern void _Error_Handler(char*, int);

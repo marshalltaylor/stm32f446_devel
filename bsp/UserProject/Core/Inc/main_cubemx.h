@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file           : main_bsp.h
+  * @file           : main_cubemx.h
   * @brief          : Header for main.c file.
   *                   This file contains the common defines of the application.
   ******************************************************************************
@@ -38,8 +38,8 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __MAIN_BSP_H__
-#define __MAIN_BSP_H__
+#ifndef __MAIN_CUBEMX_H__
+#define __MAIN_CUBEMX_H__
 
 /* Includes ------------------------------------------------------------------*/
 
@@ -64,7 +64,6 @@
 /* #define USE_FULL_ASSERT    1U */
 
 /* USER CODE BEGIN Private defines */
-#include <stdint.h>
 
 /* USER CODE END Private defines */
 
@@ -74,9 +73,7 @@
 void _Error_Handler(char *, int)__attribute__((used));
 
 /* USER CODE BEGIN Private defines */
-uint32_t millis(void);
-uint32_t ulGetFastRunTimeTicks(void);
-int main_bsp(void);
+int main_cubemx(void);
 void HAL_SYSTICK_Callback(void);
 
 /* USER CODE END Private defines */

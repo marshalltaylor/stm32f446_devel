@@ -14,7 +14,7 @@
 #include "MidiClockDisplay.h"
 
 //BSP
-//#include "main_bsp.h"
+//#include "main_cubemx.h"
 
 extern MidiClockDisplay Segments;
 

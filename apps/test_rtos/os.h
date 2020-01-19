@@ -6,6 +6,6 @@ void osInit(void);
 
 void vConfigureTimerForRunTimeStats( void );
 
-#ifdef cplusplus
+#ifdef __cplusplus
 }
 #endif

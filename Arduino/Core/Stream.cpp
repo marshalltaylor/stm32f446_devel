@@ -25,6 +25,7 @@
 #include "interface.h"
 #include "Arduino.h"
 #include "Stream.h"
+#include "bsp.h"
 
 #define PARSE_TIMEOUT 1000  // default number of milli-seconds to wait
 

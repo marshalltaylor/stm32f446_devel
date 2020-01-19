@@ -1,9 +1,9 @@
-#ifdef cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
 void osInit(void);
 
-#ifdef cplusplus
+#ifdef __cplusplus
 }
 #endif

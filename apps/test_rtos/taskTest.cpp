@@ -13,7 +13,7 @@
 #include "interface.h"
 
 //BSP
-//#include "main_bsp.h"
+//#include "main_cubemx.h"
 
 #define Serial Serial6
 

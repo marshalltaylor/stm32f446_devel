@@ -1,9 +1,10 @@
 // This file holds misc stuff that an Arduino sketch might require.
 #include <stdio.h>
-#include "main_bsp.h"
+#include "main_cubemx.h"
 #include "usart.h"
 #include "HardwareSerial.h"
 #include "interface.h"
+#include "bsp.h"
 
 /* Private variables ---------------------------------------------------------*/
 extern UartInstance_t VCP_UART;

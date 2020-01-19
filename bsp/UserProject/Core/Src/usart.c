@@ -524,7 +524,7 @@ void timer4TickCallback(void)
 	//if(t4ticks > 999)
 	{
 		//Toggle LED
-		bspToggleLED();
+		bspIOToggleLED();
 	//	t4ticks = 0;
 	}
 }

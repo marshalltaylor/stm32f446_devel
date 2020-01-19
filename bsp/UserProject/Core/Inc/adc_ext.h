@@ -1,7 +1,7 @@
 #ifndef ADC_EXT_H
 #define ADC_EXT_H
 #include "stm32f4xx_hal.h"
-#include "main_bsp.h"
+#include "main_cubemx.h"
 
 #ifdef __cplusplus
  extern "C" {

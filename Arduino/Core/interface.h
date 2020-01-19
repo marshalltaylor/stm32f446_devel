@@ -2,7 +2,7 @@
 #define INTERFACE_H
 
 #include "stm32f4xx_hal.h"
-#include "main_bsp.h"
+#include "main_cubemx.h"
 #include "usart.h"
 #include "HardwareSerial.h"
 #include "tim.h"
