@@ -36,8 +36,12 @@ Serial
 
 */
 
+#define MAX_PRINTF_LEN 256
+
 extern UartInstance_t VCP_UART;
 extern UartInstance_t D01_UART;
+
+void bsp_printf(const char* fmt, ...);
 
 #ifdef cplusplus
 }

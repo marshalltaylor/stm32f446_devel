@@ -1,8 +1,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdarg.h>
 #include "bsp.h"
-
 /* Private variables ---------------------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
@@ -11,18 +11,21 @@
 
 /* Private function prototypes -----------------------------------------------*/
 
-static void crapDelay( int16_t msInput );
+static void crapDelay( int16_t msInput ) __attribute__((used));
+static void runLoopback( void ) __attribute__((used));
 
 uint32_t nextSecond = 0;
 
 int main(void)
 {
-	UNUSED(crapDelay);
-	
 	bspInit();
 	
+
+	//Run the loopback test for python interaction
+	//runLoopback();
+
+	//Alternately, do random stuff here
 	nextSecond = millis() + 1000;
-	//AppEntry();
 	while (1)
 	{
 		if( halUartReadBytesAvailable(&VCP_UART) )
@@ -38,9 +41,24 @@ int main(void)
 			nextSecond = millis() + 1000;
 			//bspToggleLED();
 		}
-
-		//crapDelay(8);
+		bsp_printf("number = %d\n", 42); 
 		//halUartWrite('X', &VCP_UART);
+		crapDelay(1000);
+	}
+}
+
+void runLoopback( void )
+{
+	while (1)
+	{
+		if( halUartReadBytesAvailable(&VCP_UART) )
+		{
+			crapDelay(50);
+			while( halUartReadBytesAvailable(&VCP_UART) )
+			{
+				halUartWrite(halUartRead(&VCP_UART), &VCP_UART);
+			}
+		}
 	}
 }
 
