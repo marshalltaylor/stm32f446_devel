@@ -1,4 +1,4 @@
-#include "display_clock.h" // in bsp
+#include "bsp.h"
 #include "SegmentVideo.h"
 
 SegmentFrameBuffer::SegmentFrameBuffer(void){
@@ -111,5 +111,5 @@ void SegmentVideo::writeNextFrame(void)
 		//outputFrame[i] &= ~nextNoiseFrame.offBufferPtr[i];
 		//outputFrame[i] |= nextNoiseFrame.onBufferPtr[i];
 	}	
-	writeDisplay(outputFrame);
+	bspSPISegmentWrite(outputFrame);
 }

@@ -2,18 +2,23 @@
 #define BSP_H
 
 // This file is an interface and should not include other files
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*
-
-General
-
-*/
+/* General */
 void bspInit(void);
+
+/* IO */
 void bspIOToggleLED(void);
+void bspADCConvert(void);
+//extern uint16_t adcValues[10];
+
+/* Spi operations */
+void bspSPISegmentWrite(uint8_t *);
+void bspSPISegmentSend(void);
 
 /*
 
@@ -30,14 +35,8 @@ typedef void (*bspTimerCallback_t)(void);
 
 void bspRegisterSysTickCallback(bspTimerCallback_t cbFn);
 
-/*
-
-Serial
-
-*/
-
+/* Serial */
 #define MAX_PRINTF_LEN 256
-
 void bspSerialConsolePrintf(const char* fmt, ...);
 uint8_t bspSerialConsolePeek(void);
 void bspSerialConsoleWrite(uint8_t data);

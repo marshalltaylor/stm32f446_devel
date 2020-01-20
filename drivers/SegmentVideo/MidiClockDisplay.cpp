@@ -1,8 +1,10 @@
 // bsp
-#include "display_clock.h"
+#include "bsp.h"
+
 // driver
 #include "SegmentVideo.h"
 #include "MidiClockDisplay.h"
+
 // normal_distribution
 #include <iostream>
 #include <string>
