@@ -11,8 +11,6 @@
 
 //BSP
 #include "bsp.h"
-#include "adc_ext.h"
-//#include "main_cubemx.h"
 
 #define Serial Serial6
 

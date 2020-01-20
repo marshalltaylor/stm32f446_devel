@@ -6,10 +6,11 @@ bspSrc/bspSys.c \
 bspSrc/bspIO.c \
 bspSrc/bspSerial.c \
 bspSrc/bspSPI.c \
+bspSrc/bspTime.c \
+bspSrc/bspADC.c \
 UserProject/Core/Src/main_cubemx.c \
 UserProject/Core/Src/gpio.c \
 UserProject/Core/Src/adc.c \
-UserProject/Core/Src/adc_ext.c \
 UserProject/Core/Src/debugUtilities.c \
 UserProject/Core/Src/dma.c \
 UserProject/Core/Src/spi.c \

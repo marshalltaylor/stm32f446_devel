@@ -3,7 +3,6 @@
 //#include "BlinkerPanel.h"
 #include "StatusPanel.h"
 #include <MIDI.h>
-#include "adc_ext.h"
 
 #include "bsp.h"
 #include "midiTime.h"
