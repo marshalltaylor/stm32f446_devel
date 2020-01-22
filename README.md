@@ -1,12 +1,15 @@
 # MIDI clock
 The midi clock is a device that can accept and generate midi clock messages.  The hardware is a STM32F466 dev board with midi shield and controls.
+
 ## Status
-Tested with Roland products and is working.  The 7 segment driver is pretty crazy, but not really a reusable part.  The project really focused on creating a clock object that can be fit into a socket object, with callbacks both ways.  This forced removal of control mechanisms from the clock object making it purely reactive.  The controls are wired to the socket as an interface.
-* Core -- healthy.  A cubeMX project can be generated independently of the project and compared.
-* Serial -- Debug interface shows basic data
-* Midi -- OK but edge cases haven't been found.  Needs bench testing
-* ADC -- On but not really configured
-* Display -- Crazy, over-baked framebuffer objects
+Currently in massive rework -- check earlier commits for old working version
+
+By layer,
+* apps -- production and test apps exist
+* FreeRTOS -- extracted from cubemx and compiled as archive.  Works for test app
+* drivers -- seven segment display written as test driver, perhaps the name is wrong.  This layer needs work
+* arduino -- should probably be abandoned or turned into driver pieces
+* bsp -- wraps STM project and provides sole point of entry for the outer world.  Coming along nicely
 
 ## Commands
 `make` -- build the application
