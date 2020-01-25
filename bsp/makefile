@@ -1,13 +1,37 @@
 # STM32F4xx bsp
 REPO_ROOT = ..
 
-C_SOURCES =  \
-bspSrc/bspSys.c \
-bspSrc/bspIO.c \
-bspSrc/bspSerial.c \
-bspSrc/bspSPI.c \
-bspSrc/bspTime.c \
-bspSrc/bspADC.c \
+# select board
+$(info board='$(board)')
+
+ifeq ('$(board)','clock')
+C_SOURCES_BOARD := \
+bsp_clock/bspSys.c \
+bsp_clock/bspIO.c \
+bsp_clock/bspSerial.c \
+bsp_clock/bspSPI.c \
+bsp_clock/bspTime.c \
+bsp_clock/bspADC.c
+
+else ifeq ('$(board)','dot2')
+C_SOURCES_BOARD := \
+bsp_dot2/bspSys.c \
+bsp_dot2/bspIO.c \
+bsp_dot2/bspSerial.c \
+bsp_dot2/bspSPI.c \
+bsp_dot2/bspTime.c \
+bsp_dot2/bspADC.c
+
+# allow no board for clean target
+else ifeq ('$(MAKECMDGOALS)','clean')
+C_SOURCES_BOARD :=
+
+else
+# Stop
+$(error board variable not defined!  ex 'make board=dot2')
+endif
+
+C_SOURCES = $(C_SOURCES_BOARD) \
 UserProject/Core/Src/main_cubemx.c \
 UserProject/Core/Src/gpio.c \
 UserProject/Core/Src/adc.c \
@@ -43,13 +67,13 @@ UserProject/Core/Src/stm32f4xx_hal_timebase_TIM.c
 # List of directories which contain C_SOURCES.
 # This list is created within the BUILD_DIR and used for artifacts
 SOURCE_DIRS = .\
-bspSrc \
+bsp_$(board) \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src \
 UserProject/AltDrivers \
 UserProject/Core/Src
 
 C_INCLUDES = .\
-bspSrc \
+bsp_$(board) \
 UserProject/AltDrivers \
 UserProject/Core/Inc \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Inc \
@@ -59,7 +83,7 @@ CubeProject/Drivers/CMSIS/Device/ST/STM32F4xx/Include
 #PROJECT_OBJECTS
 OBJECTS = $(patsubst %s,%o,$(patsubst %c,%o,$(patsubst %cpp,%o,$(C_SOURCES))))
 
-OUTPUT_LIB_NAME = bsp.a
+OUTPUT_LIB_NAME = bsp_$(board).a
 
 default: all
 

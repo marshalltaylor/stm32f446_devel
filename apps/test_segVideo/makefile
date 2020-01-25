@@ -1,6 +1,13 @@
 # STM32F4xx bsp uart test
 REPO_ROOT = ../..
 
+ifeq ($(strip $(board)),)
+ifneq ('$(MAKECMDGOALS)','clean')
+$(info no board specified, setting to clock)
+board = clock
+endif
+endif
+
 #Unused:
 #BlinkerPanel.cpp
 #MidiClockDisplay.cpp
@@ -41,7 +48,7 @@ $(REPO_ROOT)/FreeRTOS/Source/portable/GCC/ARM_CM4F
 STATIC_LIBS = \
 $(REPO_ROOT)/Arduino/build/Arduino.a \
 $(REPO_ROOT)/drivers/SegmentVideo/build/SegmentVideo.a \
-$(REPO_ROOT)/bsp/build/bsp.a \
+$(REPO_ROOT)/bsp/build/bsp_$(board).a \
 $(REPO_ROOT)/FreeRTOS/build/FreeRTOS.a
 
 #PROJECT_OBJECTS
