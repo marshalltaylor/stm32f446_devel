@@ -7,10 +7,6 @@ extern "C" {
 
 #include "bsp.h"
 
-//void (*timer3TickCallback)( void );
-extern bspTimerCallback_t timer3TickCallback;
-extern bspTimerCallback_t sysTickCallbackPointer;
-
 //Used for uart monitoring right now
 //extern bspTimerCallback_t timer4TickCallback;
 #ifdef __cplusplus

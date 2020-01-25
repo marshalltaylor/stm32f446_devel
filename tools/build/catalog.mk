@@ -20,3 +20,7 @@ $(REPO_ROOT)/Arduino/build/Arduino.a:
 $(REPO_ROOT)/drivers/SegmentVideo/build/SegmentVideo.a:
 	@echo "######## Building $(REPO_ROOT)/drivers/SegmentVideo"
 	$(MAKE) -C $(REPO_ROOT)/drivers/SegmentVideo
+
+$(REPO_ROOT)/drivers/uCModules/build/uCModules.a:
+	@echo "######## Building $(REPO_ROOT)/drivers/uCModules"
+	$(MAKE) -C $(REPO_ROOT)/drivers/uCModules

@@ -33,6 +33,9 @@ uint32_t ulGetFastRunTimeTicks(void);
 
 typedef void (*bspTimerCallback_t)(void);
 
+extern bspTimerCallback_t timer3TickCallback;
+extern bspTimerCallback_t sysTickCallbackPointer;
+
 void bspRegisterSysTickCallback(bspTimerCallback_t cbFn);
 
 /* Serial */
