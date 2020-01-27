@@ -8,7 +8,6 @@ board = dot2
 endif
 endif
 
-#Unused:
 C_SOURCES = \
 main.c \
 App.cpp \
@@ -51,6 +50,9 @@ $(BUILD_DIR)/output.elf: build_dirs $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS)) $
 	@echo "#### Linking into elf"
 	$(PP) -o $(TARGET_EXEC) $(LDFLAGS) -std=c++11 $(addprefix $(BUILD_DIR)/obj/, $(SOURCE_OBJECTS)) $(STATIC_LIBS) $(addprefix $(BUILD_DIR)/obj/, $(STARTUP_OBJECT))
 	$(SZ) $@
+	@echo ""
+	@echo "Built for $(board) board"
+	@echo ""
 	$(OBJD) -S --disassemble $(TARGET_EXEC) > $(TARGET_EXEC).dump
 	@echo
 

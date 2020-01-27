@@ -20,7 +20,8 @@ bsp_dot2/bspIO.c \
 bsp_dot2/bspSerial.c \
 bsp_dot2/bspSPI.c \
 bsp_dot2/bspTime.c \
-bsp_dot2/bspADC.c
+bsp_dot2/bspADC.c \
+bsp_dot2/bspPins.c
 
 # allow no board for clean target
 else ifeq ('$(MAKECMDGOALS)','clean')

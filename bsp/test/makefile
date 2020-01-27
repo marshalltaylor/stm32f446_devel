@@ -1,6 +1,13 @@
 # STM32F4xx bsp uart test
 REPO_ROOT = ../..
 
+ifeq ($(strip $(board)),)
+ifneq ('$(MAKECMDGOALS)','clean')
+$(info no board specified, setting to dot2)
+board = dot2
+endif
+endif
+
 C_SOURCES =  \
 main.c
 
@@ -22,7 +29,7 @@ $(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Device/ST/STM32F4xx/Include \
 $(REPO_ROOT)/bsp/UserProject/AltDrivers
 
 STATIC_LIBS = \
-$(REPO_ROOT)/bsp/build/bsp.a
+$(REPO_ROOT)/bsp/build/bsp_$(board).a
 
 #PROJECT_OBJECTS
 #OBJECTS = $(patsubst %s,%o,$(patsubst %c,%o,$(patsubst %cpp,%o,$(C_SOURCES))))
@@ -40,6 +47,9 @@ $(BUILD_DIR)/output.elf: build_dirs $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS)) $
 	@echo "#### Linking into elf"
 	$(PP) -o $(TARGET_EXEC) $(LDFLAGS) $(addprefix $(BUILD_DIR)/obj/, $(SOURCE_OBJECTS)) $(STATIC_LIBS) $(addprefix $(BUILD_DIR)/obj/, $(STARTUP_OBJECT))
 	$(SZ) $@
+	@echo ""
+	@echo "Built for $(board) board"
+	@echo ""
 	$(OBJD) -S --disassemble $(TARGET_EXEC) > $(TARGET_EXEC).dump
 	@echo
 
