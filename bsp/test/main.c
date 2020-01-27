@@ -14,6 +14,7 @@
 
 static void crapDelay( int16_t msInput ) __attribute__((used));
 static void runLoopback( void ) __attribute__((used));
+static void runLoopbackIO( void ) __attribute__((used));
 
 uint32_t nextSecond = 0;
 
@@ -21,8 +22,9 @@ int main(void)
 {
 	bspInit();
 
-	//Run the loopback test for python interaction
+	//Run a test or allow the default loop
 	//runLoopback();
+	runLoopbackIO();
 
 	//Alternately, do random stuff here
 	nextSecond = millis() + 1000;
@@ -57,6 +59,27 @@ void runLoopback( void )
 			{
 				bspSerialConsoleWrite(bspSerialConsoleRead());
 			}
+		}
+	}
+}
+
+void runLoopbackIO( void )
+{
+	bool button1Save = false;
+	bool button2Save = false;
+	while (1)
+	{
+		bool button1Value = bspIOPinRead(D2);
+		bool button2Value = bspIOPinRead(D3);
+		if( button1Save != button1Value )
+		{
+			button1Save = button1Value;
+			bspSerialConsolePrintf("Button 1: %d\n", button1Save);
+		}
+		if( button2Save != button2Value )
+		{
+			button2Save = button2Value;
+			bspSerialConsolePrintf("Button 2: %d\n", button2Save);
 		}
 	}
 }
