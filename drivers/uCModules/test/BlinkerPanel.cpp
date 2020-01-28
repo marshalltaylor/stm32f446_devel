@@ -1,13 +1,14 @@
 //********************************************//
 #include "uCModules.h"
 #include "BlinkerPanel.h"
+#include "bsp.h"
 
 BlinkerPanel::BlinkerPanel( void )
 {
-	myButton.setHardware(new ArduinoDigitalIn( 3 ), 1);
+	myButton.setHardware(new ArduinoDigitalIn( D24 ), 1);
 	add( &myButton );
 
-	myLed.setHardware(new ArduinoDigitalOut( 2 ), 0);
+	myLed.setHardware(new ArduinoDigitalOut( D31 ), 1);
 	add( &myLed );
 	
 	state = PInit;
@@ -68,6 +69,10 @@ void BlinkerPanel::tickStateMachine( int msTicksDelta )
 		nextState = PInit;
 		break;
 	}
-	state = nextState;
+	if(state != nextState)
+	{
+		bspSerialConsolePrintf("State %d -> %d\n", state, nextState);
+		state = nextState;
+	}
 
 }

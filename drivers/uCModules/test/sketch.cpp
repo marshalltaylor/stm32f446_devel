@@ -5,7 +5,7 @@
 
 BlinkerPanel myCustomPanel;
 
-uint16_t debugCounter = 0;
+uint32_t debugCounter = 0;
 
 void hwTimerCallback(void)
 {
@@ -40,7 +40,7 @@ void setup(void)
 }
 
 //Set LOOP_DELAY to length of time between ticks of everything (in ms)
-#define LOOP_DELAY 100
+#define LOOP_DELAY 10
 
 void loop()
 {
@@ -50,17 +50,9 @@ void loop()
 //	//Delay the loop
 //	delay(LOOP_DELAY);
 //	
-//	//Increment a counter for debug stuff
-//	debugCounter = debugCounter + LOOP_DELAY;
-//	if( debugCounter > 10000 )
-//	{
-//		//Do debug stuff
-//		Serial.print("State: ");
-//		Serial.println(myCustomPanel.getState()); 
-//		Serial.print("Free ram: ");
-//		Serial.println(freeRam());
-//		debugCounter = 0;
-//	}
+	//Increment a counter for debug stuff
+	uint32_t timeStart = millis();
+	while(millis() < timeStart + 10);
 	
 }
 

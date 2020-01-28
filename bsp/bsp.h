@@ -12,6 +12,8 @@ extern "C" {
 /* General */
 void bspInit(void);
 
+extern const char boardName[];
+
 /* IO */
 #define D0 0
 #define D1 1

@@ -4,24 +4,22 @@ REPO_ROOT = ..
 # select board
 $(info board='$(board)')
 
+C_SOURCES_COMMON := \
+bsp_common/bspSys.c \
+bsp_common/bspIO.c \
+bsp_common/bspSerial.c \
+bsp_common/bspSPI.c \
+bsp_common/bspTime.c \
+bsp_common/bspADC.c \
+bsp_common/bspPins.c
+
 ifeq ('$(board)','clock')
 C_SOURCES_BOARD := \
-bsp_clock/bspSys.c \
-bsp_clock/bspIO.c \
-bsp_clock/bspSerial.c \
-bsp_clock/bspSPI.c \
-bsp_clock/bspTime.c \
-bsp_clock/bspADC.c
+bsp_clock/board.c
 
 else ifeq ('$(board)','dot2')
 C_SOURCES_BOARD := \
-bsp_dot2/bspSys.c \
-bsp_dot2/bspIO.c \
-bsp_dot2/bspSerial.c \
-bsp_dot2/bspSPI.c \
-bsp_dot2/bspTime.c \
-bsp_dot2/bspADC.c \
-bsp_dot2/bspPins.c
+bsp_dot2/board.c
 
 # allow no board for clean target
 else ifeq ('$(MAKECMDGOALS)','clean')
@@ -32,7 +30,7 @@ else
 $(error board variable not defined!  ex 'make board=dot2')
 endif
 
-C_SOURCES = $(C_SOURCES_BOARD) \
+C_SOURCES = $(C_SOURCES_COMMON) $(C_SOURCES_BOARD) \
 UserProject/Core/Src/main_cubemx.c \
 UserProject/Core/Src/gpio.c \
 UserProject/Core/Src/adc.c \
@@ -69,12 +67,14 @@ UserProject/Core/Src/stm32f4xx_hal_timebase_TIM.c
 # This list is created within the BUILD_DIR and used for artifacts
 SOURCE_DIRS = .\
 bsp_$(board) \
+bsp_common \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src \
 UserProject/AltDrivers \
 UserProject/Core/Src
 
 C_INCLUDES = .\
 bsp_$(board) \
+bsp_common \
 UserProject/AltDrivers \
 UserProject/Core/Inc \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Inc \

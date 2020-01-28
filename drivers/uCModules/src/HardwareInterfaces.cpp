@@ -1,4 +1,5 @@
 #include "HardwareInterfaces.h"
+#include "bsp.h"
 
 using namespace std;
 
@@ -9,43 +10,43 @@ using namespace std;
 ArduinoDigitalIn::ArduinoDigitalIn( int inputPin )
 {
 //	pinMode(inputPin, INPUT_PULLUP);
-//	localData.size = 1;
-//	localData.data = new uint8_t[localData.size];
-//	pin = inputPin;
-//
+	localData.size = 1;
+	localData.data = new uint8_t[localData.size];
+	pin = inputPin;
+
 }
 
 void ArduinoDigitalIn::readHardware( void )
 {
-//	*localData.data = digitalRead( pin );
+	*localData.data = bspIOPinRead( pin );
 };
 
 //Arduino Digital out
 ArduinoDigitalOut::ArduinoDigitalOut( int inputPin )
 {
 //	pinMode(inputPin, OUTPUT);
-//	localData.size = 1;
-//	localData.data = new uint8_t[localData.size];
-//	pin = inputPin;
-//
+	localData.size = 1;
+	localData.data = new uint8_t[localData.size];
+	pin = inputPin;
+
 }
 
 void ArduinoDigitalOut::writeHardware( void )
 {
-//	digitalWrite( pin, *localData.data );
+	bspIOPinWrite( pin, *localData.data );
 };
 
 //Arduino Analog in
 ArduinoAnalogIn::ArduinoAnalogIn( int inputPin )
 {
 //	pinMode(inputPin, INPUT);
-//	localData.size = 2;
-//	localData.data = new uint8_t[localData.size];
-//	pin = inputPin;
+	localData.size = 2;
+	localData.data = new uint8_t[localData.size];
+	pin = inputPin;
 //
 }
 
 void ArduinoAnalogIn::readHardware( void )
 {
-//	*(uint16_t *)localData.data = analogRead( pin );
+	*(uint16_t *)localData.data = bspIOPinReadAnalog( pin );
 };

@@ -21,12 +21,14 @@ uint32_t nextSecond = 0;
 int main(void)
 {
 	bspInit();
-
+	
+	bspSerialConsolePrintf("BSP Test on board: %s\n", boardName); 
+	
 	//Run a test or allow the default loop
+
 	//runLoopback();
 	runLoopbackIO();
 
-	//Alternately, do random stuff here
 	nextSecond = millis() + 1000;
 	while (1)
 	{
