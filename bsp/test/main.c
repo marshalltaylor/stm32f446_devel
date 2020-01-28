@@ -69,17 +69,27 @@ void runLoopbackIO( void )
 	bool button2Save = false;
 	while (1)
 	{
-		bool button1Value = bspIOPinRead(D2);
-		bool button2Value = bspIOPinRead(D3);
+		bool button1Value = bspIOPinRead(D24);
+		bool button2Value = bspIOPinRead(D25);
+		bool anyDetected = false;
 		if( button1Save != button1Value )
 		{
 			button1Save = button1Value;
+			bspIOPinWrite(D31, button1Save);
 			bspSerialConsolePrintf("Button 1: %d\n", button1Save);
+			anyDetected = true;
 		}
 		if( button2Save != button2Value )
 		{
 			button2Save = button2Value;
+			bspIOPinWrite(D32, button2Save);
 			bspSerialConsolePrintf("Button 2: %d\n", button2Save);
+			anyDetected = true;
+		}
+		if(anyDetected)
+		{
+			bspSerialConsolePrintf("ADC 0: %d\n", bspIOPinReadAnalog(A0));
+			bspSerialConsolePrintf("ADC 1: %d\n", bspIOPinReadAnalog(A1));
 		}
 	}
 }

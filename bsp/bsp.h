@@ -69,9 +69,10 @@ void bspIOToggleLED(void);
 void bspIOPinInit(uint8_t pin, uint8_t pullMode);
 void bspIOPinWrite(uint8_t pin, bool value);
 bool bspIOPinRead(uint8_t pin);
+uint32_t bspIOPinReadAnalog(uint8_t pin);
 
+//Dirty api.  This may be run from within the bsp or by an app...
 void bspADCConvert(void);
-//extern uint16_t adcValues[10];
 
 /* Spi operations */
 void bspSPISegmentWrite(uint8_t *);

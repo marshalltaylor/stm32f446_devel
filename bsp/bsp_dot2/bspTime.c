@@ -26,16 +26,17 @@ void bspRegisterSysTickCallback(bspTimerCallback_t cbFn)
 	sysTickCallbackPointer = cbFn;
 }
 
+uint32_t adcUsCounter = 0;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	//traceWrite(VIOLET, 1);
 
 	if(htim->Instance == TIM2)
 	{
-		//Routine 1: fast arbitrary run time ticker
+		//fast arbitrary run time ticker
 		fastRunTimeTicks++;
 
-		//Routine 2: 10us resolution timer
+		//10us resolution timer
 		if(usTicks >= ( maxTimer + maxInterval ))
 		{
 			usTicks = usTicks - maxTimer;
@@ -48,6 +49,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	}
 	else if(htim->Instance == TIM3)
 	{
+		adcUsCounter += 100;
+		if(adcUsCounter > 10000)
+		{
+			//Schedule an ADC conversion
+			bspADCConvert();
+			adcUsCounter = 0;
+		}
+
 		// Call into app
 		if( timer3TickCallback != NULL )
 		{

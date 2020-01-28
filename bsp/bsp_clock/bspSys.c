@@ -23,6 +23,9 @@ void bspInit(void)
 	UNUSED(trash);
 
 	main_cubemx();
+
+	//Should never stop converting
+	bspADCConvert();
 }
 
 uint32_t millis(void)
