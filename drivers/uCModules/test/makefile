@@ -12,7 +12,8 @@ C_SOURCES = \
 main.c \
 App.cpp \
 sketch.cpp \
-BlinkerPanel.cpp
+BlinkerPanel.cpp \
+KnobPanel.cpp
 
 STARTUP_SOURCES =  \
 startup_stm32f446xx.s \

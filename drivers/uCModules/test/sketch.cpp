@@ -1,9 +1,13 @@
 #include "bsp.h"
 
 #include "uCModules.h"
-#include "BlinkerPanel.h"
 
+#include "BlinkerPanel.h"
 BlinkerPanel myCustomPanel;
+
+#include "KnobPanel.h"
+KnobPanel myKnobPanel;
+
 
 uint32_t debugCounter = 0;
 
@@ -35,6 +39,7 @@ void setup(void)
 
 	//Go to fresh state
 	myCustomPanel.reset();
+	myKnobPanel.reset();
 
 	
 }
@@ -46,6 +51,7 @@ void loop()
 {
 	//Tick the machine
 	myCustomPanel.tickStateMachine(LOOP_DELAY);
+	myKnobPanel.tickStateMachine(LOOP_DELAY);
 	
 //	//Delay the loop
 //	delay(LOOP_DELAY);

@@ -71,7 +71,7 @@ void BlinkerPanel::tickStateMachine( int msTicksDelta )
 	}
 	if(state != nextState)
 	{
-		bspSerialConsolePrintf("State %d -> %d\n", state, nextState);
+		bspSerialConsolePrintf("[IO      ] State %d -> %d\n", state, nextState);
 		state = nextState;
 	}
 
