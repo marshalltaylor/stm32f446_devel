@@ -15,19 +15,20 @@
 static void crapDelay( int16_t msInput ) __attribute__((used));
 static void runLoopback( void ) __attribute__((used));
 static void runLoopbackIO( void ) __attribute__((used));
-
+static void runObjLoopback( void ) __attribute__((used));
 uint32_t nextSecond = 0;
 
 int main(void)
 {
 	bspInit();
 	
-	bspSerialConsolePrintf("BSP Test on board: %s\n", boardName); 
+	bspPrintf("BSP Test on board: %s\n", boardName); 
 	
 	//Run a test or allow the default loop
 
 	//runLoopback();
-	runLoopbackIO();
+	//runLoopbackIO();
+	runObjLoopback();
 
 	nextSecond = millis() + 1000;
 	while (1)
@@ -44,7 +45,7 @@ int main(void)
 		{
 			nextSecond = nextSecond + 1000;
 			//bspToggleLED();
-			bspSerialConsolePrintf("number = %d\n", nextSecond); 
+			bspPrintf("number = %d\n", nextSecond); 
 		}
 		crapDelay(10);
 	}
@@ -65,6 +66,24 @@ void runLoopback( void )
 	}
 }
 
+void runObjLoopback( void )
+{
+	comPortInterface_t comObj;
+	bspGetSerialConsoleObj(&comObj);
+	
+	while (1)
+	{
+		if( comObj.bytesAvailable() )
+		{
+			crapDelay(50);
+			while( comObj.bytesAvailable() )
+			{
+				comObj.write(comObj.read());
+			}
+		}
+	}
+}
+
 void runLoopbackIO( void )
 {
 	bool button1Save = false;
@@ -78,20 +97,20 @@ void runLoopbackIO( void )
 		{
 			button1Save = button1Value;
 			bspIOPinWrite(D31, button1Save);
-			bspSerialConsolePrintf("Button 1: %d\n", button1Save);
+			bspPrintf("Button 1: %d\n", button1Save);
 			anyDetected = true;
 		}
 		if( button2Save != button2Value )
 		{
 			button2Save = button2Value;
 			bspIOPinWrite(D32, button2Save);
-			bspSerialConsolePrintf("Button 2: %d\n", button2Save);
+			bspPrintf("Button 2: %d\n", button2Save);
 			anyDetected = true;
 		}
 		if(anyDetected)
 		{
-			bspSerialConsolePrintf("ADC 0: %d\n", bspIOPinReadAnalog(A0));
-			bspSerialConsolePrintf("ADC 1: %d\n", bspIOPinReadAnalog(A1));
+			bspPrintf("ADC 0: %d\n", bspIOPinReadAnalog(A0));
+			bspPrintf("ADC 1: %d\n", bspIOPinReadAnalog(A1));
 		}
 	}
 }

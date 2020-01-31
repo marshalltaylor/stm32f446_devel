@@ -100,11 +100,38 @@ void bspRegisterSysTickCallback(bspTimerCallback_t cbFn);
 
 /* Serial */
 #define MAX_PRINTF_LEN 256
-void bspSerialConsolePrintf(const char* fmt, ...);
-uint8_t bspSerialConsolePeek(void);
+
+typedef enum
+{
+	COM0 = 0,
+	COM1
+} comPort_t;
+
+typedef uint8_t (*bspSerialPeek_t)(void);
+typedef void (*bspSerialWrite_t)(uint8_t data);
+typedef uint8_t (*bspSerialRead_t)(void);
+typedef uint16_t (*bspSerialBytesAvailable_t)(void);
+
+typedef struct
+{
+	bspSerialPeek_t peek;
+	bspSerialWrite_t write;
+	bspSerialRead_t read;
+	bspSerialBytesAvailable_t bytesAvailable;
+} comPortInterface_t;
+
+// Used for bspPrintf
+#define CONSOLE_PORT COM0
+
+void bspPrintf(const char* fmt, ...);
+
+uint8_t bspSerialConsolePeek();
 void bspSerialConsoleWrite(uint8_t data);
-uint8_t bspSerialConsoleRead(void);
-uint16_t bspSerialConsoleBytesAvailable(void);
+uint8_t bspSerialConsoleRead();
+uint16_t bspSerialConsoleBytesAvailable();
+
+void bspGetSerialConsoleObj(comPortInterface_t * interface);
+void bspGetSerialCOMObj(comPort_t port, comPortInterface_t * interface);
 
 #ifdef __cplusplus
 }
