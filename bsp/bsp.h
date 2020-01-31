@@ -4,6 +4,7 @@
 // This file is an interface and should not include other files
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdarg.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -107,6 +108,9 @@ typedef enum
 	COM1
 } comPort_t;
 
+typedef void (*bspPrintf_t)(const char* fmt, ...);
+typedef void (*bspVPrintf_t)(const char* fmt, va_list args );
+
 typedef uint8_t (*bspSerialPeek_t)(void);
 typedef void (*bspSerialWrite_t)(uint8_t data);
 typedef uint8_t (*bspSerialRead_t)(void);
@@ -130,6 +134,8 @@ void bspSerialConsoleWrite(uint8_t data);
 uint8_t bspSerialConsoleRead();
 uint16_t bspSerialConsoleBytesAvailable();
 
+bspPrintf_t bspGetSerialConsolePrintf(void);
+bspVPrintf_t bspGetSerialConsoleVPrintf(void);
 void bspGetSerialConsoleObj(comPortInterface_t * interface);
 void bspGetSerialCOMObj(comPort_t port, comPortInterface_t * interface);
 

@@ -2,6 +2,7 @@
 REPO_ROOT = ../..
 
 C_SOURCES = \
+src/uCModules.cpp \
 src/flagMessaging.cpp \
 src/HardwareInterfaces.cpp \
 src/Panel.cpp \

@@ -31,7 +31,7 @@ void KnobPanel::tickStateMachine( int msTicksDelta )
 	case KnobPanelScope::run:
 		if( myKnob.serviceChanged() )
 		{
-			bspSerialConsolePrintf("knob: %d\n", myKnob.getState());
+			bspPrintf("knob: %d\n", myKnob.getState());
 		}
 		break;
 	default:
@@ -40,7 +40,7 @@ void KnobPanel::tickStateMachine( int msTicksDelta )
 	}
 	if(state != nextState)
 	{
-		bspSerialConsolePrintf("[KNOB    ] State %d -> %d\n", state, nextState);
+		bspPrintf("[KNOB    ] State %d -> %d\n", state, nextState);
 		state = nextState;
 	}
 

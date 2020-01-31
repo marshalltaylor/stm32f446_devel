@@ -1,11 +1,9 @@
 #include <stddef.h>
-//#include "Hardware//Serial.h"
-//#include "board.h"
+
 #include "PanelDataObjects.h"
+#include "uCModulesPrivate.h"
 
-//extern HardwareSerial Serial;
-
-//#define ARDUINO_PRINT_DEBUG
+extern DebugUtils dbg;
 
 DataObject::DataObject( void )
 {
@@ -88,27 +86,23 @@ KnobDataObject::~KnobDataObject( void )
 //dumpObject lists a DataObject's contents, plus the contents of it's contained data
 void dumpObject( DataObject * inputObjectPtr )
 {
-	//Serial.print("Obj Addr: 0x");
-	//Serial.println((uint32_t)&(*inputObjectPtr), HEX);
+	dbg.printf("Obj Addr: 0x08X", (uint32_t)&(*inputObjectPtr));
 	uint8_t * bytePtr = (uint8_t *)inputObjectPtr;
 	for( uint32_t i = 0; i < sizeof(*inputObjectPtr); i++ )
 	{
-		//Serial.print("0x");
-		//Serial.print(*bytePtr,HEX);
-		//Serial.print(", ");
+		
+		dbg.printf("0x02X, ", *bytePtr);
 		bytePtr++;
 	}
-	//Serial.println();
+	dbg.printf("\n");
 	
-	//Serial.print("Containted data: ");
+	dbg.printf("Containted data: ");
 	bytePtr = (uint8_t *)inputObjectPtr->data;
 	for( uint32_t i = 0; i < inputObjectPtr->size; i++ )
 	{
-		//Serial.print("0x");
-		//Serial.print(*bytePtr,HEX);
-		//Serial.print(", ");
+		dbg.printf("0x02X, ", *bytePtr);
 		bytePtr++;
 	}
-	//Serial.println();
+	dbg.printf("\n");
 
 }

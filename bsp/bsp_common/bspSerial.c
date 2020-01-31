@@ -20,6 +20,10 @@ UartInstance_t * comPorts[] =
 	NULL
 };
 
+static void bspVPrintf(const char* fmt, va_list args );
+
+char buffer[MAX_PRINTF_LEN];
+
 /* Functions -----------------------------------------------------------------*/
 // bspPrintf
 //   It is assumed that only one user will ever be operating the console,
@@ -28,7 +32,6 @@ void bspPrintf(const char* fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
-	char buffer[MAX_PRINTF_LEN];
 	vsprintf(buffer, fmt, args);
 	int i;
 	for(i = 0; (i < MAX_PRINTF_LEN)&&buffer[i]!='\0'; i++)
@@ -36,6 +39,16 @@ void bspPrintf(const char* fmt, ...)
 		bspSerialConsoleWrite(buffer[i]);
 	}
 	va_end(args);
+}
+
+void bspVPrintf(const char* fmt, va_list args )
+{
+	vsprintf(buffer, fmt, args);
+	int i;
+	for(i = 0; (i < MAX_PRINTF_LEN)&&buffer[i]!='\0'; i++)
+	{
+		bspSerialConsoleWrite(buffer[i]);
+	}
 }
 
 // Peek, Write, and BytesAvailable are called with a port name.
@@ -57,6 +70,16 @@ uint8_t bspSerialConsoleRead(void)
 uint16_t bspSerialConsoleBytesAvailable(void)
 {
 	return halUartReadBytesAvailable(&VCP_UART);
+}
+
+bspPrintf_t bspGetSerialConsolePrintf(void)
+{
+	return bspPrintf;
+}
+
+bspVPrintf_t bspGetSerialConsoleVPrintf(void)
+{
+	return bspVPrintf;
 }
 
 void bspGetSerialConsoleObj(comPortInterface_t * interface)

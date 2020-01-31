@@ -27,8 +27,8 @@ int main(void)
 	//Run a test or allow the default loop
 
 	//runLoopback();
-	//runLoopbackIO();
-	runObjLoopback();
+	runLoopbackIO();
+	//runObjLoopback();
 
 	nextSecond = millis() + 1000;
 	while (1)
@@ -86,6 +86,7 @@ void runObjLoopback( void )
 
 void runLoopbackIO( void )
 {
+	bspPrintf_t printf = bspGetSerialConsolePrintf();
 	bool button1Save = false;
 	bool button2Save = false;
 	while (1)
@@ -97,20 +98,20 @@ void runLoopbackIO( void )
 		{
 			button1Save = button1Value;
 			bspIOPinWrite(D31, button1Save);
-			bspPrintf("Button 1: %d\n", button1Save);
+			printf("Button 1: %d\n", button1Save);
 			anyDetected = true;
 		}
 		if( button2Save != button2Value )
 		{
 			button2Save = button2Value;
 			bspIOPinWrite(D32, button2Save);
-			bspPrintf("Button 2: %d\n", button2Save);
+			printf("Button 2: %d\n", button2Save);
 			anyDetected = true;
 		}
 		if(anyDetected)
 		{
-			bspPrintf("ADC 0: %d\n", bspIOPinReadAnalog(A0));
-			bspPrintf("ADC 1: %d\n", bspIOPinReadAnalog(A1));
+			printf("ADC 0: %d\n", bspIOPinReadAnalog(A0));
+			printf("ADC 1: %d\n", bspIOPinReadAnalog(A1));
 		}
 	}
 }

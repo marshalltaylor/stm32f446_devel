@@ -145,13 +145,15 @@ uint8_t Button::serviceFallingEdge( void )
 	
 	return returnVar;
 }
-
+#include "uCModulesPrivate.h"
+extern DebugUtils dbg;
 uint8_t Button::serviceHoldRisingEdge( void )
 {
 	uint8_t returnVar = 0;
 	if( holdRisingEdgeFlag == 1 )
 	{
 		holdRisingEdgeFlag = 0;
+		dbg.printf("GOTCHA\n");
 		returnVar = 1;
 	}
 	
