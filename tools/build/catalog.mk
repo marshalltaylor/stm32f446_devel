@@ -17,6 +17,10 @@ $(REPO_ROOT)/Arduino/build/Arduino.a:
 	@echo "######## Building $(REPO_ROOT)/Arduino"
 	$(MAKE) -C $(REPO_ROOT)/Arduino
 
+$(REPO_ROOT)/drivers/logging/build/logging.a:
+	@echo "######## Building $(REPO_ROOT)/drivers/logging"
+	$(MAKE) -C $(REPO_ROOT)/drivers/logging
+
 $(REPO_ROOT)/drivers/SegmentVideo/build/SegmentVideo.a:
 	@echo "######## Building $(REPO_ROOT)/drivers/SegmentVideo"
 	$(MAKE) -C $(REPO_ROOT)/drivers/SegmentVideo
