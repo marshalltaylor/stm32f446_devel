@@ -2,31 +2,24 @@
 
 #include "logging.h"
 
-Logging::Logging(const char* name)
+Logging::Logging(void)
 {
-	bspVPrintf = bspGetSerialConsoleVPrintf();
-	uint8_t sz = strlen(name);
-	printf(" sz: %d\n", sz);
-	if(sz > LOGGING_STAMP_MAX_LEN - 4)
-	{
-		sz = LOGGING_STAMP_MAX_LEN - 4;
-	}
-	
-	setStamp(name, sz);
+	pPrintf = bspGetSerialConsolePrintf();
+	pVPrintf = bspGetSerialConsoleVPrintf();
 }
 
 void Logging::printf(const char* fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
-	if(bspVPrintf)
+	if(pVPrintf)
 	{
 		if(logMode == LOG_MODE_AUTO)
 		{
-			bspPrintf("%s", stamp);
+			pPrintf("%s", stamp);
 		}
 
-		bspVPrintf(fmt, args);
+		pVPrintf(fmt, args);
 	}
 
 	va_end(args);
@@ -34,11 +27,16 @@ void Logging::printf(const char* fmt, ...)
 
 void Logging::setVPrintf(bspVPrintf_t function)
 {
-	bspVPrintf = function;
+	pVPrintf = function;
 }
 
 void Logging::setStamp(const char * data, uint8_t len)
 {
+	if(len > LOGGING_STAMP_MAX_LEN - 4)
+	{
+		len = LOGGING_STAMP_MAX_LEN - 4;
+	}
+	
 	int indexOut = 0;
 	stamp[indexOut++] = '[';
 	stamp[indexOut++] = ' ';

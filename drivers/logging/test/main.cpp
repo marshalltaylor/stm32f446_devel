@@ -6,7 +6,16 @@
 #include "logging.h"
 
 /* Private variables ---------------------------------------------------------*/
-//static const char name[] = "Dummy";
+#ifdef USE_LOGGING
+// Create logging object and macro for local printf
+#define localPrintf dummy.printf
+Logging dummy;
+
+#else
+// Connect directly to bsp.
+#define localPrintf bspPrintf
+
+#endif
 
 class DummyModule
 {
@@ -18,7 +27,7 @@ private:
 	Logging dbg;
 };
 
-DummyModule::DummyModule(void) : dbg("Dummy")
+DummyModule::DummyModule(void)
 {
 	data = 0;
 }
@@ -26,7 +35,7 @@ DummyModule::DummyModule(void) : dbg("Dummy")
 void DummyModule::logData(void)
 {
 	//Write data
-	dbg.printf("data = 0x%08X\n", data);
+	localPrintf("data = 0x%08X\n", data);
 	
 	//Increment ticker
 	data++;
@@ -42,7 +51,14 @@ int main(void)
 
 	bspPrintf("Logging test on board: %s\n", boardName); 
 
-	Logging dbg("dbg");
+	Logging dbg;
+	dbg.setStamp("dbg", 3);
+	dbg.setMode(LOG_MODE_AUTO);
+
+#ifdef USE_LOGGING
+	dummy.setStamp("dummy", 5);
+	//dummy.setMode(LOG_MODE_AUTO);
+#endif
 
 	DummyModule module;
 
