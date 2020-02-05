@@ -8,7 +8,7 @@ SOURCE_DIRS = ./ \
 src
 
 C_INCLUDES = \
-$(REPO_ROOT)/drivers/logging \
+$(REPO_ROOT)/modules/logging \
 $(REPO_ROOT)/bsp \
 
 #PROJECT_OBJECTS

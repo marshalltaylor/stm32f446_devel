@@ -32,11 +32,11 @@ SOURCE_DIRS = .\
 C_INCLUDES = \
 $(REPO_ROOT)/bsp \
 $(REPO_ROOT)/bsp/UserProject/Core/Inc \
-$(REPO_ROOT)/bsp/CubeProject/Drivers/STM32F4xx_HAL_Driver/Inc \
-$(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Include \
-$(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Device/ST/STM32F4xx/Include \
+$(REPO_ROOT)/bsp/CubeProject/modules/STM32F4xx_HAL_Driver/Inc \
+$(REPO_ROOT)/bsp/CubeProject/modules/CMSIS/Include \
+$(REPO_ROOT)/bsp/CubeProject/modules/CMSIS/Device/ST/STM32F4xx/Include \
 $(REPO_ROOT)/bsp/UserProject/AltDrivers \
-$(REPO_ROOT)/drivers/SegmentVideo \
+$(REPO_ROOT)/modules/SegmentVideo \
 $(REPO_ROOT)/Arduino/Core \
 $(REPO_ROOT)/Arduino/Libs/uCModules/src \
 $(REPO_ROOT)/Arduino/Libs/arduino_midi/src \
@@ -47,7 +47,7 @@ $(REPO_ROOT)/FreeRTOS/Source/portable/GCC/ARM_CM4F
 
 STATIC_LIBS = \
 $(REPO_ROOT)/Arduino/build/Arduino.a \
-$(REPO_ROOT)/drivers/SegmentVideo/build/SegmentVideo.a \
+$(REPO_ROOT)/modules/SegmentVideo/build/SegmentVideo.a \
 $(REPO_ROOT)/bsp/build/bsp_$(board).a \
 $(REPO_ROOT)/FreeRTOS/build/FreeRTOS.a
 
