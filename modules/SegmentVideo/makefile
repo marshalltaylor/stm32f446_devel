@@ -2,16 +2,17 @@
 REPO_ROOT = ../..
 
 C_SOURCES = \
-SegmentVideo.cpp \
-MidiClockDisplay.cpp
+src/SegmentVideo.cpp \
+src/MidiClockDisplay.cpp
 
-SOURCE_DIRS = ./ \
+SOURCE_DIRS = src
 
-C_INCLUDES = \
+C_INCLUDES = . \
+src \
 $(REPO_ROOT)/bsp \
-$(REPO_ROOT)/bsp/CubeProject/modules/CMSIS/Include \
-$(REPO_ROOT)/bsp/CubeProject/modules/CMSIS/Device/ST/STM32F4xx/Include \
-$(REPO_ROOT)/bsp/CubeProject/modules/STM32F4xx_HAL_Driver/Inc \
+$(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Include \
+$(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Device/ST/STM32F4xx/Include \
+$(REPO_ROOT)/bsp/CubeProject/Drivers/STM32F4xx_HAL_Driver/Inc \
 $(REPO_ROOT)/bsp/UserProject/AltDrivers \
 $(REPO_ROOT)/bsp/UserProject/Core/Inc \
 $(REPO_ROOT)/Arduino/Core \

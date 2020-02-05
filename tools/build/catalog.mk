@@ -28,3 +28,11 @@ $(REPO_ROOT)/modules/SegmentVideo/build/SegmentVideo.a:
 $(REPO_ROOT)/modules/uCModules/build/uCModules.a:
 	@echo "######## Building $(REPO_ROOT)/modules/uCModules"
 	$(MAKE) -C $(REPO_ROOT)/modules/uCModules
+
+clean_all:
+	$(MAKE) -C $(REPO_ROOT)/bsp clean
+	$(MAKE) -C $(REPO_ROOT)/Arduino clean
+	$(MAKE) -C $(REPO_ROOT)/FreeRTOS clean
+	$(MAKE) -C $(REPO_ROOT)/modules/logging clean
+	$(MAKE) -C $(REPO_ROOT)/modules/uCModules clean
+	$(MAKE) -C $(REPO_ROOT)/modules/SegmentVideo clean

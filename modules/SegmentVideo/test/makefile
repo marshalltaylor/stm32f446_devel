@@ -3,18 +3,25 @@ REPO_ROOT = ../../..
 
 ifeq ($(strip $(board)),)
 ifneq ('$(MAKECMDGOALS)','clean')
-$(info no board specified, setting to dot2)
-board = dot2
+$(info no board specified, setting to clock)
+board = clock
 endif
 endif
 
-C_SOURCES = \
-main.cpp
+#Unused:
+#BlinkerPanel.cpp
+#MidiClockDisplay.cpp
+C_SOURCES =  \
+main.cpp \
+taskTest.cpp \
+taskConsole.cpp \
+taskLog.cpp \
+os.c
 
-STARTUP_SOURCES = \
+STARTUP_SOURCES =  \
 startup_stm32f446xx.s \
 
-SOURCE_DIRS = src\
+SOURCE_DIRS = .\
 
 # TODO: Not all these should be included maybe
 # TODO: FreeRTOSConfig.h location?
@@ -25,11 +32,16 @@ $(REPO_ROOT)/bsp/CubeProject/Drivers/STM32F4xx_HAL_Driver/Inc \
 $(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Include \
 $(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Device/ST/STM32F4xx/Include \
 $(REPO_ROOT)/bsp/UserProject/AltDrivers \
-$(REPO_ROOT)/modules/logging
+$(REPO_ROOT)/modules/SegmentVideo \
+$(REPO_ROOT)/FreeRTOS \
+$(REPO_ROOT)/FreeRTOS/Source/include \
+$(REPO_ROOT)/FreeRTOS/Source/CMSIS_RTOS \
+$(REPO_ROOT)/FreeRTOS/Source/portable/GCC/ARM_CM4F
 
 STATIC_LIBS = \
-$(REPO_ROOT)/modules/logging/build/logging.a \
-$(REPO_ROOT)/bsp/build/bsp_$(board).a
+$(REPO_ROOT)/modules/SegmentVideo/build/SegmentVideo.a \
+$(REPO_ROOT)/bsp/build/bsp_$(board).a \
+$(REPO_ROOT)/FreeRTOS/build/FreeRTOS.a
 
 #PROJECT_OBJECTS
 #OBJECTS = $(patsubst %s,%o,$(patsubst %c,%o,$(patsubst %cpp,%o,$(C_SOURCES))))
@@ -47,9 +59,6 @@ $(BUILD_DIR)/output.elf: build_dirs $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS)) $
 	@echo "#### Linking into elf"
 	$(PP) -o $(TARGET_EXEC) $(LDFLAGS) -std=c++11 $(addprefix $(BUILD_DIR)/obj/, $(SOURCE_OBJECTS)) $(STATIC_LIBS) $(addprefix $(BUILD_DIR)/obj/, $(STARTUP_OBJECT))
 	$(SZ) $@
-	@echo ""
-	@echo "Built for $(board) board"
-	@echo ""
 	$(OBJD) -S --disassemble $(TARGET_EXEC) > $(TARGET_EXEC).dump
 	@echo
 
@@ -67,9 +76,7 @@ $(BUILD_DIR)/output.bin: build_dirs $(TARGET_EXEC)
 
 all: $(STATIC_LIBS) $(TARGET_EXEC)
 
-clean::
-	$(MAKE) -C $(REPO_ROOT)/bsp clean
-	$(MAKE) -C $(REPO_ROOT)/modules/logging clean
+clean:: clean_all
 
 openocd:
 	cygstart cmd /k launch_openocd.bat
