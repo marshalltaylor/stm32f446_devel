@@ -32,9 +32,9 @@ void Logging::setVPrintf(bspVPrintf_t function)
 
 void Logging::setStamp(const char * data, uint8_t len)
 {
-	if(len > LOGGING_STAMP_MAX_LEN - 4)
+	if(len > LOGGING_STAMP_MAX_LEN)
 	{
-		len = LOGGING_STAMP_MAX_LEN - 4;
+		len = LOGGING_STAMP_MAX_LEN;
 	}
 	
 	int indexOut = 0;

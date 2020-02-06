@@ -56,7 +56,7 @@ extern "C" void taskTestStart(void * argument)
 				strMsg_t * msg = new strMsg_t();
 				
 				msg->id = 0;
-				sprintf( msg->data, "Fade Triggered\n" );
+				sprintf( msg->data, "Fade Triggered" );
 				if(pdPASS != xQueueSend( logQueue, &msg, 1 ))
 				{
 					//TODO: error on send
@@ -85,7 +85,7 @@ extern "C" void taskTestStart(void * argument)
 			strMsg_t * msg = new strMsg_t();
 			
 			msg->id = 0;
-			sprintf( msg->data, "Test: %02d:%03d\n", stamp_s, stamp_ms );
+			sprintf( msg->data, "Test: %02d:%03d", stamp_s, stamp_ms );
 			if(pdPASS != xQueueSend( logQueue, &msg, 1 ))
 			{
 				//TODO: error on send

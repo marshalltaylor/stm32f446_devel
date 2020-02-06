@@ -1,24 +1,47 @@
-//FreeRTOS system
+/* Includes -- STD -----------------------------------------------------------*/
+#include <stdint.h>
+#include <stdbool.h>
+#include <stdarg.h>
+#include <stdio.h>
+
+/* Includes -- BSP -----------------------------------------------------------*/
+#include "bsp.h"
+
+/* Includes -- FreeRTOS system -----------------------------------------------*/
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
+#include "event_groups.h"
 
-//FreeRTOS app
+/* Includes -- FreeRTOS app --------------------------------------------------*/
 #include "taskLog.h"
+#include "taskCommon.h"
 
-//Arduino
-#include "Arduino.h"
-#include "interface.h"
+/* Includes -- modules -------------------------------------------------------*/
+#include "logging.h"
+#include "MidiClockDisplay.h"
 
-//BSP
-//#include "main_cubemx.h"
+/* References ----------------------------------------------------------------*/
+#define USE_LOGGING
+#ifdef USE_LOGGING
+// Create logging object and macro for local printf
+#define localPrintf logTaskLog.printf
+Logging logTaskLog;
 
-#define Serial Serial6
+#else
+// Connect directly to bsp.
+#define localPrintf bspPrintf
+
+#endif
 
 QueueHandle_t logQueue = NULL;
 
 extern "C" void taskLogStart(void * argument)
 {
+#ifdef USE_LOGGING
+	logTaskLog.setStamp("taskLog", 7);
+	logTaskLog.setMode(LOG_MODE_AUTO);
+#endif
 	while(1)
 	{
 		strMsg_t * msg = NULL;
@@ -29,20 +52,17 @@ extern "C" void taskLogStart(void * argument)
 			{
 				case -1:
 				{
-					Serial6.println("BANG!");
+					localPrintf("BANG!");
 					break;
 				}
 				case 0:
 				{
-					Serial6.print(msg->data);
+					localPrintf("msg data: %s\n", (const char *)msg->data);
 					break;
 				}
 				default:
 				{
-					Serial6.print("[");
-					Serial6.print(msg->id);
-					Serial6.print("] ");
-					Serial6.print(msg->data);
+					localPrintf("msg id: 0x%X, data: %s\n", msg->id, (const char *)msg->data);
 					break;
 				}
 			}

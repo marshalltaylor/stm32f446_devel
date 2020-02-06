@@ -33,6 +33,7 @@ $(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Include \
 $(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Device/ST/STM32F4xx/Include \
 $(REPO_ROOT)/bsp/UserProject/AltDrivers \
 $(REPO_ROOT)/modules/SegmentVideo \
+$(REPO_ROOT)/modules/logging \
 $(REPO_ROOT)/FreeRTOS \
 $(REPO_ROOT)/FreeRTOS/Source/include \
 $(REPO_ROOT)/FreeRTOS/Source/CMSIS_RTOS \
@@ -40,6 +41,7 @@ $(REPO_ROOT)/FreeRTOS/Source/portable/GCC/ARM_CM4F
 
 STATIC_LIBS = \
 $(REPO_ROOT)/modules/SegmentVideo/build/SegmentVideo.a \
+$(REPO_ROOT)/modules/logging/build/logging.a \
 $(REPO_ROOT)/bsp/build/bsp_$(board).a \
 $(REPO_ROOT)/FreeRTOS/build/FreeRTOS.a
 

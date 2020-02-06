@@ -12,8 +12,6 @@
 //BSP
 #include "bsp.h"
 
-#define Serial Serial6
-
 extern void xPortSysTickHandler(void);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */

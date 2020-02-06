@@ -1,108 +1,145 @@
-//FreeRTOS system
+/* Includes -- STD -----------------------------------------------------------*/
+#include <stdint.h>
+#include <stdbool.h>
+#include <stdarg.h>
+#include <stdio.h>
+
+/* Includes -- BSP -----------------------------------------------------------*/
+#include "bsp.h"
+
+/* Includes -- FreeRTOS system -----------------------------------------------*/
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
 #include "event_groups.h"
 
-//FreeRTOS app
+/* Includes -- FreeRTOS app --------------------------------------------------*/
 #include "taskLog.h"
 #include "taskCommon.h"
 #include "MidiClockDisplay.h"
 
-//BSP
-#include "bsp.h"
+/* Includes -- modules -------------------------------------------------------*/
+#include "logging.h"
 
-todo() // Switch this file's print facility to bsp output
+/* References ----------------------------------------------------------------*/
+#define USE_LOGGING
+#ifdef USE_LOGGING
+// Create logging object and macro for local printf
+#define localPrintf consoleDebug.printf
+Logging consoleDebug;
+
+#else
+// Connect directly to bsp.
+#define localPrintf bspPrintf
+
+#endif
 
 extern MidiClockDisplay Segments;
-
 TaskStatus_t pxTaskStatusArray[5];
+
+void delay(uint32_t delayInput);
+
+/* Functions -----------------------------------------------------------------*/
+void delay(uint32_t delayInput)
+{
+	uint32_t targetTicks = millis() + delayInput; //OK for this to roll
+	while(millis() > targetTicks)
+	{
+		//if we rolled, wait until millis rolls
+	}
+	while(millis() < targetTicks)
+	{
+		//nop
+	}
+}
 
 void taskConsolePrintStats(void)
 {
 	volatile UBaseType_t uxArraySize, x;
 	unsigned long ulTotalRunTime, ulStatsAsPercentage;
-	char pcWriteBuffer[64];
-	
+
 	/* get num of tasks */
 	uxArraySize = uxTaskGetNumberOfTasks();
-    /* Generate raw status information about each task. */
-    uxTaskGetSystemState( pxTaskStatusArray,
-                               uxArraySize,
-                               &ulTotalRunTime );
+	/* Generate raw status information about each task. */
+	uxTaskGetSystemState( pxTaskStatusArray,
+								uxArraySize,
+								&ulTotalRunTime );
 
-    /* For percentage calculations. */
-    ulTotalRunTime /= 100UL;
+	/* For percentage calculations. */
+	ulTotalRunTime /= 100UL;
 	//ulTotalRunTime = 1; //fake it
 	
-    /* Avoid divide by zero errors. */
-    if( ulTotalRunTime > 0 )
-    {
-        sprintf( pcWriteBuffer, " %-7s%10s%7s", "name", "epoch", "Load");
-		Serial6.println(pcWriteBuffer);
-		sprintf( pcWriteBuffer, "--------------------------");
-		Serial6.println(pcWriteBuffer);
-       /* For each populated position in the pxTaskStatusArray array,
-       format the raw data as human readable ASCII data. */
-       for( x = 0; x < uxArraySize; x++ )
-       {
-          /* What percentage of the total run time has the task used?
-          This will always be rounded down to the nearest integer.
-          ulTotalRunTimeDiv100 has already been divided by 100. */
-          ulStatsAsPercentage =
-                pxTaskStatusArray[ x ].ulRunTimeCounter / ulTotalRunTime;
+	/* Avoid divide by zero errors. */
+	if( ulTotalRunTime > 0 )
+	{
+		localPrintf(" %-7s%10s%7s\n", "name", "epoch", "Load");
+		localPrintf("--------------------------\n");
+		/* For each populated position in the pxTaskStatusArray array,
+		format the raw data as human readable ASCII data. */
+		for( x = 0; x < uxArraySize; x++ )
+		{
+			/* What percentage of the total run time has the task used?
+			This will always be rounded down to the nearest integer.
+			ulTotalRunTimeDiv100 has already been divided by 100. */
+			ulStatsAsPercentage =
+				pxTaskStatusArray[ x ].ulRunTimeCounter / ulTotalRunTime;
 
-          if( ulStatsAsPercentage > 0UL )
-          {
-             sprintf( pcWriteBuffer, " %-7s%10lu%6lu%%",
-                               pxTaskStatusArray[ x ].pcTaskName,
-                               pxTaskStatusArray[ x ].ulRunTimeCounter,
-                               ulStatsAsPercentage );
-          }
-          else
-          {
-             /* If the percentage is zero here then the task has
-             consumed less than 1% of the total run time. */
-             sprintf( pcWriteBuffer, " %-7s%10lu%7s",
-                               pxTaskStatusArray[ x ].pcTaskName,
-                               pxTaskStatusArray[ x ].ulRunTimeCounter,
-							   "<1%"							   );
-          }
-		Serial6.println(pcWriteBuffer);
-       }
-    }
+			if( ulStatsAsPercentage > 0UL )
+			{
+				localPrintf(" %-7s%10lu%6lu%%\n",
+							pxTaskStatusArray[ x ].pcTaskName,
+							pxTaskStatusArray[ x ].ulRunTimeCounter,
+							ulStatsAsPercentage
+							);
+			}
+			else
+			{
+			 /* If the percentage is zero here then the task has
+			 consumed less than 1% of the total run time. */
+			 localPrintf(" %-7s%10lu%7s\n",
+						pxTaskStatusArray[ x ].pcTaskName,
+						pxTaskStatusArray[ x ].ulRunTimeCounter,
+						"<1%"
+						);
+			}
+		}
+	}
 }
 
 void taskConsolePrintHelp(void)
 {
-	Serial6.println("Segment Video Test Console.");
-	Serial6.println(" h: help");
-	Serial6.println(" i: initialize display");
-	Serial6.println(" 0 - 9: graphical tests");
+	localPrintf("Segment Video Test Console.\n");
+	localPrintf(" h: help\n");
+	localPrintf(" i: initialize display\n");
+	localPrintf(" 0 - 9: graphical tests\n");
 }
 
 //strMsg_t globoMsg = {0};
 extern "C" void taskConsoleStart(void * argument)
 {
 	uint32_t nextUpdate = 0;
-	
+
+#ifdef USE_LOGGING
+	consoleDebug.setStamp("Console", 7);
+	consoleDebug.setMode(LOG_MODE_DEFAULT);
+#endif
+
 	taskConsolePrintHelp();
 	while(1)
 	{
-		if(Serial6.available())
+		if(bspSerialConsoleBytesAvailable())
 		{
-			//Serial6.println(c);
-			char c = (char)Serial6.read();
+			char c = (char)bspSerialConsoleRead();
 			switch(c)
 			{
 				case '\r':
 				{
-					Serial6.println();
+					localPrintf("\n");
 					break;
 				}
 				case 'r':
 				{
-					Serial6.println();
+					localPrintf("\n");
 					taskConsolePrintStats();
 					break;
 				}
@@ -113,7 +150,7 @@ extern "C" void taskConsoleStart(void * argument)
 				}
 				case 'i':
 				{
-					Serial6.println("Starting driver");
+					localPrintf("Starting driver");
 					uint8_t AllZeros[11];
 					//uint8_t AllOnes[11];
 					for(int i = 0; i < 11; i++)
@@ -128,24 +165,20 @@ extern "C" void taskConsoleStart(void * argument)
 				}
 				case '!':
 				{
-					Serial6.print("3");
-					delay( 100 );
-					Serial6.print("2");
-					delay( 100 );
-					Serial6.print("1");
-					delay( 100 );
+					localPrintf("3");
+					delay(300);
+					localPrintf("2");
+					delay(300);
+					localPrintf("1");
+					delay(300);
 
 					strMsg_t * msg = new strMsg_t();
-
-					//char buffer[32];
-					//sprintf( buffer, "New: %p\n", &msg);
-					//Serial6.println(buffer);
 
 					msg->id = -1;
 					msg->data[0] = '\0';
 					if(pdPASS != xQueueSend( logQueue, &msg, 0 ))
 					{
-						Serial6.println(".dud");
+						localPrintf(".dud");
 						delete msg;
 					}
 					break;
@@ -166,24 +199,23 @@ extern "C" void taskConsoleStart(void * argument)
 				case 't':
 				{
 					//Test delay times
-					Serial6.println();
-					Serial6.println(millis());
+					localPrintf("\n");
+					localPrintf("Start time  %dms\n", millis());
 					vTaskDelay( 1000 );
-					Serial6.println(millis());
-					//Serial6.print(xTaskGetTickCount());
+					localPrintf("Stop time   %dms\n", millis());
+					//localPrintf("tick count     %dms\n", xTaskGetTickCount());
 					break;
 				}
 				case 'l':
 				{
 					//Test delay times
-					Serial6.print("L");
+					localPrintf("L");
 					delay( 333 );
-					Serial6.print("O");
+					localPrintf("O");
 					delay( 333 );
-					Serial6.print("A");
+					localPrintf("A");
 					delay( 333 );
-					Serial6.print("D");
-					//Serial6.print(xTaskGetTickCount());
+					localPrintf("D");
 					break;
 				}
 				default:
@@ -191,9 +223,10 @@ extern "C" void taskConsoleStart(void * argument)
 					if(((c >= '0')&&(c <= '9'))||(c == '`'))
 					{
 						EventBits_t uxBits = xEventGroupGetBits(xTestEventGroup);
+						uint8_t testKeyMask = 0;
 						if((c != '`')&&(c != '8')&&(c != '9'))
 						{
-							uint8_t testKeyMask = 0x0001 << (c - '0');
+							testKeyMask = 0x0001 << (c - '0');
 							uxBits ^= testKeyMask;
 							if( (uxBits >> (c - '0')) & 0x0001 )
 							{
@@ -207,13 +240,26 @@ extern "C" void taskConsoleStart(void * argument)
 						}
 						for(int i = 1; i <= 9; i++)
 						{
-							Serial6.print((uxBits >> i)&0x0001);
+							localPrintf("%d", (uxBits >> i)&0x0001);
 						}
-						Serial6.println(uxBits&0x0001);
+						localPrintf("%d\n", uxBits&0x0001);
+						
+						//Optionally do something with key like regular state
+						if(c == '2')
+						{
+							if(uxBits & testKeyMask)
+							{
+								consoleDebug.setMode(LOG_MODE_AUTO);
+							}
+							else
+							{
+								consoleDebug.setMode(LOG_MODE_DEFAULT);
+							}
+						}
 					}
 					else
 					{
-						Serial6.print(".");
+						localPrintf(".");
 					}
 				}
 
@@ -228,7 +274,7 @@ extern "C" void taskConsoleStart(void * argument)
 		}
 		// Clock segment driver
 		vTaskDelay( 5 );
-		Segments.tickValueStateMachine(millis());	
+		Segments.tickValueStateMachine(millis());
 
 		Segments.processEffects();
 		Segments.writeNextFrame();
