@@ -9,6 +9,7 @@
 #include "bsp.h"
 
 /* Includes -- modules -------------------------------------------------------*/
+#include "midi47fx.h"
 #include "logging.h"
 
 /* References ----------------------------------------------------------------*/
@@ -50,7 +51,22 @@ void DummyModule::logData(void)
 }
 
 /* Private function prototypes -----------------------------------------------*/
+//TODO: What is this?  Why is it here?
 void SystemClock_Config(void);
+
+HardwareSerial TestSerial;
+//uint32_t var;
+//MIDI_CREATE_DEFAULT_INSTANCE();
+//MIDI_CREATE_INSTANCE(HardwareSerial, Serial,  MIDI);
+MIDI_CREATE_INSTANCE(HardwareSerial, TestSerial,  MIDI);
+
+void handleNoteOn(byte channel, byte pitch, byte velocity)
+{
+}
+
+void handleNoteOff(byte channel, byte pitch, byte velocity)
+{
+}
 
 /* Functions -----------------------------------------------------------------*/
 int main(void)
@@ -70,11 +86,12 @@ int main(void)
 
 	DummyModule module;
 
-	//Configure logger for..
-	//  Create a reference for this task's serial output
-	
-	//  Register logger into used modules
-	
+	TestSerial.initPort(COM1);
+
+	MIDI.setHandleNoteOn(handleNoteOn);  // Put only the name of the function
+	MIDI.setHandleNoteOff(handleNoteOff);
+	MIDI.begin(MIDI_CHANNEL_OMNI);
+
 	while (1)
 	{
 		module.logData();
@@ -85,6 +102,10 @@ int main(void)
 			dbg.printf("Seconds = %d\n", seconds);
 		}
 		uint32_t t = millis() + 1000;
-		while(millis() < t);
+		while(millis() < t)
+		{
+			//Spin
+			MIDI.read();
+		}
 	}
 }

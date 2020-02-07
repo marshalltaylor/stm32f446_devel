@@ -105,7 +105,8 @@ void bspRegisterSysTickCallback(bspTimerCallback_t cbFn);
 typedef enum
 {
 	COM0 = 0,
-	COM1
+	COM1,
+	NUM_COM_PORTS
 } comPort_t;
 
 typedef void (*bspPrintf_t)(const char* fmt, ...);

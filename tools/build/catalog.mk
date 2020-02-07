@@ -21,6 +21,10 @@ $(REPO_ROOT)/modules/logging/build/logging.a:
 	@echo "######## Building $(REPO_ROOT)/modules/logging"
 	$(MAKE) -C $(REPO_ROOT)/modules/logging
 
+$(REPO_ROOT)/modules/midi47fx/build/midi47fx.a:
+	@echo "######## Building $(REPO_ROOT)/modules/midi47fx"
+	$(MAKE) -C $(REPO_ROOT)/modules/midi47fx
+
 $(REPO_ROOT)/modules/SegmentVideo/build/SegmentVideo.a:
 	@echo "######## Building $(REPO_ROOT)/modules/SegmentVideo"
 	$(MAKE) -C $(REPO_ROOT)/modules/SegmentVideo
@@ -31,8 +35,8 @@ $(REPO_ROOT)/modules/uCModules/build/uCModules.a:
 
 clean_all:
 	$(MAKE) -C $(REPO_ROOT)/bsp clean
-	$(MAKE) -C $(REPO_ROOT)/Arduino clean
 	$(MAKE) -C $(REPO_ROOT)/FreeRTOS clean
 	$(MAKE) -C $(REPO_ROOT)/modules/logging clean
 	$(MAKE) -C $(REPO_ROOT)/modules/uCModules clean
 	$(MAKE) -C $(REPO_ROOT)/modules/SegmentVideo clean
+	$(MAKE) -C $(REPO_ROOT)/modules/midi47fx clean

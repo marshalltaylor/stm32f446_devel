@@ -92,3 +92,47 @@ void bspGetSerialConsoleObj(comPortInterface_t * interface)
 	interface->bytesAvailable = bspSerialConsoleBytesAvailable;
 
 }
+
+
+//This is a terrible duplication, it's obvious I haven't solved the serial problem
+
+uint8_t bspSerialMidiAPeek(void)
+{
+	return halUartPeek(&D01_UART);
+}
+
+void bspSerialMidiAWrite(uint8_t data)
+{
+	halUartWrite(data, &D01_UART);
+}
+
+uint8_t bspSerialMidiARead(void)
+{
+	return halUartRead(&D01_UART);
+}
+
+uint16_t bspSerialMidiABytesAvailable(void)
+{
+	return halUartReadBytesAvailable(&D01_UART);
+}
+
+void bspGetSerialCOMObj(comPort_t port, comPortInterface_t * interface)
+{
+	if( interface == NULL ) return;
+	switch(port) // this isn't really even used, what's going on with this crap.
+	{
+		case COM0:
+		break;
+		case COM1:
+		{
+			interface->peek = bspSerialMidiAPeek;
+			interface->write = bspSerialMidiAWrite;
+			interface->read = bspSerialMidiARead;
+			interface->bytesAvailable = bspSerialMidiABytesAvailable;
+		}
+		break;
+		default:
+		break;
+	}
+
+}
