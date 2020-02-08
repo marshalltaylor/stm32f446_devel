@@ -135,6 +135,12 @@ void bspSerialConsoleWrite(uint8_t data);
 uint8_t bspSerialConsoleRead();
 uint16_t bspSerialConsoleBytesAvailable();
 
+
+uint8_t bspSerialMidiAPeek();
+void bspSerialMidiAWrite(uint8_t data);
+uint8_t bspSerialMidiARead();
+uint16_t bspSerialMidiABytesAvailable();
+
 bspPrintf_t bspGetSerialConsolePrintf(void);
 bspVPrintf_t bspGetSerialConsoleVPrintf(void);
 void bspGetSerialConsoleObj(comPortInterface_t * interface);

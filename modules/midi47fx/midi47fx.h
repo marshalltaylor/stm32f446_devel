@@ -28,7 +28,7 @@ public:
 //    operator bool() { return true; }
 //
 private:
-	comPortInterface_t * bspSerialMidiObj;
+	comPortInterface_t bspSerialMidiObj;
 //    uint8_t _config;
 };
 

@@ -118,7 +118,7 @@ uint16_t bspSerialMidiABytesAvailable(void)
 
 void bspGetSerialCOMObj(comPort_t port, comPortInterface_t * interface)
 {
-	if( interface == NULL ) return;
+	bspPrintf("com obj: 0x%X\n", port);
 	switch(port) // this isn't really even used, what's going on with this crap.
 	{
 		case COM0:

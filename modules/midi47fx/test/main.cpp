@@ -62,10 +62,12 @@ MIDI_CREATE_INSTANCE(HardwareSerial, TestSerial,  MIDI);
 
 void handleNoteOn(byte channel, byte pitch, byte velocity)
 {
+	localPrintf("Note on: %d, %d, %d\n", channel, pitch, velocity); 
 }
 
 void handleNoteOff(byte channel, byte pitch, byte velocity)
 {
+	localPrintf("Note off: %d, %d, %d\n", channel, pitch, velocity); 
 }
 
 /* Functions -----------------------------------------------------------------*/

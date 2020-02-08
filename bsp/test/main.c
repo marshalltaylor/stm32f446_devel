@@ -27,12 +27,13 @@ int main(void)
 	//Run a test or allow the default loop
 
 	//runLoopback();
-	runLoopbackIO();
+	//runLoopbackIO();
 	//runObjLoopback();
 
 	nextSecond = millis() + 1000;
 	while (1)
 	{
+		#if 0
 		if( bspSerialConsoleBytesAvailable() )
 		{
 			crapDelay(50);
@@ -41,6 +42,17 @@ int main(void)
 				bspSerialConsoleWrite(bspSerialConsoleRead());
 			}
 		}
+		#endif
+		#if 1
+		if( bspSerialMidiABytesAvailable() )
+		{
+			crapDelay(50);
+			while( bspSerialMidiABytesAvailable() )
+			{
+				bspPrintf("read: 0x%02X\n", bspSerialMidiARead());
+			}
+		}
+		#endif
 		if( millis() > nextSecond )
 		{
 			nextSecond = nextSecond + 1000;
