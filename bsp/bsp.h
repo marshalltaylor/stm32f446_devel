@@ -105,7 +105,8 @@ void bspRegisterSysTickCallback(bspTimerCallback_t cbFn);
 typedef enum
 {
 	COM0 = 0,
-	COM1
+	COM1,
+	NUM_COM_PORTS
 } comPort_t;
 
 typedef void (*bspPrintf_t)(const char* fmt, ...);
@@ -133,6 +134,12 @@ uint8_t bspSerialConsolePeek();
 void bspSerialConsoleWrite(uint8_t data);
 uint8_t bspSerialConsoleRead();
 uint16_t bspSerialConsoleBytesAvailable();
+
+
+uint8_t bspSerialMidiAPeek();
+void bspSerialMidiAWrite(uint8_t data);
+uint8_t bspSerialMidiARead();
+uint16_t bspSerialMidiABytesAvailable();
 
 bspPrintf_t bspGetSerialConsolePrintf(void);
 bspVPrintf_t bspGetSerialConsoleVPrintf(void);

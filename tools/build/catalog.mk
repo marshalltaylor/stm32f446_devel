@@ -17,14 +17,26 @@ $(REPO_ROOT)/Arduino/build/Arduino.a:
 	@echo "######## Building $(REPO_ROOT)/Arduino"
 	$(MAKE) -C $(REPO_ROOT)/Arduino
 
-$(REPO_ROOT)/drivers/logging/build/logging.a:
-	@echo "######## Building $(REPO_ROOT)/drivers/logging"
-	$(MAKE) -C $(REPO_ROOT)/drivers/logging
+$(REPO_ROOT)/modules/logging/build/logging.a:
+	@echo "######## Building $(REPO_ROOT)/modules/logging"
+	$(MAKE) -C $(REPO_ROOT)/modules/logging
 
-$(REPO_ROOT)/drivers/SegmentVideo/build/SegmentVideo.a:
-	@echo "######## Building $(REPO_ROOT)/drivers/SegmentVideo"
-	$(MAKE) -C $(REPO_ROOT)/drivers/SegmentVideo
+$(REPO_ROOT)/modules/midi47fx/build/midi47fx.a:
+	@echo "######## Building $(REPO_ROOT)/modules/midi47fx"
+	$(MAKE) -C $(REPO_ROOT)/modules/midi47fx
 
-$(REPO_ROOT)/drivers/uCModules/build/uCModules.a:
-	@echo "######## Building $(REPO_ROOT)/drivers/uCModules"
-	$(MAKE) -C $(REPO_ROOT)/drivers/uCModules
+$(REPO_ROOT)/modules/SegmentVideo/build/SegmentVideo.a:
+	@echo "######## Building $(REPO_ROOT)/modules/SegmentVideo"
+	$(MAKE) -C $(REPO_ROOT)/modules/SegmentVideo
+
+$(REPO_ROOT)/modules/uCModules/build/uCModules.a:
+	@echo "######## Building $(REPO_ROOT)/modules/uCModules"
+	$(MAKE) -C $(REPO_ROOT)/modules/uCModules
+
+clean_all:
+	$(MAKE) -C $(REPO_ROOT)/bsp clean
+	$(MAKE) -C $(REPO_ROOT)/FreeRTOS clean
+	$(MAKE) -C $(REPO_ROOT)/modules/logging clean
+	$(MAKE) -C $(REPO_ROOT)/modules/uCModules clean
+	$(MAKE) -C $(REPO_ROOT)/modules/SegmentVideo clean
+	$(MAKE) -C $(REPO_ROOT)/modules/midi47fx clean
