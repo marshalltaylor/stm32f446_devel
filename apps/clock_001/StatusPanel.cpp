@@ -1,15 +1,39 @@
-//********************************************//
-#include "StatusPanel.h"
-#include "panelComponents.h"
-#include "HardwareInterfaces.h"
-#include <Arduino.h>
+/* Includes -- STD -----------------------------------------------------------*/
+#include <stdint.h>
+#include <stdbool.h>
+#include <stdarg.h>
+#include <string.h>
+#include <stdio.h>
+
+/* Includes -- BSP -----------------------------------------------------------*/
+#include "bsp.h"
+
+/* Includes -- modules -------------------------------------------------------*/
+#include "midi47fx.h"
+#include "logging.h"
+#include "uCModules.h"
+
+#include "SegmentVideo.h"
+
+/* Includes -- App -----------------------------------------------------------*/
 #include "midiTime.h"
-#include "flagMessaging.h"
-#include "timeKeeper32.h"
+#include "StatusPanel.h"
 #include "BlinkerPanel.h"
-#include "MidiClockDisplay.h"
-#include <MIDI.h>
-#include "midi_Defs.h"
+
+
+/* References ----------------------------------------------------------------*/
+//#define USE_LOGGING
+#ifdef USE_LOGGING
+// Create logging object and macro for local printf
+#define localPrintf dummy.printf
+Logging dummy;
+
+#else
+// Connect directly to bsp.
+#define localPrintf bspPrintf
+
+#endif
+
 
 extern midi::MidiInterface<HardwareSerial> MIDI;
 
@@ -148,7 +172,7 @@ void StatusPanel::tickStateMachine( int usTicksDelta )
 		if( clock->getState() == Playing )
 		{
 			playLedState = PlayLedStateOn;
-			Serial6.println(" to PlayLedStateOn");
+			localPrintf(" to PlayLedStateOn\n");
 			ledPlay.setState(LEDON);
 		}
 		else if( playFlag.serviceRisingEdge() )
@@ -156,7 +180,7 @@ void StatusPanel::tickStateMachine( int usTicksDelta )
 			if( clock->getState() == Paused )
 			{
 				playLedState = PlayLedStateBlink;
-				Serial6.println(" to PlayLedStateBlink");
+				localPrintf(" to PlayLedStateBlink\n");
 				ledPlay.setState(LEDON);
 				playTimeKeeper.uClear();
 			}
@@ -168,7 +192,7 @@ void StatusPanel::tickStateMachine( int usTicksDelta )
 		{
 			playFlag.serviceRisingEdge();
 			playLedState = PlayLedStateOff;
-			Serial6.println(" to PlayLedStateOff");
+			localPrintf(" to PlayLedStateOff\n");
 			ledPlay.setState(LEDOFF);
 		}
 		break;
@@ -176,7 +200,7 @@ void StatusPanel::tickStateMachine( int usTicksDelta )
 		if( playTimeKeeper.uGet() > 600 )
 		{
 			playLedState = PlayLedStateOff;
-			Serial6.println(" to PlayLedStateOff");
+			localPrintf(" to PlayLedStateOff\n");
 			ledPlay.setState(LEDOFF);
 		}
 		break;

@@ -146,12 +146,6 @@ void MidiClockDisplay::showNewValue( const char * input )
 //	}		
 }
 
-//Arduino
-#include "Arduino.h"
-#include "interface.h"
-
-#define Serial Serial6
-
 void MidiClockDisplay::tickValueStateMachine( uint32_t sysTime )
 {
 	//TODO: should be using bsp or below, need to clean logging

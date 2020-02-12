@@ -40,9 +40,9 @@ $(REPO_ROOT)/FreeRTOS/Source/CMSIS_RTOS \
 $(REPO_ROOT)/FreeRTOS/Source/portable/GCC/ARM_CM4F
 
 STATIC_LIBS = \
+$(REPO_ROOT)/bsp/build/bsp_$(board).a \
 $(REPO_ROOT)/modules/SegmentVideo/build/SegmentVideo.a \
 $(REPO_ROOT)/modules/logging/build/logging.a \
-$(REPO_ROOT)/bsp/build/bsp_$(board).a \
 $(REPO_ROOT)/FreeRTOS/build/FreeRTOS.a
 
 #PROJECT_OBJECTS
@@ -61,6 +61,9 @@ $(BUILD_DIR)/output.elf: build_dirs $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS)) $
 	@echo "#### Linking into elf"
 	$(PP) -o $(TARGET_EXEC) $(LDFLAGS) -std=c++11 $(addprefix $(BUILD_DIR)/obj/, $(SOURCE_OBJECTS)) $(STATIC_LIBS) $(addprefix $(BUILD_DIR)/obj/, $(STARTUP_OBJECT))
 	$(SZ) $@
+	@echo ""
+	@echo "Built for $(board) board"
+	@echo ""
 	$(OBJD) -S --disassemble $(TARGET_EXEC) > $(TARGET_EXEC).dump
 	@echo
 
