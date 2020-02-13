@@ -57,8 +57,7 @@ $(BUILD_DIR)/output.bin: build_dirs $(TARGET_EXEC)
 
 all: $(STATIC_LIBS) $(TARGET_EXEC)
 
-clean::
-	$(MAKE) -C $(REPO_ROOT)/bsp clean
+clean:: clean_all
 
 openocd:
 	cygstart cmd /k launch_openocd.bat

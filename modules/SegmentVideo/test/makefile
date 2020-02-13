@@ -27,11 +27,6 @@ SOURCE_DIRS = .\
 # TODO: FreeRTOSConfig.h location?
 C_INCLUDES = \
 $(REPO_ROOT)/bsp \
-$(REPO_ROOT)/bsp/UserProject/Core/Inc \
-$(REPO_ROOT)/bsp/CubeProject/Drivers/STM32F4xx_HAL_Driver/Inc \
-$(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Include \
-$(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Device/ST/STM32F4xx/Include \
-$(REPO_ROOT)/bsp/UserProject/AltDrivers \
 $(REPO_ROOT)/modules/SegmentVideo \
 $(REPO_ROOT)/modules/logging \
 $(REPO_ROOT)/FreeRTOS \
@@ -40,10 +35,10 @@ $(REPO_ROOT)/FreeRTOS/Source/CMSIS_RTOS \
 $(REPO_ROOT)/FreeRTOS/Source/portable/GCC/ARM_CM4F
 
 STATIC_LIBS = \
-$(REPO_ROOT)/bsp/build/bsp_$(board).a \
+$(REPO_ROOT)/FreeRTOS/build/FreeRTOS.a \
 $(REPO_ROOT)/modules/SegmentVideo/build/SegmentVideo.a \
 $(REPO_ROOT)/modules/logging/build/logging.a \
-$(REPO_ROOT)/FreeRTOS/build/FreeRTOS.a
+$(REPO_ROOT)/bsp/build/bsp_$(board).a
 
 #PROJECT_OBJECTS
 #OBJECTS = $(patsubst %s,%o,$(patsubst %c,%o,$(patsubst %cpp,%o,$(C_SOURCES))))

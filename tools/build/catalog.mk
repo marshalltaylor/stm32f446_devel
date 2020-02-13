@@ -13,10 +13,6 @@ $(REPO_ROOT)/FreeRTOS/build/FreeRTOS.a:
 	@echo "######## Building $(REPO_ROOT)/FreeRTOS"
 	$(MAKE) -C $(REPO_ROOT)/FreeRTOS
 
-$(REPO_ROOT)/Arduino/build/Arduino.a:
-	@echo "######## Building $(REPO_ROOT)/Arduino"
-	$(MAKE) -C $(REPO_ROOT)/Arduino
-
 $(REPO_ROOT)/modules/logging/build/logging.a:
 	@echo "######## Building $(REPO_ROOT)/modules/logging"
 	$(MAKE) -C $(REPO_ROOT)/modules/logging
