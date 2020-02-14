@@ -79,12 +79,14 @@ clean::
 openocd:
 	cygstart cmd /k $(shell cygpath -w $(PATH_OPENOCD)/launch_openocd.bat)
 
-deploy:
-#	cygstart cmd /k launch_gdb.bat
-	@echo "For manual use,"
-	@echo "cmd $(shell cygpath -w $(CURDIR)/launch_gdb.bat)"
-	@echo "Listing batch file contents:"
-	@cat launch_gdb.bat
+gdb:
+	@echo ""
+	@echo "gdb needs special ctrl-c treatment."
+	@echo "Launch cmd.exe from start and enter these commands:"
+	@echo ""
+	@echo "E:"
+	@echo "cd $(shell cygpath -w $(REPO_ROOT))modules\midi47fx\test"
+	@echo "$(shell cygpath -w $(GDB)) -x gdbinit.txt build/output.elf"
 
 info:
 	@echo "***** ***** ***** DEBUG ***** ***** *****"

@@ -39,6 +39,7 @@ AR = $(GCC_PATH)/arm-none-eabi-ar
 CP = $(GCC_PATH)/arm-none-eabi-objcopy
 SZ = $(GCC_PATH)/arm-none-eabi-size
 OBJD = $(GCC_PATH)/arm-none-eabi-objdump
+GDB = $(GCC_PATH)/arm-none-eabi-gdb
 
 #######################################
 # Flags
