@@ -1,13 +1,42 @@
-//********************************************//
-#include "BlinkerPanel.h"
-#include "panelComponents.h"
-#include "HardwareInterfaces.h"
-#include <Arduino.h>
+/* Includes -- STD -----------------------------------------------------------*/
+#include <stdint.h>
+#include <stdbool.h>
+#include <stdarg.h>
+#include <string.h>
+#include <stdio.h>
+
+/* Includes -- BSP -----------------------------------------------------------*/
+#include "bsp.h"
+
+/* Includes -- modules -------------------------------------------------------*/
+#include "midi47fx.h"
+#include "logging.h"
+#include "uCModules.h"
+
+#include "SegmentVideo.h"
+
+/* Includes -- App -----------------------------------------------------------*/
 #include "midiTime.h"
 #include "StatusPanel.h"
-#include "MidiClockDisplay.h"
-#include <MIDI.h>
-#include "midi_Defs.h"
+#include "BlinkerPanel.h"
+
+
+/* References ----------------------------------------------------------------*/
+//#define USE_LOGGING
+#ifdef USE_LOGGING
+// Create logging object and macro for local printf
+#define localPrintf dummy.printf
+Logging dummy;
+
+#else
+// Connect directly to bsp.
+#define localPrintf bspPrintf
+
+#endif
+
+
+//#include "midi_Defs.h"
+
 extern midi::MidiInterface<HardwareSerial> MIDI;
 
 extern MidiClock extMidiClock;
@@ -97,7 +126,6 @@ void BlinkerPanel::reset( void )
 void BlinkerPanel::tickStateMachine( int msTicksDelta )
 {
 	freshenComponents( msTicksDelta );
-	Segments.displaySMTK.uIncrement( msTicksDelta * 1000 );
 	//***** PROCESS THE LOGIC *****//
 	MidiClock * clock = statusPanel.ClockSocket->getSocketedClock();
 	//Now do the states.
@@ -119,7 +147,7 @@ void BlinkerPanel::tickStateMachine( int msTicksDelta )
 
 	if( button1.serviceRisingEdge() )
 	{
-		Serial6.println("Button1");
+		localPrintf("Button1");
 		glideEnabled = !glideEnabled;
 		if(glideEnabled)
 		{
@@ -132,19 +160,19 @@ void BlinkerPanel::tickStateMachine( int msTicksDelta )
 	}
 	if( button2.serviceRisingEdge() )
 	{
-		Serial6.println("Button2");
+		localPrintf("Button2");
 		led2.toggle();
 		//emergencyRestart();
 		Segments.debugNoise = !led2.getState();
 	}
 	if( button3.serviceRisingEdge() )
 	{
-		Serial6.println("Button3");
+		localPrintf("Button3");
 		led3.toggle();
 	}
 	if( button4.serviceRisingEdge() )
 	{
-		Serial6.println("Button4");
+		localPrintf("Button4");
 		if(!timeMaster)
 		{
 //			clock->stop();
@@ -157,11 +185,11 @@ void BlinkerPanel::tickStateMachine( int msTicksDelta )
 	}
 	if( buttonSelect.serviceRisingEdge() )
 	{
-		Serial6.println("Select");
+		localPrintf("Select");
 	}
 	if( play.serviceRisingEdge() )
 	{
-		Serial6.println("play");
+		localPrintf("play");
 		
 		if( timeMaster )
 		{
@@ -230,10 +258,8 @@ void BlinkerPanel::tickStateMachine( int msTicksDelta )
 
 	if( knob1.serviceChanged() )
 	{
-		Serial6.print("knob1: ");
-		Serial6.print(knob1.getState());
-		Serial6.print(" Val: ");
-		Serial6.println(analogRead(A1));
+		localPrintf("knob1: %d\n", knob1.getState());
+		localPrintf(" Val: %d\n", bspIOPinReadAnalog(A1));
 		int16_t newValue = knob1.getAsInt16();
 		if( newValue != lastKnob1 )
 		{
@@ -245,10 +271,8 @@ void BlinkerPanel::tickStateMachine( int msTicksDelta )
 	}
 	if( knob3.serviceChanged() )
 	{
-		Serial6.print("knob3: ");
-		Serial6.print(knob3.getState());
-		Serial6.print(" Val: ");
-		Serial6.println(analogRead(A2));
+		localPrintf("knob3: %d\n", knob3.getState());
+		localPrintf(" Val: %d\n", bspIOPinReadAnalog(A2));
 		int16_t newValue = knob3.getAsInt16();
 		if( newValue != lastKnob3 )
 		{
@@ -259,10 +283,8 @@ void BlinkerPanel::tickStateMachine( int msTicksDelta )
 	}
 	if( knobTempo.serviceChanged() )
 	{
-		Serial6.print("knobTempo: ");
-		Serial6.print(knobTempo.getState());
-		Serial6.print(" Val: ");
-		Serial6.println(analogRead(A2));
+		localPrintf("knobTempo: %d\n", knobTempo.getState());
+		localPrintf(" Val: %d\n", bspIOPinReadAnalog(A2));
 		int16_t newValue = knobTempo.getAsInt16();
 		if( newValue != lastKnobTempo )
 		{
@@ -284,10 +306,8 @@ void BlinkerPanel::tickStateMachine( int msTicksDelta )
 				currentBPM = targetBPM;
 			}
 			intMidiClock.setBPM(currentBPM / 1000);
-			Serial6.print("(-)currentBPM: ");
-			Serial6.print(currentBPM);
-			Serial6.print("   targetBPM: ");
-			Serial6.println(targetBPM);
+			localPrintf("(-)currentBPM: %d\n", currentBPM);
+			localPrintf("   targetBPM: %d\n", targetBPM);
 
 		}
 		if( currentBPM < targetBPM )
@@ -298,10 +318,8 @@ void BlinkerPanel::tickStateMachine( int msTicksDelta )
 				currentBPM = targetBPM;
 			}
 			intMidiClock.setBPM(currentBPM / 1000);
-			Serial6.print("(+)currentBPM: ");
-			Serial6.print(currentBPM);
-			Serial6.print("   targetBPM: ");
-			Serial6.println(targetBPM);
+			localPrintf("(+)currentBPM: %d\n", currentBPM);
+			localPrintf("   targetBPM: %d\n", targetBPM);
 		}
 	}
 	else
@@ -310,10 +328,8 @@ void BlinkerPanel::tickStateMachine( int msTicksDelta )
 		{
 			currentBPM = targetBPM;
 			intMidiClock.setBPM(currentBPM / 1000);
-			Serial6.print("(S)currentBPM: ");
-			Serial6.print(currentBPM);
-			Serial6.print("   targetBPM: ");
-			Serial6.println(targetBPM);
+			localPrintf("(S)currentBPM: %d\n", currentBPM);
+			localPrintf("   targetBPM: %d\n", targetBPM);
 		}
 	}
 }
