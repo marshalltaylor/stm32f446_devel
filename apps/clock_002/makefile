@@ -77,7 +77,7 @@ clean::
 	$(MAKE) -C $(REPO_ROOT)/FreeRTOS clean
 
 openocd:
-	cygstart cmd /k launch_openocd.bat
+	cygstart cmd /k $(shell cygpath -w $(PATH_OPENOCD)/launch_openocd.bat)
 
 deploy:
 #	cygstart cmd /k launch_gdb.bat

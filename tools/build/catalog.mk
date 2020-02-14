@@ -5,6 +5,10 @@
 # REPO_ROOT
 # board
 
+PATH_OPENOCD:=$(REPO_ROOT)/tools/debugger
+#PATH_OPENOCD=$(REPO_ROOT)/tools/debugger
+
+
 $(REPO_ROOT)/bsp/build/bsp_$(board).a:
 	@echo "######## Building $(REPO_ROOT)/bsp_$(board)"
 	$(MAKE) -C $(REPO_ROOT)/bsp board=$(board)

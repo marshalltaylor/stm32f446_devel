@@ -71,13 +71,10 @@ $(BUILD_DIR)/output.bin: build_dirs $(TARGET_EXEC)
 
 all: $(STATIC_LIBS) $(TARGET_EXEC)
 
-clean::
-	$(MAKE) -C $(REPO_ROOT)/bsp clean
-	$(MAKE) -C $(REPO_ROOT)/Arduino clean
-	$(MAKE) -C $(REPO_ROOT)/FreeRTOS clean
+clean:: clean_all
 
 openocd:
-	cygstart cmd /k launch_openocd.bat
+	cygstart cmd /k $(shell cygpath -w $(PATH_OPENOCD)/launch_openocd.bat)
 
 deploy:
 #	cygstart cmd /k launch_gdb.bat

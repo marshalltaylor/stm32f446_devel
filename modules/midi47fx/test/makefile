@@ -72,10 +72,10 @@ all: $(STATIC_LIBS) $(TARGET_EXEC)
 clean:: clean_all
 
 openocd:
-	cygstart cmd /k launch_openocd.bat
+	cygstart cmd /k $(shell cygpath -w $(PATH_OPENOCD)/launch_openocd.bat)
 
-deploy:
-#	cygstart cmd /k launch_gdb.bat
+dbg:
+	#cygstart cmd /k launch_gdb.bat
 	@echo "For manual use,"
 	@echo "cmd $(shell cygpath -w $(CURDIR)/launch_gdb.bat)"
 	@echo "Listing batch file contents:"
