@@ -4,14 +4,11 @@ REPO_ROOT = ../..
 C_SOURCES =  \
 main.c
 
-STARTUP_SOURCES =  \
-startup_test.s \
+STARTUP_SOURCES = \
+$(REPO_ROOT)/bsp/bsp_$(board)/startup_stm32f446xx.s \
 
-# \
-#startup_stm32f446xx.s \
-#App.cpp
-
-SOURCE_DIRS = .\
+SOURCE_DIRS = . \
+$(REPO_ROOT)/bsp/bsp_$(board)
 
 C_INCLUDES = \
 $(REPO_ROOT)/bsp \

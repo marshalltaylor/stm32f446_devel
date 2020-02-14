@@ -12,9 +12,10 @@ C_SOURCES = \
 main.cpp
 
 STARTUP_SOURCES = \
-startup_stm32f446xx.s \
+$(REPO_ROOT)/bsp/bsp_$(board)/startup_stm32f446xx.s \
 
-SOURCE_DIRS = src\
+SOURCE_DIRS = src \
+$(REPO_ROOT)/bsp/bsp_$(board)
 
 # TODO: Not all these should be included maybe
 # TODO: FreeRTOSConfig.h location?

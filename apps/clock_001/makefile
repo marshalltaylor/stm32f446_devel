@@ -15,10 +15,12 @@ BlinkerPanel.cpp \
 midiTime.cpp \
 StatusPanel.cpp
 
-STARTUP_SOURCES =  \
-startup_stm32f446xx.s \
+STARTUP_SOURCES = \
+$(REPO_ROOT)/bsp/bsp_$(board)/startup_stm32f446xx.s \
 
-SOURCE_DIRS = .\
+SOURCE_DIRS = src \
+SOURCE_DIRS = . \
+$(REPO_ROOT)/bsp/bsp_$(board)
 
 C_INCLUDES = \
 $(REPO_ROOT)/bsp \

@@ -18,10 +18,11 @@ taskConsole.cpp \
 taskLog.cpp \
 os.c
 
-STARTUP_SOURCES =  \
-startup_stm32f446xx.s \
+STARTUP_SOURCES = \
+$(REPO_ROOT)/bsp/bsp_$(board)/startup_stm32f446xx.s \
 
-SOURCE_DIRS = .\
+SOURCE_DIRS = . \
+$(REPO_ROOT)/bsp/bsp_$(board)
 
 # TODO: Not all these should be included maybe
 # TODO: FreeRTOSConfig.h location?
