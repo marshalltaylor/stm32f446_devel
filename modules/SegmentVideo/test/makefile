@@ -27,11 +27,6 @@ SOURCE_DIRS = .\
 # TODO: FreeRTOSConfig.h location?
 C_INCLUDES = \
 $(REPO_ROOT)/bsp \
-$(REPO_ROOT)/bsp/UserProject/Core/Inc \
-$(REPO_ROOT)/bsp/CubeProject/Drivers/STM32F4xx_HAL_Driver/Inc \
-$(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Include \
-$(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Device/ST/STM32F4xx/Include \
-$(REPO_ROOT)/bsp/UserProject/AltDrivers \
 $(REPO_ROOT)/modules/SegmentVideo \
 $(REPO_ROOT)/modules/logging \
 $(REPO_ROOT)/FreeRTOS \
@@ -40,10 +35,10 @@ $(REPO_ROOT)/FreeRTOS/Source/CMSIS_RTOS \
 $(REPO_ROOT)/FreeRTOS/Source/portable/GCC/ARM_CM4F
 
 STATIC_LIBS = \
+$(REPO_ROOT)/FreeRTOS/build/FreeRTOS.a \
 $(REPO_ROOT)/modules/SegmentVideo/build/SegmentVideo.a \
 $(REPO_ROOT)/modules/logging/build/logging.a \
-$(REPO_ROOT)/bsp/build/bsp_$(board).a \
-$(REPO_ROOT)/FreeRTOS/build/FreeRTOS.a
+$(REPO_ROOT)/bsp/build/bsp_$(board).a
 
 #PROJECT_OBJECTS
 #OBJECTS = $(patsubst %s,%o,$(patsubst %c,%o,$(patsubst %cpp,%o,$(C_SOURCES))))
@@ -61,6 +56,9 @@ $(BUILD_DIR)/output.elf: build_dirs $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS)) $
 	@echo "#### Linking into elf"
 	$(PP) -o $(TARGET_EXEC) $(LDFLAGS) -std=c++11 $(addprefix $(BUILD_DIR)/obj/, $(SOURCE_OBJECTS)) $(STATIC_LIBS) $(addprefix $(BUILD_DIR)/obj/, $(STARTUP_OBJECT))
 	$(SZ) $@
+	@echo ""
+	@echo "Built for $(board) board"
+	@echo ""
 	$(OBJD) -S --disassemble $(TARGET_EXEC) > $(TARGET_EXEC).dump
 	@echo
 

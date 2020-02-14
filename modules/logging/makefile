@@ -9,7 +9,7 @@ src
 
 C_INCLUDES = \
 $(REPO_ROOT)/modules/logging \
-$(REPO_ROOT)/bsp \
+$(REPO_ROOT)/bsp
 
 #PROJECT_OBJECTS
 OBJECTS = $(patsubst %s,%o,$(patsubst %c,%o,$(patsubst %cpp,%o,$(C_SOURCES))))

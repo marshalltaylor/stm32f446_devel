@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include "display_clock.h"
+//#include "display_clock.h"
 #include "midiTime.h"
-#include "interface.h"
+//#include "interface.h"
 
 extern MidiClock intMidiClock;
 

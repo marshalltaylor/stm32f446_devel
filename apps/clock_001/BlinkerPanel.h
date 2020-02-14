@@ -2,11 +2,8 @@
 #ifndef SYSTEMPANEL_H_INCLUDED
 #define SYSTEMPANEL_H_INCLUDED
 
-#include "Panel.h"
-#include "PanelComponents.h"
-#include "HardwareInterfaces.h"
-#include <Arduino.h>
-#include "timeKeeper32.h"
+#include "uCModules.h"
+#include "MidiClockDisplay.h"
 
 enum PStates
 {

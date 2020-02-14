@@ -2,12 +2,7 @@
 #ifndef STATUSPANEL_H_INCLUDED
 #define STATUSPANEL_H_INCLUDED
 
-#include "Panel.h"
-#include "PanelComponents.h"
-#include "HardwareInterfaces.h"
-#include <Arduino.h>
-#include "flagMessaging.h"
-#include "timeKeeper32.h"
+#include "uCModules.h"
 #include "midiTime.h"
 
 enum BeatLedStates

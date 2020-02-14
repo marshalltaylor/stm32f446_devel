@@ -3,8 +3,6 @@
 #include "PanelDataObjects.h"
 #include "uCModulesPrivate.h"
 
-extern DebugUtils dbg;
-
 DataObject::DataObject( void )
 {
 	size = -1;
@@ -86,23 +84,23 @@ KnobDataObject::~KnobDataObject( void )
 //dumpObject lists a DataObject's contents, plus the contents of it's contained data
 void dumpObject( DataObject * inputObjectPtr )
 {
-	dbg.printf("Obj Addr: 0x08X", (uint32_t)&(*inputObjectPtr));
+	//dbg.printf("Obj Addr: 0x08X", (uint32_t)&(*inputObjectPtr));
 	uint8_t * bytePtr = (uint8_t *)inputObjectPtr;
 	for( uint32_t i = 0; i < sizeof(*inputObjectPtr); i++ )
 	{
 		
-		dbg.printf("0x02X, ", *bytePtr);
+		//dbg.printf("0x02X, ", *bytePtr);
 		bytePtr++;
 	}
-	dbg.printf("\n");
+	//dbg.printf("\n");
 	
-	dbg.printf("Containted data: ");
+	//dbg.printf("Containted data: ");
 	bytePtr = (uint8_t *)inputObjectPtr->data;
 	for( uint32_t i = 0; i < inputObjectPtr->size; i++ )
 	{
-		dbg.printf("0x02X, ", *bytePtr);
+		//dbg.printf("0x02X, ", *bytePtr);
 		bytePtr++;
 	}
-	dbg.printf("\n");
+	//dbg.printf("\n");
 
 }

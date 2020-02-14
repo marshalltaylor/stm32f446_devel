@@ -2,11 +2,8 @@
 #define APP_H
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
-
-#include "stm32f4xx_hal.h"
-#include "main_cubemx.h"
 
 int AppEntry(void);
 
