@@ -22,13 +22,11 @@ Example: add a CRT controller to the project and write apps for a few recycled t
 2. Extend the bsp.h interface to include the new functions required
 3. Write the bsp implementations to support this
 4. Write a 'module' that connects to the bsp and has helpful non-hw specific things, like position setting, memory page management, primitives.  This module shall have a test folder with an app that uses the module.  It should link to the logging module if appropriate, rather than calling the bsp printf directly.
-5. For the repository (Note 1)
+5. Fork the repository (Note 1)
 6. Build an app that uses for new module for each tube, display type, etc
 7. The new repository is now its own contained thing.  You are free to make changes for the new family of apps, but if changes are deemed standard, they should be placed on a branch of this repository as well and brought back into the development branch.
 
 *Note 1: if the board is fundamentally different (would need breaking changes to the generated cubemx project), the forking should happen earlier and the module would not be common to development.  This example is esoteric, smaller changes would be developed straight in this branch and may not even need apps apart from test.*
-
-The midi clock is a device that can accept and generate midi clock messages.  The hardware is a STM32F466 dev board with midi shield and controls.
 
 ## Toolchain
 TODO: this section needs to be run again and written up.
