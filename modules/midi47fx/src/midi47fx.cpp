@@ -17,7 +17,7 @@ void HardwareSerial::initPort(comPort_t port)
 	{
 		return;
 	}
-	bspGetSerialCOMObj(port, &bspSerialMidiObj);
+	bspGetSerialFunctions(port, &bspSerialMidiObj);
 }
 
 void HardwareSerial::begin(unsigned long baud)

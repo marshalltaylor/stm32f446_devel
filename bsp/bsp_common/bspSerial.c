@@ -1,3 +1,14 @@
+/* Serial operates in two ways
+
+1.  We have printf available as bspPrintf.  This defaults to com0 but can be
+remapped.. somehow or wherex
+
+2.  A serial object consisting of basic IO can be filled out pointed to a specific
+port.  This allows users to use the IO without having to specify a port each time, just
+at init.
+
+*/
+
 /* Includes -- STD -----------------------------------------------------------*/
 #include <stdint.h>
 #include <stdbool.h>
@@ -20,14 +31,24 @@ UartInstance_t * comPorts[] =
 	NULL
 };
 
-static void bspVPrintf(const char* fmt, va_list args );
-
 char buffer[MAX_PRINTF_LEN];
 
+// References to these functions given out through accessors:
+static void bspVPrintf(const char* fmt, va_list args );
+
+static uint8_t bspSerial_VCP_Peek();
+static void bspSerial_VCP_Write(uint8_t data);
+static uint8_t bspSerial_VCP_Read();
+static uint16_t bspSerial_VCP_BytesAvailable();
+
+static uint8_t bspSerial_D01_Peek();
+static void bspSerial_D01_Write(uint8_t data);
+static uint8_t bspSerial_D01_Read();
+static uint16_t bspSerial_D01_BytesAvailable();
+
+
 /* Functions -----------------------------------------------------------------*/
-// bspPrintf
-//   It is assumed that only one user will ever be operating the console,
-// so bspPrintf's port is set in the bsp.  Re-implement if needed.
+// bspPrintf and bspVPrintf are both hardcoded to talk on a certain port.
 void bspPrintf(const char* fmt, ...)
 {
 	va_list args;
@@ -36,7 +57,7 @@ void bspPrintf(const char* fmt, ...)
 	int i;
 	for(i = 0; (i < MAX_PRINTF_LEN)&&buffer[i]!='\0'; i++)
 	{
-		bspSerialConsoleWrite(buffer[i]);
+		bspSerial_VCP_Write(buffer[i]);
 	}
 	va_end(args);
 }
@@ -47,31 +68,11 @@ void bspVPrintf(const char* fmt, va_list args )
 	int i;
 	for(i = 0; (i < MAX_PRINTF_LEN)&&buffer[i]!='\0'; i++)
 	{
-		bspSerialConsoleWrite(buffer[i]);
+		bspSerial_VCP_Write(buffer[i]);
 	}
 }
 
-// Peek, Write, and BytesAvailable are called with a port name.
-uint8_t bspSerialConsolePeek(void)
-{
-	return halUartPeek(&VCP_UART);
-}
-
-void bspSerialConsoleWrite(uint8_t data)
-{
-	halUartWrite(data, &VCP_UART);
-}
-
-uint8_t bspSerialConsoleRead(void)
-{
-	return halUartRead(&VCP_UART);
-}
-
-uint16_t bspSerialConsoleBytesAvailable(void)
-{
-	return halUartReadBytesAvailable(&VCP_UART);
-}
-
+// Accessors to get function names for dynamic usage
 bspPrintf_t bspGetSerialConsolePrintf(void)
 {
 	return bspPrintf;
@@ -82,57 +83,75 @@ bspVPrintf_t bspGetSerialConsoleVPrintf(void)
 	return bspVPrintf;
 }
 
-void bspGetSerialConsoleObj(comPortInterface_t * interface)
-{
-	if( interface == NULL ) return;
-	
-	interface->peek = bspSerialConsolePeek;
-	interface->write = bspSerialConsoleWrite;
-	interface->read = bspSerialConsoleRead;
-	interface->bytesAvailable = bspSerialConsoleBytesAvailable;
+// ----- Individual port functions ----- //
+// I know, this is not flexible but it's easy for now.  I don't want to export
+// the stm port objects past bsp.h, so this is the way it goes.
 
+// VCP port
+uint8_t bspSerial_VCP_Peek(void)
+{
+	return halUartPeek(&VCP_UART);
 }
 
+void bspSerial_VCP_Write(uint8_t data)
+{
+	halUartWrite(data, &VCP_UART);
+}
 
-//This is a terrible duplication, it's obvious I haven't solved the serial problem
+uint8_t bspSerial_VCP_Read(void)
+{
+	return halUartRead(&VCP_UART);
+}
 
-uint8_t bspSerialMidiAPeek(void)
+uint16_t bspSerial_VCP_BytesAvailable(void)
+{
+	return halUartReadBytesAvailable(&VCP_UART);
+}
+
+// D01 port
+uint8_t bspSerial_D01_Peek(void)
 {
 	return halUartPeek(&D01_UART);
 }
 
-void bspSerialMidiAWrite(uint8_t data)
+void bspSerial_D01_Write(uint8_t data)
 {
 	halUartWrite(data, &D01_UART);
 }
 
-uint8_t bspSerialMidiARead(void)
+uint8_t bspSerial_D01_Read(void)
 {
 	return halUartRead(&D01_UART);
 }
 
-uint16_t bspSerialMidiABytesAvailable(void)
+uint16_t bspSerial_D01_BytesAvailable(void)
 {
 	return halUartReadBytesAvailable(&D01_UART);
 }
 
-void bspGetSerialCOMObj(comPort_t port, comPortInterface_t * interface)
+// Finally, accessors to get the serial functions grouped to an object.
+void bspGetSerialObj(comPort_t port, comPortInterface_t * interface)
 {
 	bspPrintf("com obj: 0x%X\n", port);
 	switch(port) // this isn't really even used, what's going on with this crap.
 	{
 		case COM0:
+		{
+			interface->peek = bspSerial_VCP_Peek;
+			interface->write = bspSerial_VCP_Write;
+			interface->read = bspSerial_VCP_Read;
+			interface->bytesAvailable = bspSerial_VCP_BytesAvailable;
+		}
 		break;
 		case COM1:
 		{
-			interface->peek = bspSerialMidiAPeek;
-			interface->write = bspSerialMidiAWrite;
-			interface->read = bspSerialMidiARead;
-			interface->bytesAvailable = bspSerialMidiABytesAvailable;
+			interface->peek = bspSerial_D01_Peek;
+			interface->write = bspSerial_D01_Write;
+			interface->read = bspSerial_D01_Read;
+			interface->bytesAvailable = bspSerial_D01_BytesAvailable;
 		}
 		break;
 		default:
 		break;
 	}
-
 }

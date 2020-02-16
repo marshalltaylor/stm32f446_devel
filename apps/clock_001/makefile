@@ -15,12 +15,10 @@ BlinkerPanel.cpp \
 midiTime.cpp \
 StatusPanel.cpp
 
-STARTUP_SOURCES = \
-$(REPO_ROOT)/bsp/bsp_$(board)/startup_stm32f446xx.s \
+STARTUP_SOURCES =  \
+startup_stm32f446xx.s \
 
-SOURCE_DIRS = src \
-SOURCE_DIRS = . \
-$(REPO_ROOT)/bsp/bsp_$(board)
+SOURCE_DIRS = .\
 
 C_INCLUDES = \
 $(REPO_ROOT)/bsp \
@@ -82,7 +80,7 @@ clean:: clean_all
 
 openocd:
 	cygstart cmd /k $(shell cygpath -w $(PATH_OPENOCD)/launch_openocd.bat)
-
+trash
 gdb:
 	@echo ""
 	@echo "gdb needs special ctrl-c treatment."
@@ -90,6 +88,7 @@ gdb:
 	@echo ""
 	@echo "E:"
 	@echo "cd $(shell cygpath -w $(REPO_ROOT))modules\midi47fx\test"
+	@echo "$(shell pwd)"
 	@echo "$(shell cygpath -w $(GDB)) -x gdbinit.txt build/output.elf"
 
 info:
