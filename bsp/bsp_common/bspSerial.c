@@ -130,7 +130,7 @@ uint16_t bspSerial_D01_BytesAvailable(void)
 }
 
 // Finally, accessors to get the serial functions grouped to an object.
-void bspGetSerialObj(comPort_t port, comPortInterface_t * interface)
+void bspGetSerialFunctions(comPort_t port, comPortInterface_t * interface)
 {
 	bspPrintf("com obj: 0x%X\n", port);
 	switch(port) // this isn't really even used, what's going on with this crap.
