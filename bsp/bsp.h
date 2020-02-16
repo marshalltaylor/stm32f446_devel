@@ -125,26 +125,11 @@ typedef struct
 	bspSerialBytesAvailable_t bytesAvailable;
 } comPortInterface_t;
 
-// Used for bspPrintf
-#define CONSOLE_PORT COM0
-
 void bspPrintf(const char* fmt, ...);
-
-uint8_t bspSerialConsolePeek();
-void bspSerialConsoleWrite(uint8_t data);
-uint8_t bspSerialConsoleRead();
-uint16_t bspSerialConsoleBytesAvailable();
-
-
-uint8_t bspSerialMidiAPeek();
-void bspSerialMidiAWrite(uint8_t data);
-uint8_t bspSerialMidiARead();
-uint16_t bspSerialMidiABytesAvailable();
 
 bspPrintf_t bspGetSerialConsolePrintf(void);
 bspVPrintf_t bspGetSerialConsoleVPrintf(void);
-void bspGetSerialConsoleObj(comPortInterface_t * interface);
-void bspGetSerialCOMObj(comPort_t port, comPortInterface_t * interface);
+void bspGetSerialFunctions(comPort_t port, comPortInterface_t * interface);
 
 #ifdef __cplusplus
 }

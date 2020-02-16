@@ -76,7 +76,7 @@ gdb:
 	@echo "Launch cmd.exe from start and enter these commands:"
 	@echo ""
 	@echo "E:"
-	@echo "cd $(shell cygpath -w $(REPO_ROOT))modules\midi47fx\test"
+	@echo "cd $(shell cygpath -w $(shell pwd))"
 	@echo "$(shell cygpath -w $(GDB)) -x gdbinit.txt build/output.elf"
 
 info:

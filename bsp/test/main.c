@@ -81,7 +81,7 @@ void runLoopback( void )
 void runObjLoopback( void )
 {
 	comPortInterface_t comObj;
-	bspGetSerialConsoleObj(&comObj);
+	bspGetSerialFunctions(COM0, &comObj);
 	
 	while (1)
 	{

@@ -18,22 +18,14 @@ StatusPanel.cpp
 STARTUP_SOURCES = \
 $(REPO_ROOT)/bsp/bsp_$(board)/startup_stm32f446xx.s \
 
-SOURCE_DIRS = src \
 SOURCE_DIRS = . \
-$(REPO_ROOT)/bsp/bsp_$(board)
 
 C_INCLUDES = \
 $(REPO_ROOT)/bsp \
-$(REPO_ROOT)/bsp/UserProject/Core/Inc \
-$(REPO_ROOT)/bsp/CubeProject/Drivers/STM32F4xx_HAL_Driver/Inc \
-$(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Include \
-$(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Device/ST/STM32F4xx/Include \
-$(REPO_ROOT)/bsp/UserProject/AltDrivers \
 $(REPO_ROOT)/modules/logging \
 $(REPO_ROOT)/modules/SegmentVideo \
 $(REPO_ROOT)/modules/midi47fx \
 $(REPO_ROOT)/modules/uCModules
-
 
 STATIC_LIBS = \
 $(REPO_ROOT)/modules/SegmentVideo/build/SegmentVideo.a \
@@ -89,7 +81,7 @@ gdb:
 	@echo "Launch cmd.exe from start and enter these commands:"
 	@echo ""
 	@echo "E:"
-	@echo "cd $(shell cygpath -w $(REPO_ROOT))modules\midi47fx\test"
+	@echo "cd $(shell cygpath -w $(shell pwd))"
 	@echo "$(shell cygpath -w $(GDB)) -x gdbinit.txt build/output.elf"
 
 info:
