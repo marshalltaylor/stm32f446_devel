@@ -453,7 +453,17 @@ uint16_t halUartReadBytesAvailable(UartInstance_t * UART)
   */
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
-  if(UartHandle->Instance==USART2)
+  if(UartHandle->Instance==USART1)
+  {
+    /* Set transmission flag: trasfer complete*/
+    PA9_10_UART.UartTxInProgress = false;
+    PA9_10_UART.txDataBuffer_head = PA9_10_UART.txDataBuffer_next;
+    if(PA9_10_UART.txDataBuffer_next != PA9_10_UART.txDataBuffer_tail)
+    {
+	    uartQueueNextData(&PA9_10_UART);
+    }
+  }
+  else if(UartHandle->Instance==USART2)
   {
     /* Set transmission flag: trasfer complete*/
     D01_UART.UartTxInProgress = false;
@@ -488,7 +498,20 @@ uint32_t restartedCount = 0;
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
 	//traceWrite(YELLOW, 1);
-  if(UartHandle->Instance==USART2)
+	TODO()
+  if(UartHandle->Instance==USART1)
+  {
+	PA9_10_UART.rxDataBuffer[PA9_10_UART.rxDataBuffer_last] = PA9_10_UART.rxCharBuffer;
+	PA9_10_UART.rxDataBuffer_last++;
+	if( PA9_10_UART.rxDataBuffer_last >= RX_BUFFER_SIZE )
+	{
+		PA9_10_UART.rxDataBuffer_last = 0;
+	}
+	//Queue another rx transfer
+	HAL_UART_Receive_IT(&huart1, &PA9_10_UART.rxCharBuffer, 1);
+
+  }
+  else if(UartHandle->Instance==USART2)
   {
 	//traceWrite(CYAN, 1);
 	D01_UART.rxDataBuffer[D01_UART.rxDataBuffer_last] = D01_UART.rxCharBuffer;
@@ -548,7 +571,11 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *UartHandle)
 	if(UartHandle->ErrorCode == HAL_UART_ERROR_DMA)
 	{
 		//Whatev's, kick it with a fresh buffer
-		if(UartHandle->Instance==USART2)
+		if(UartHandle->Instance==USART1)
+		{
+			//while(1);
+		}
+		else if(UartHandle->Instance==USART2)
 		{
 			//while(1);
 			//Queue another rx transfer
