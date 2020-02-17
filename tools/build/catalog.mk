@@ -13,6 +13,10 @@ $(REPO_ROOT)/bsp/build/bsp_$(board).a:
 	@echo "######## Building $(REPO_ROOT)/bsp_$(board)"
 	$(MAKE) -C $(REPO_ROOT)/bsp board=$(board)
 
+$(REPO_ROOT)/bsp_sliders/build/bsp_$(board).a:
+	@echo "######## Building $(REPO_ROOT)/bsp_$(board)"
+	$(MAKE) -C $(REPO_ROOT)/bsp_sliders board=$(board)
+
 $(REPO_ROOT)/FreeRTOS/build/FreeRTOS.a:
 	@echo "######## Building $(REPO_ROOT)/FreeRTOS"
 	$(MAKE) -C $(REPO_ROOT)/FreeRTOS
@@ -43,6 +47,7 @@ $(REPO_ROOT)/modules/TeensyView/build/TeensyView.a:
 
 clean_all:
 	$(MAKE) -C $(REPO_ROOT)/bsp clean
+	$(MAKE) -C $(REPO_ROOT)/bsp_sliders clean
 	$(MAKE) -C $(REPO_ROOT)/FreeRTOS clean
 	$(MAKE) -C $(REPO_ROOT)/modules/logging clean
 	$(MAKE) -C $(REPO_ROOT)/modules/uCModules clean

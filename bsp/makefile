@@ -22,11 +22,6 @@ C_SOURCES_BOARD := \
 bsp_dot2/bspSPI.c \
 bsp_dot2/board.c
 
-else ifeq ('$(board)','slide6')
-C_SOURCES_BOARD := \
-bsp_slide6/bspSPI.c \
-bsp_slide6/board.c
-
 # allow no board for clean target
 else ifeq ('$(MAKECMDGOALS)','clean')
 C_SOURCES_BOARD :=

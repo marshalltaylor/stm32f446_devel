@@ -54,7 +54,7 @@ SequenceRecorder \
 SequenceDebug \
 SequenceTeensyView \
 Sequences \
-$(REPO_ROOT)/bsp \
+$(REPO_ROOT)/bsp_sliders \
 $(REPO_ROOT)/modules/logging \
 $(REPO_ROOT)/modules/midi47fx \
 $(REPO_ROOT)/modules/uCModules \
@@ -67,7 +67,7 @@ $(REPO_ROOT)/modules/uCModules/build/uCModules.a \
 $(REPO_ROOT)/modules/logging/build/logging.a \
 $(REPO_ROOT)/modules/midiUtils/build/midiUtils.a \
 $(REPO_ROOT)/modules/TeensyView/build/TeensyView.a \
-$(REPO_ROOT)/bsp/build/bsp_$(board).a
+$(REPO_ROOT)/bsp_sliders/build/bsp_$(board).a
 
 # objects
 OBJECTS = $(patsubst %c,%o,$(patsubst %cpp,%o,$(C_SOURCES)))
