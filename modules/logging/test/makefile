@@ -11,11 +11,8 @@ endif
 C_SOURCES = \
 main.cpp
 
-STARTUP_SOURCES = \
-$(REPO_ROOT)/bsp/bsp_$(board)/startup_stm32f446xx.s \
-
-SOURCE_DIRS = src \
-$(REPO_ROOT)/bsp/bsp_$(board)
+SOURCE_DIRS = \
+src
 
 C_INCLUDES = \
 $(REPO_ROOT)/bsp \
@@ -25,11 +22,10 @@ STATIC_LIBS = \
 $(REPO_ROOT)/modules/logging/build/logging.a \
 $(REPO_ROOT)/bsp/build/bsp_$(board).a
 
-#PROJECT_OBJECTS
-#OBJECTS = $(patsubst %s,%o,$(patsubst %c,%o,$(patsubst %cpp,%o,$(C_SOURCES))))
-SOURCE_OBJECTS = $(patsubst %c,%o,$(patsubst %cpp,%o,$(C_SOURCES)))
-STARTUP_OBJECT = $(patsubst %s,%o,$(STARTUP_SOURCES))
-OBJECTS = $(SOURCE_OBJECTS) $(STARTUP_OBJECT)
+# objects
+OBJECTS = $(patsubst %c,%o,$(patsubst %cpp,%o,$(C_SOURCES)))
+
+# rules
 default: all
 
 include $(REPO_ROOT)/tools/build/catalog.mk
@@ -37,9 +33,9 @@ include $(REPO_ROOT)/tools/build/catalog.mk
 include $(REPO_ROOT)/tools/build/common.mk
 
 # linker
-$(BUILD_DIR)/output.elf: build_dirs $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS)) $(addprefix $(BUILD_DIR)/obj/, $(STARTUP_OBJECT))
+$(BUILD_DIR)/output.elf: build_dirs $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS))
 	@echo "#### Linking into elf"
-	$(PP) -o $(TARGET_EXEC) $(LDFLAGS) -std=c++11 $(addprefix $(BUILD_DIR)/obj/, $(SOURCE_OBJECTS)) $(STATIC_LIBS) $(addprefix $(BUILD_DIR)/obj/, $(STARTUP_OBJECT))
+	$(PP) -o $(TARGET_EXEC) $(LDFLAGS) -std=c++11 $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS)) $(STATIC_LIBS)
 	$(SZ) $@
 	@echo ""
 	@echo "Built for $(board) board"

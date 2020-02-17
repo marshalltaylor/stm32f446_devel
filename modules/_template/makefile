@@ -1,20 +1,21 @@
-# midi47fx module
+# _template module
 REPO_ROOT = ../..
 
 C_SOURCES = \
-src/MIDI.cpp \
-src/midi47fx.cpp
+src/template.cpp \
 
-SOURCE_DIRS = src
 
-C_INCLUDES = . \
-src \
-$(REPO_ROOT)/bsp
+
+SOURCE_DIRS = ./ \
+src
+
+C_INCLUDES = \
+$(REPO_ROOT)/bsp \
 
 #PROJECT_OBJECTS
 OBJECTS = $(patsubst %s,%o,$(patsubst %c,%o,$(patsubst %cpp,%o,$(C_SOURCES))))
 
-OUTPUT_LIB_NAME = midi47fx.a
+OUTPUT_LIB_NAME = template.a
 
 default: info all
 

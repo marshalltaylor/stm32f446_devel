@@ -1,4 +1,4 @@
-# STM32F4xx bsp
+# SegmentVideo Module
 REPO_ROOT = ../..
 
 C_SOURCES = \

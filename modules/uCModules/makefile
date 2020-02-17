@@ -1,4 +1,4 @@
-# STM32F4xx bsp
+# uCModules module... yeah
 REPO_ROOT = ../..
 
 C_SOURCES = \

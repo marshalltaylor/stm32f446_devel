@@ -1,1 +1,1 @@
-openocd -f "e:\github\Midi_Clock\tools\debugger\usbDebug.cfg" -c "init; reset halt"
+openocd -f "e:\github\stm32f446_devel\tools\debugger\usbDebug.cfg" -c "init; reset halt"

@@ -1,4 +1,4 @@
-# STM32F4xx bsp
+# Logging module
 REPO_ROOT = ../..
 
 C_SOURCES = \

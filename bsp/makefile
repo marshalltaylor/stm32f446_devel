@@ -61,7 +61,11 @@ CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c \
 UserProject/Core/Src/system_stm32f4xx.c \
-UserProject/Core/Src/stm32f4xx_hal_timebase_TIM.c
+UserProject/Core/Src/stm32f4xx_hal_timebase_TIM.c \
+bsp_$(board)/startup_stm32f446xx.s
+
+# The startup file above ***MUST*** be last in the list for weak linking
+# The output archive of the bsp should also be linked last
 
 # List of directories which contain C_SOURCES.
 # This list is created within the BUILD_DIR and used for artifacts

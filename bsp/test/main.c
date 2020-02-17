@@ -13,68 +13,66 @@
 /* Private function prototypes -----------------------------------------------*/
 
 static void crapDelay( int16_t msInput ) __attribute__((used));
-static void runLoopback( void ) __attribute__((used));
 static void runLoopbackIO( void ) __attribute__((used));
 static void runObjLoopback( void ) __attribute__((used));
 uint32_t nextSecond = 0;
+
+static comPortInterface_t console;
+static comPortInterface_t midiSerial;
 
 int main(void)
 {
 	bspInit();
 	
+	bspGetSerialFunctions(COM0, &console);
+	bspGetSerialFunctions(COM0, &midiSerial);
+	
 	bspPrintf("BSP Test on board: %s\n", boardName); 
 	
 	//Run a test or allow the default loop
 
-	//runLoopback();
 	//runLoopbackIO();
 	//runObjLoopback();
 
 	nextSecond = millis() + 1000;
 	while (1)
 	{
+		//Choose a routine
+		
 		#if 0
-		if( bspSerialConsoleBytesAvailable() )
+		if( console.bytesAvailable() )
 		{
 			crapDelay(50);
-			while( bspSerialConsoleBytesAvailable() )
+			while( console.bytesAvailable() )
 			{
-				bspSerialConsoleWrite(bspSerialConsoleRead());
+				console.write(console.read());
 			}
 		}
 		#endif
 		#if 1
-		if( bspSerialMidiABytesAvailable() )
+		if( midiSerial.bytesAvailable() )
 		{
 			crapDelay(50);
-			while( bspSerialMidiABytesAvailable() )
+			while( midiSerial.bytesAvailable() )
 			{
-				bspPrintf("read: 0x%02X\n", bspSerialMidiARead());
+				bspPrintf("read: 0x%02X\n", midiSerial.read());
 			}
 		}
 		#endif
+		
+		
+		
+		
+		//Do some periodic stuff too
+		
 		if( millis() > nextSecond )
 		{
 			nextSecond = nextSecond + 1000;
 			//bspToggleLED();
-			bspPrintf("number = %d\n", nextSecond); 
+			console.write('N');
+			bspPrintf("umber = %d\n", nextSecond); 
 		}
 		crapDelay(10);
-	}
-}
-
-void runLoopback( void )
-{
-	while (1)
-	{
-		if( bspSerialConsoleBytesAvailable() )
-		{
-			crapDelay(50);
-			while( bspSerialConsoleBytesAvailable() )
-			{
-				bspSerialConsoleWrite(bspSerialConsoleRead());
-			}
-		}
 	}
 }
 
