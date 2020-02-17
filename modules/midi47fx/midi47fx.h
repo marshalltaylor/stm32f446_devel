@@ -2,6 +2,7 @@
 #define MIDI_47EFFECTS_H
 
 #include "src/MIDI.h"
+#include "src/midi_Defs.h"
 #include "bsp.h"
 
 class HardwareSerial

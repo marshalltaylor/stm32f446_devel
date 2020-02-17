@@ -33,6 +33,14 @@ $(REPO_ROOT)/modules/uCModules/build/uCModules.a:
 	@echo "######## Building $(REPO_ROOT)/modules/uCModules"
 	$(MAKE) -C $(REPO_ROOT)/modules/uCModules
 
+$(REPO_ROOT)/modules/midiUtils/build/midiUtils.a:
+	@echo "######## Building $(REPO_ROOT)/modules/midiUtils"
+	$(MAKE) -C $(REPO_ROOT)/modules/midiUtils
+
+$(REPO_ROOT)/modules/TeensyView/build/TeensyView.a:
+	@echo "######## Building $(REPO_ROOT)/modules/TeensyView"
+	$(MAKE) -C $(REPO_ROOT)/modules/TeensyView
+
 clean_all:
 	$(MAKE) -C $(REPO_ROOT)/bsp clean
 	$(MAKE) -C $(REPO_ROOT)/FreeRTOS clean

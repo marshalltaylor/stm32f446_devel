@@ -81,6 +81,15 @@ void bspADCConvert(void);
 void bspSPISegmentWrite(uint8_t *);
 void bspSPISegmentSend(void);
 
+// Need to objectify
+bool spiDisplayStartDMACommand(uint8_t command);
+bool spiDisplayStartDMAData(uint8_t * data, uint16_t length);
+void spiDisplayWriteData(uint8_t data);
+void spiDisplayWriteCommand(uint8_t data);
+void spiDisplayDisable(void);
+void spiDisplayEnable(void);
+bool spiDisplayBusy(void);
+
 /*
 
 Timer Functions

@@ -8,18 +8,24 @@ C_SOURCES_COMMON := \
 bsp_common/bspSys.c \
 bsp_common/bspIO.c \
 bsp_common/bspSerial.c \
-bsp_common/bspSPI.c \
 bsp_common/bspTime.c \
 bsp_common/bspADC.c \
 bsp_common/bspPins.c
 
 ifeq ('$(board)','clock')
 C_SOURCES_BOARD := \
+bsp_clock/bspSPI.c \
 bsp_clock/board.c
 
 else ifeq ('$(board)','dot2')
 C_SOURCES_BOARD := \
+bsp_dot2/bspSPI.c \
 bsp_dot2/board.c
+
+else ifeq ('$(board)','slide6')
+C_SOURCES_BOARD := \
+bsp_slide6/bspSPI.c \
+bsp_slide6/board.c
 
 # allow no board for clean target
 else ifeq ('$(MAKECMDGOALS)','clean')
