@@ -36,8 +36,6 @@
 #include "stm32f4xx_it.h"
 
 /* USER CODE BEGIN 0 */
-#include "debugUtilities.h" // traceWrite(NAVY, 1);
-//#include "bsp.h"
 #include "bspPrivate.h"
 /* USER CODE END 0 */
 
@@ -191,11 +189,11 @@ void SysTick_Handler(void)
 void DMA1_Stream6_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Stream6_IRQn 0 */
-//  traceWrite(VIOLET, 1);
+
   /* USER CODE END DMA1_Stream6_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_usart2_tx);
   /* USER CODE BEGIN DMA1_Stream6_IRQn 1 */
-//  traceWrite(VIOLET, 0);
+
   /* USER CODE END DMA1_Stream6_IRQn 1 */
 }
 
@@ -275,11 +273,11 @@ void SPI1_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
   /* USER CODE BEGIN USART2_IRQn 0 */
- // traceWrite(YELLOW, 1);
+
   /* USER CODE END USART2_IRQn 0 */
   HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */
- // traceWrite(YELLOW, 0);
+
   /* USER CODE END USART2_IRQn 1 */
 }
 
@@ -317,11 +315,11 @@ void DMA2_Stream3_IRQHandler(void)
 void DMA2_Stream6_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA2_Stream6_IRQn 0 */
-//  traceWrite(NAVY, 1);
+
   /* USER CODE END DMA2_Stream6_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_usart6_tx);
   /* USER CODE BEGIN DMA2_Stream6_IRQn 1 */
-//  traceWrite(NAVY, 0);
+
   /* USER CODE END DMA2_Stream6_IRQn 1 */
 }
 
@@ -331,11 +329,11 @@ void DMA2_Stream6_IRQHandler(void)
 void USART6_IRQHandler(void)
 {
   /* USER CODE BEGIN USART6_IRQn 0 */
-//  traceWrite(CYAN, 1);
+
   /* USER CODE END USART6_IRQn 0 */
   HAL_UART_IRQHandler(&huart6);
   /* USER CODE BEGIN USART6_IRQn 1 */
- // traceWrite(CYAN, 0);
+
   /* USER CODE END USART6_IRQn 1 */
 }
 
