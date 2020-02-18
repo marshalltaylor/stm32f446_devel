@@ -14,15 +14,10 @@ main.c
 SOURCE_DIRS = . \
 
 C_INCLUDES = \
-$(REPO_ROOT)/bsp \
-$(REPO_ROOT)/bsp/UserProject/Core/Inc \
-$(REPO_ROOT)/bsp/CubeProject/Drivers/STM32F4xx_HAL_Driver/Inc \
-$(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Include \
-$(REPO_ROOT)/bsp/CubeProject/Drivers/CMSIS/Device/ST/STM32F4xx/Include \
-$(REPO_ROOT)/bsp/UserProject/AltDrivers
+$(REPO_ROOT)/bsp_sliders \
 
 STATIC_LIBS = \
-$(REPO_ROOT)/bsp/build/bsp_$(board).a
+$(REPO_ROOT)/bsp_sliders/build/bsp_$(board).a
 
 # objects
 OBJECTS = $(patsubst %c,%o,$(patsubst %cpp,%o,$(C_SOURCES)))

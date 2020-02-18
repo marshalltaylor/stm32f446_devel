@@ -117,6 +117,7 @@ extern uint32_t usTicks;
 
 int AppEntry(void)
 {
+	TestSerial.initPort(COM1);
 	//Config area
 	//pinMode(D6, OUTPUT);
 	//Serial2.begin(9600, 6);

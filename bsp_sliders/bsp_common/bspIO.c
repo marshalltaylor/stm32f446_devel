@@ -12,7 +12,7 @@
 
 /* References ----------------------------------------------------------------*/
 static bool ledState = false;
-extern uint16_t adcValues[6];
+extern uint16_t adcValues[];
 
 /* Functions -----------------------------------------------------------------*/
 void bspIOToggleLED(void)
@@ -56,5 +56,8 @@ uint32_t bspIOPinReadAnalog(uint8_t pin)
 	if(pin == A0) value = adcValues[0];
 	if(pin == A1) value = adcValues[1];
 	if(pin == A2) value = adcValues[2];
+	if(pin == A3) value = adcValues[3];
+	if(pin == A4) value = adcValues[4];
+	if(pin == A5) value = adcValues[5];
 	return value;
 }

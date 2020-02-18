@@ -9,7 +9,7 @@ SOURCE_DIRS = src
 
 C_INCLUDES = . \
 src \
-$(REPO_ROOT)/bsp
+$(REPO_ROOT)/bsp_sliders
 
 #PROJECT_OBJECTS
 OBJECTS = $(patsubst %s,%o,$(patsubst %c,%o,$(patsubst %cpp,%o,$(C_SOURCES))))

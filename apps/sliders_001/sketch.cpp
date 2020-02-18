@@ -180,7 +180,7 @@ void setup()
 	//delay(2000);
 
 	mainMidiInterface.initPort(COM1);
-	ctrlMidiInterface.initPort(COM1);
+	ctrlMidiInterface.initPort(COM2);
 	
 	localPrintf("OK\n");
 	

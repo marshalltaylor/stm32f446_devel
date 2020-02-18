@@ -27,7 +27,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc1)
 {
   /* Get the converted value of regular channel */
   adcValues[conversionCounter] = HAL_ADC_GetValue(hadc1);
-  if( conversionCounter < 3 )
+  if( conversionCounter < 6 )
   {
 	  conversionCounter++;
   }

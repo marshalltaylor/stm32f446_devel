@@ -2,6 +2,7 @@
 
 HardwareSerial mainMidiInterface;
 HardwareSerial ctrlMidiInterface;
+
 MIDI_CREATE_INSTANCE(HardwareSerial, mainMidiInterface,  MIDI);
 MIDI_CREATE_INSTANCE(HardwareSerial, ctrlMidiInterface, CtrlMIDI);
 
