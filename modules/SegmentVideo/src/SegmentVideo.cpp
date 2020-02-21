@@ -1,6 +1,18 @@
 #include "bsp.h"
 #include "SegmentVideo.h"
 
+//#define USE_LOGGING
+#ifdef USE_LOGGING
+// Create logging object and macro for local printf
+#define localPrintf consoleDebug.printf
+Logging consoleDebug;
+
+#else
+// Connect directly to bsp.
+#define localPrintf bspPrintf
+
+#endif
+
 SegmentFrameBuffer::SegmentFrameBuffer(void){
 	for(int i = 0; i < 11; i++)
 	{
@@ -10,30 +22,51 @@ SegmentFrameBuffer::SegmentFrameBuffer(void){
 }
 
 uint8_t testData[11] = {1,2,0,0,0xFF,0xF0,0xFF,8,9,10,11};
-BufferChannels SegmentFrameBuffer::read( void )
+bool SegmentFrameBuffer::read( BufferChannels * retVar )
 {
-	BufferChannels retVar;
-	retVar.onBufferPtr = &(onBuffer[outputPtr][0]);
-	retVar.offBufferPtr = &(offBuffer[outputPtr][0]);
+	retVar->onBufferPtr = &(onBuffer[outputPtr][0]);
+	retVar->offBufferPtr = &(offBuffer[outputPtr][0]);
 
-	//retVar.onBufferPtr = testData;
-	//retVar.offBufferPtr = testData;
+	if(buffersAreNull)
+	{
+		return false;
+	}
+	
 	if( ((outputPtr == FB_FIFO_SIZE - 1)&&( nextToWrite == 0 )) || (outputPtr + 1 == nextToWrite) )
 	{
 		// no new data, special case
-		return retVar;
+		return true;
 	}
+
+#if 0
+	int i;
+	localPrintf("instance: 0x%08X, out = %d, next = %d\n", (uint32_t)this, outputPtr, nextToWrite);
+	localPrintf("   ON DATA:  0x[ ");
+	for(i = 0; i < 11; i++)
+	{
+		localPrintf("%02X ", retVar->onBufferPtr[i]);
+	}
+	localPrintf("]\n");
+	localPrintf("   OFF DATA: 0x[ ");
+	for(i = 0; i < 11; i++)
+	{
+		localPrintf("%02X ", retVar->offBufferPtr[i]);
+	}
+	localPrintf("]\n");
+#endif
+
 	outputPtr++;
 	if( outputPtr >= FB_FIFO_SIZE )
 	{
 		outputPtr = 0;
 	}	
-	return retVar;
+	return true;
 }
 
 // Put a new frame into the frame buffer
 void SegmentFrameBuffer::write(const uint8_t * onData, const uint8_t * offData)
 {
+	buffersAreNull = false;
 	if(nextToWrite == outputPtr)
 	{
 		// full
@@ -91,16 +124,36 @@ bool SegmentFrameBuffer::empty( void )
 	return false;
 }
 
-
+// Mixer
 
 void SegmentVideo::writeNextFrame(void)
 {
 	BufferChannels nextValueMaskFrame;
-	nextValueMaskFrame = valueMask_layer.read();
 	BufferChannels nextFGFrame;
-	nextFGFrame = fg_layer.read();
 	BufferChannels nextNoiseFrame;
-	nextNoiseFrame = noise_layer.read();
+
+	bool skipFrame = false; //ignore null data
+	if(!valueMask_layer.read(&nextValueMaskFrame))
+	{
+		//fail
+		skipFrame = true;
+	}
+	if(!fg_layer.read(&nextFGFrame))
+	{
+		//fail
+		skipFrame = true;
+	}
+	if(!noise_layer.read(&nextNoiseFrame))
+	{
+		//fail
+		skipFrame = true;
+	}
+	
+	if(skipFrame)
+	{
+		//Bad init read from one of them
+		return;
+	}
 	
 	for(int i = 0; i < 11; i++)
 	{
@@ -108,8 +161,8 @@ void SegmentVideo::writeNextFrame(void)
 		outputFrame[i] &= ~nextValueMaskFrame.offBufferPtr[i];
 		outputFrame[i] |= nextValueMaskFrame.onBufferPtr[i];
 		//outputFrame[i] = nextFGFrame.onBufferPtr[i];
-		//outputFrame[i] &= ~nextNoiseFrame.offBufferPtr[i];
-		//outputFrame[i] |= nextNoiseFrame.onBufferPtr[i];
+		outputFrame[i] &= ~nextNoiseFrame.offBufferPtr[i];
+		outputFrame[i] |= nextNoiseFrame.onBufferPtr[i];
 	}	
 	bspSPISegmentWrite(outputFrame);
 }

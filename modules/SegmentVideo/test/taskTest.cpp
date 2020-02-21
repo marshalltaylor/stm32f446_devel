@@ -18,6 +18,8 @@ extern MidiClockDisplay Segments;
 //state inputs, not threadsafe
 bool genTestLog = false;
 
+char value1Str[8];
+
 /* Declare a variable to hold the created event group. */
 EventGroupHandle_t xTestEventGroup;
 
@@ -27,7 +29,6 @@ extern "C" void taskTestStart(void * argument)
 	uint16_t stamp_ms = 0;
 	uint8_t stamp_s = 0;
 	bool testValueStateIdle = true;
-	char value1Str[8];
 	
 	while(1)
 	{

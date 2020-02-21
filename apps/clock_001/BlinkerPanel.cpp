@@ -82,6 +82,7 @@ BlinkerPanel::BlinkerPanel( void )
 	knob1.setLowerIntVal(0);
 	knob1.setUpperIntVal(100);
 	knob1.setSamplesAveraged(10);
+	knob1.setWindow(100);
 
 	knob3.setHardware(new ArduinoAnalogIn( A0 ));
 	add( &knob3 );
@@ -90,6 +91,7 @@ BlinkerPanel::BlinkerPanel( void )
 	knob3.setLowerIntVal(0);
 	knob3.setUpperIntVal(255);
 	knob3.setSamplesAveraged(10);
+	knob3.setWindow(100);
 
 	knobTempo.setHardware(new ArduinoAnalogIn( A2 ));
 	add( &knobTempo );
@@ -98,6 +100,7 @@ BlinkerPanel::BlinkerPanel( void )
 	knobTempo.setLowerIntVal(40);
 	knobTempo.setUpperIntVal(208);
 	knobTempo.setSamplesAveraged(10);
+	knobTempo.setWindow(100);
 
 	reset();
 
@@ -255,44 +258,64 @@ void BlinkerPanel::tickStateMachine( int msTicksDelta )
 		}
 	}
 	
-
+	char buffer[8];
+	int16_t newValue;
 	if( knob1.serviceChanged() )
 	{
 		localPrintf("knob1: %d\n", knob1.getState());
 		localPrintf(" Val: %d\n", bspIOPinReadAnalog(A1));
-		int16_t newValue = knob1.getAsInt16();
-		if( newValue != lastKnob1 )
+
+		newValue = knob1.getAsInt16();
+		sprintf( buffer, "%3d", newValue );
+		if(pLastKnobShown == &knob1)
 		{
-			lastKnob1 = newValue;
-			sprintf( knob1Str, "%3d", newValue );
-			Segments.showNewValue(knob1Str);
-			glideRate = newValue * 1000;
+			Segments.displayDrawValue(buffer);
 		}
+		else
+		{
+			Segments.showNewValue(buffer);
+		}
+		pLastKnobShown = &knob1;
+
+		glideRate = newValue * 1000;
 	}
 	if( knob3.serviceChanged() )
 	{
 		localPrintf("knob3: %d\n", knob3.getState());
 		localPrintf(" Val: %d\n", bspIOPinReadAnalog(A2));
-		int16_t newValue = knob3.getAsInt16();
-		if( newValue != lastKnob3 )
+
+		newValue = knob3.getAsInt16();
+		sprintf( buffer, "%3d", newValue );
+		if(pLastKnobShown == &knob3)
 		{
-			lastKnob3 = newValue;
-			sprintf( knob3Str, "%3d", newValue );
-			Segments.showNewValue(knob3Str);
+			Segments.displayDrawValue(buffer);
 		}
-	}
+		else
+		{
+			Segments.showNewValue(buffer);
+		}
+		pLastKnobShown = &knob3;
+
+		//No real action
+		}
 	if( knobTempo.serviceChanged() )
 	{
 		localPrintf("knobTempo: %d\n", knobTempo.getState());
 		localPrintf(" Val: %d\n", bspIOPinReadAnalog(A2));
-		int16_t newValue = knobTempo.getAsInt16();
-		if( newValue != lastKnobTempo )
+
+		newValue = knobTempo.getAsInt16();
+		sprintf( buffer, "%3d", newValue );
+		if(pLastKnobShown == &knobTempo)
 		{
-			lastKnobTempo = newValue;		
-			targetBPM = newValue * 1000;
-			sprintf( knobTempoStr, "%3d", newValue );
-			Segments.showNewValue(knobTempoStr);
+			Segments.displayDrawValue(buffer);
 		}
+		else
+		{
+			Segments.showNewValue(buffer);
+		}
+		pLastKnobShown = &knobTempo;
+
+		targetBPM = newValue * 1000;
 	}
 	
 	int32_t scaledGlide = glideRate / 100;

@@ -117,12 +117,7 @@ extern uint32_t usTicks;
 
 int AppEntry(void)
 {
-	//Config area
-	//pinMode(D6, OUTPUT);
-	//Serial2.begin(9600, 6);
-	//Serial6.begin(12345, 1);
-	//delay(2000);
-	//Serial2.println("ok");
+	TestSerial.initPort(COM1);	
 	//Serial6.println("OK");
 	intMidiClock.setBPM(100);
 	// Write our function address into the hw timer
@@ -145,16 +140,16 @@ int AppEntry(void)
     MIDI.setHandleNoteOff(handleNoteOff);
     MIDI.begin(MIDI_CHANNEL_OMNI);
 	
-	uint8_t AllZeros[11];
-	//uint8_t AllOnes[11];
-	for(int i = 0; i < 11; i++)
-	{
-		AllZeros[i] = 0x00;
-		//AllOnes[i] = 0xFF;
-	}
-	Segments.valueMask_layer.write(AllZeros, AllZeros);
-	Segments.fg_layer.write(AllZeros, AllZeros);
-	Segments.noise_layer.write(AllZeros, AllZeros);
+	//uint8_t AllZeros[11];
+	////uint8_t AllOnes[11];
+	//for(int i = 0; i < 11; i++)
+	//{
+	//	AllZeros[i] = 0x00;
+	//	//AllOnes[i] = 0xFF;
+	//}
+	//Segments.valueMask_layer.write(AllZeros, AllZeros);
+	//Segments.fg_layer.write(AllZeros, AllZeros);
+	//Segments.noise_layer.write(AllZeros, AllZeros);
 	
 	
 	
@@ -182,7 +177,7 @@ int AppEntry(void)
 		if(mainPanelTimer.flagStatus() == PENDING)
 		{
 			mainPanel.tickStateMachine(10);
-			Segments.tickValueStateMachine(10);
+			Segments.tickValueStateMachine(millis());
 		}
 	
 		if(statusPanelTimer.flagStatus() == PENDING)
@@ -194,13 +189,7 @@ int AppEntry(void)
 		
 		if(debugTimer.flagStatus() == PENDING)
 		{
-			//User code
-			char buffer[200] = {0};
-			sprintf(buffer, "__DEBUG______\nintPlayState = %d, extPlayState = %d\nbeatLedState = %d, playLedState = %d\nFreeStack() = %d\n\n", intMidiClock.getState(), extMidiClock.getState(), statusPanel.getBeatLedState(), statusPanel.getPlayLedState(), FreeStack());
-			//sprintf(buffer, "__DEBUG__");
-			//Serial6.print(buffer);
-			//Serial6.println(mainPanel.getState());
-			//Serial6.print("Playing: ");
+			localPrintf("__DEBUG______\nintPlayState = %d, extPlayState = %d\nbeatLedState = %d, playLedState = %d\nFreeStack() = %d\n\n", intMidiClock.getState(), extMidiClock.getState(), statusPanel.getBeatLedState(), statusPanel.getPlayLedState(), FreeStack());
 		}
 		if(segmentVideoTimer.flagStatus() == PENDING)
 		{

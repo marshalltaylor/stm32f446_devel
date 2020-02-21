@@ -10,6 +10,18 @@
 #include <string>
 #include <random>
 
+//#define USE_LOGGING
+#ifdef USE_LOGGING
+// Create logging object and macro for local printf
+#define localPrintf consoleDebug.printf
+Logging consoleDebug;
+
+#else
+// Connect directly to bsp.
+#define localPrintf bspPrintf
+
+#endif
+
 std::default_random_engine generator;
 std::normal_distribution<float> distribution(5.0,2.0);
 
@@ -73,6 +85,7 @@ void MidiClockDisplay::displayDrawClockNums( const char * input )
 
 void MidiClockDisplay::displayDrawValue( const char * input )
 {
+	restartTimer = true;
 	for( int i = 0; i < 3; i++ )
 	{
 		textBitmap[i + 2] = 0x00;
@@ -132,38 +145,26 @@ void MidiClockDisplay::showNewValue( const char * input )
 	displayDrawValue(input);
 	newValueRequested = true;
 	nextValue = input;
-//	if( input == currentValue )
-//	{
-//		restartTimer = true;
-//		// buffer it to frames
-//		displayDrawValue(currentValue);
-//	}
-//	else
-//	{
-//		displayDrawValue(currentValue);
-//		newValueRequested = true;
-//		nextValue = input;
-//	}		
+	
 }
 
 void MidiClockDisplay::tickValueStateMachine( uint32_t sysTime )
 {
-	//TODO: should be using bsp or below, need to clean logging
-	//Serial.print("State: ");
-	//Serial.println(displayState);
+	//localPrintf("%d ->\n", displayState);
 	
 	if( restartTimer )
 	{
 		startTime = sysTime;
 		restartTimer = false;
 	}
-
 	switch( displayState )
 	{
 		case init:
 		{
 			displayState = idle;
-			valueMask_layer.write(maskBitmaps[VALUE_DIGITS_ONLY], maskBitmaps[ALL_ZEROS]);
+			valueMask_layer.write(maskBitmaps[ALL_ZEROS], &ValueFadeMap[15][0]);
+			fg_layer.write(maskBitmaps[ALL_ZEROS], maskBitmaps[ALL_ZEROS]);
+			noise_layer.write(maskBitmaps[ALL_ZEROS], maskBitmaps[ALL_ZEROS]);
 		}
 		break;
 		case idle:
@@ -231,6 +232,7 @@ void MidiClockDisplay::tickValueStateMachine( uint32_t sysTime )
 		displayState = init;
 		break;
 	}
+	//localPrintf("     -> %d\n", displayState);
 }
 
 uint8_t MidiClockDisplay::getValueState( void ){

@@ -18,12 +18,14 @@ public:
 	void write(const uint8_t * onData, const uint8_t * offData);
 	bool ready( void );
 	bool empty( void );
-	BufferChannels read( void );
+	bool read( BufferChannels * retVar );
+	
 private:
 	uint8_t onBuffer[FB_FIFO_SIZE][11];
 	uint8_t offBuffer[FB_FIFO_SIZE][11];
-	uint8_t outputPtr = 0;
-	uint8_t nextToWrite = 1;
+	uint8_t outputPtr = 255;
+	uint8_t nextToWrite = 0;
+	bool buffersAreNull = true;
 };
 
 class SegmentVideo

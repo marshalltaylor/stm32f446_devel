@@ -31,13 +31,13 @@ public:
 	bool debugNoise = false;
 	
 	//State machine
-	void tickValueStateMachine( uint32_t sysTime );
+	void tickValueStateMachine( uint32_t sysTime ); //Give in milliseconds
 	uint8_t getValueState( void );
 	
 private:
 	uint32_t startTime = 0;
 	bool newValueRequested = false;
-	bool restartTimer = false;
+	bool restartTimer = true;
 	const char * currentValue;
 	const char * nextValue;
 	const char blankValue[4] = "   ";

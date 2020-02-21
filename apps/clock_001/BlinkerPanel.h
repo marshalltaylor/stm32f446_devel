@@ -58,6 +58,8 @@ private:
 	
 	//State machine stuff  
 	PStates state;
+	Windowed10BitKnob * pLastKnobShown;
+	
 private:
 	
 	//Unsure on lenghth effect

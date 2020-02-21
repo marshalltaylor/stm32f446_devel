@@ -35,7 +35,12 @@ Logging consoleDebug;
 #endif
 
 extern MidiClockDisplay Segments;
+//extern char value1Str[8];
+
+uint8_t peekValue = 128;
+static comPortInterface_t console;
 TaskStatus_t pxTaskStatusArray[5];
+
 
 void delay(uint32_t delayInput);
 
@@ -110,7 +115,8 @@ void taskConsolePrintHelp(void)
 {
 	localPrintf("Segment Video Test Console.\n");
 	localPrintf(" h: help\n");
-	localPrintf(" i: initialize display\n");
+	localPrintf(" i: increment value\n");
+	localPrintf(" p: start peeking\n");
 	localPrintf(" 0 - 9: graphical tests\n");
 }
 
@@ -118,18 +124,19 @@ void taskConsolePrintHelp(void)
 extern "C" void taskConsoleStart(void * argument)
 {
 	uint32_t nextUpdate = 0;
-
 #ifdef USE_LOGGING
 	consoleDebug.setStamp("Console", 7);
 	consoleDebug.setMode(LOG_MODE_DEFAULT);
 #endif
 
+	bspGetSerialFunctions(COM0, &console);
+
 	taskConsolePrintHelp();
 	while(1)
 	{
-		if(bspSerialConsoleBytesAvailable())
+		if(console.bytesAvailable())
 		{
-			char c = (char)bspSerialConsoleRead();
+			char c = (char)console.read();
 			switch(c)
 			{
 				case '\r':
@@ -150,17 +157,19 @@ extern "C" void taskConsoleStart(void * argument)
 				}
 				case 'i':
 				{
-					localPrintf("Starting driver");
-					uint8_t AllZeros[11];
-					//uint8_t AllOnes[11];
-					for(int i = 0; i < 11; i++)
-					{
-						AllZeros[i] = 0x00;
-						//AllOnes[i] = 0xFF;
-					}
-					Segments.valueMask_layer.write(AllZeros, AllZeros);
-					Segments.fg_layer.write(AllZeros, AllZeros);
-					Segments.noise_layer.write(AllZeros, AllZeros);
+					localPrintf("Increment 'peek' value\n");
+					peekValue++;
+					char buffer[5];
+					sprintf(buffer, "%03d", peekValue);
+					Segments.displayDrawValue(buffer);
+					break;
+				}
+				case 'p':
+				{
+					localPrintf("Start peeking\n");
+					char buffer[5];
+					sprintf(buffer, "%03d", peekValue);
+					Segments.showNewValue(buffer);
 					break;
 				}
 				case '!':
