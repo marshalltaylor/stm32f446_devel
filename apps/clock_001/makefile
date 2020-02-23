@@ -1,5 +1,6 @@
 # STM32F4xx bsp uart test
-REPO_ROOT = ../..
+REPO_ROOT := ../..
+SYNTH_COMMON_ROOT := $(REPO_ROOT)/synth_common
 
 ifeq ($(strip $(board)),)
 ifneq ('$(MAKECMDGOALS)','clean')
@@ -19,16 +20,16 @@ SOURCE_DIRS = . \
 
 C_INCLUDES = \
 $(REPO_ROOT)/bsp \
-$(REPO_ROOT)/modules/logging \
-$(REPO_ROOT)/modules/SegmentVideo \
-$(REPO_ROOT)/modules/midi47fx \
-$(REPO_ROOT)/modules/uCModules
+$(SYNTH_COMMON_ROOT)/modules/logging \
+$(SYNTH_COMMON_ROOT)/modules/SegmentVideo \
+$(SYNTH_COMMON_ROOT)/modules/midi47fx \
+$(SYNTH_COMMON_ROOT)/modules/uCModules
 
 STATIC_LIBS = \
-$(REPO_ROOT)/modules/SegmentVideo/build/SegmentVideo.a \
-$(REPO_ROOT)/modules/midi47fx/build/midi47fx.a \
-$(REPO_ROOT)/modules/uCModules/build/uCModules.a \
-$(REPO_ROOT)/modules/logging/build/logging.a \
+$(SYNTH_COMMON_ROOT)/modules/SegmentVideo/build/SegmentVideo.a \
+$(SYNTH_COMMON_ROOT)/modules/midi47fx/build/midi47fx.a \
+$(SYNTH_COMMON_ROOT)/modules/uCModules/build/uCModules.a \
+$(SYNTH_COMMON_ROOT)/modules/logging/build/logging.a \
 $(REPO_ROOT)/bsp/build/bsp_$(board).a
 
 # objects
@@ -37,9 +38,9 @@ OBJECTS = $(patsubst %c,%o,$(patsubst %cpp,%o,$(C_SOURCES)))
 # rules
 default: all
 
-include $(REPO_ROOT)/tools/build/catalog.mk
+include $(SYNTH_COMMON_ROOT)/tools/build/catalog.mk
 
-include $(REPO_ROOT)/tools/build/common.mk
+include $(SYNTH_COMMON_ROOT)/tools/build/common.mk
 
 # linker
 $(BUILD_DIR)/output.elf: build_dirs $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS))
