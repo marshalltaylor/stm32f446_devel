@@ -1,5 +1,6 @@
 # STM32F4xx bsp
 REPO_ROOT = ..
+SYNTH_COMMON_ROOT := $(REPO_ROOT)/synth_common
 
 # select board
 $(info board='$(board)')
@@ -98,7 +99,7 @@ OUTPUT_LIB_NAME = bsp_$(board).a
 
 default: all
 
-include $(REPO_ROOT)/tools/build/common.mk
+include $(SYNTH_COMMON_ROOT)/tools/build/common.mk
 
 all: $(BUILD_DIR)/$(OUTPUT_LIB_NAME)
 
