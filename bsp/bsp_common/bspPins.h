@@ -27,16 +27,6 @@
 #ifdef __cplusplus
 extern "C"{
 #endif // __cplusplus
-//class bobert{
-//	bobert() { return 5;};
-//	uint8_t somedumbbyte = 4;
-//	const uint32_t * asdfasdfasdf[] = {
-//		(uint32_t *)0
-//	};
-//};
-
-extern const uint32_t DxToPort[];
-extern const uint32_t DxToPin[];
 
 /*----------------------------------------------------------------------------
  *        Pins
@@ -54,6 +44,14 @@ extern const uint32_t DxToPin[];
 #define PORTI_OFFSET 0x2000U
 #define PORTJ_OFFSET 0x2400U
 #define PORTK_OFFSET 0x2800U
+
+typedef struct
+{
+	uint32_t portOffset;
+	uint32_t pinOffset;
+} portPinOffsets_t;
+
+extern const portPinOffsets_t DxToPortPin[];
 
 #ifdef __cplusplus
 }

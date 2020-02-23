@@ -115,6 +115,7 @@ typedef enum
 {
 	COM0 = 0,
 	COM1,
+	COM2,
 	NUM_COM_PORTS
 } comPort_t;
 

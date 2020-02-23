@@ -23,11 +23,13 @@ at init.
 /* References ----------------------------------------------------------------*/
 extern UartInstance_t VCP_UART;
 extern UartInstance_t D01_UART;
+extern UartInstance_t PA9_10_UART;
 
 UartInstance_t * comPorts[] =
 {
 	&VCP_UART,
 	&D01_UART,
+	&PA9_10_UART,
 	NULL
 };
 
@@ -45,6 +47,11 @@ static uint8_t bspSerial_D01_Peek();
 static void bspSerial_D01_Write(uint8_t data);
 static uint8_t bspSerial_D01_Read();
 static uint16_t bspSerial_D01_BytesAvailable();
+
+static uint8_t bspSerial_PA9_10_Peek();
+static void bspSerial_PA9_10_Write(uint8_t data);
+static uint8_t bspSerial_PA9_10_Read();
+static uint16_t bspSerial_PA9_10_BytesAvailable();
 
 
 /* Functions -----------------------------------------------------------------*/
@@ -129,6 +136,26 @@ uint16_t bspSerial_D01_BytesAvailable(void)
 	return halUartReadBytesAvailable(&D01_UART);
 }
 
+//PA9_10_UART
+uint8_t bspSerial_PA9_10_Peek(void)
+{
+	return halUartPeek(&PA9_10_UART);
+}
+
+void bspSerial_PA9_10_Write(uint8_t data)
+{
+	halUartWrite(data, &PA9_10_UART);
+}
+
+uint8_t bspSerial_PA9_10_Read(void)
+{
+	return halUartRead(&PA9_10_UART);
+}
+
+uint16_t bspSerial_PA9_10_BytesAvailable(void)
+{
+	return halUartReadBytesAvailable(&PA9_10_UART);
+}
 // Finally, accessors to get the serial functions grouped to an object.
 void bspGetSerialFunctions(comPort_t port, comPortInterface_t * interface)
 {
@@ -149,6 +176,14 @@ void bspGetSerialFunctions(comPort_t port, comPortInterface_t * interface)
 			interface->write = bspSerial_D01_Write;
 			interface->read = bspSerial_D01_Read;
 			interface->bytesAvailable = bspSerial_D01_BytesAvailable;
+		}
+		break;
+		case COM2:
+		{
+			interface->peek = bspSerial_PA9_10_Peek;
+			interface->write = bspSerial_PA9_10_Write;
+			interface->read = bspSerial_PA9_10_Read;
+			interface->bytesAvailable = bspSerial_PA9_10_BytesAvailable;
 		}
 		break;
 		default:

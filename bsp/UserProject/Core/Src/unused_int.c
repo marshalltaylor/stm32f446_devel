@@ -222,10 +222,10 @@ void TIM1_CC_IRQHandler( void )
 //	isr_break(39);
 //}
 
-void TIM4_IRQHandler( void )
-{
-	isr_break(40);
-}
+//void TIM4_IRQHandler( void )
+//{
+//	isr_break(40);
+//}
 
 void I2C1_EV_IRQHandler( void )
 {
@@ -257,10 +257,10 @@ void SPI2_IRQHandler( void )
 	isr_break(46);
 }
 
-void USART1_IRQHandler( void )
-{
-	isr_break(47);
-}
+//void USART1_IRQHandler( void )
+//{
+//	isr_break(47);
+//}
 
 //void USART2_IRQHandler( void )
 //{
@@ -424,10 +424,10 @@ void DMA2_Stream5_IRQHandler( void )
 //	isr_break(80);
 //}
 
-void DMA2_Stream7_IRQHandler( void )
-{
-	isr_break(81);
-}
+//void DMA2_Stream7_IRQHandler( void )
+//{
+//	isr_break(81);
+//}
 
 //void USART6_IRQHandler( void )
 //{

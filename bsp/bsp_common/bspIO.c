@@ -12,7 +12,7 @@
 
 /* References ----------------------------------------------------------------*/
 static bool ledState = false;
-extern uint16_t adcValues[6];
+extern uint16_t adcValues[];
 
 /* Functions -----------------------------------------------------------------*/
 void bspIOToggleLED(void)
@@ -26,23 +26,23 @@ void bspIOPinInit(uint8_t pin, uint8_t pullMode)
 {
 //	GPIO_InitTypeDef GPIO_InitStruct;
 //	
-//	GPIO_InitStruct.Pin = DxToPin[pin];
+//	GPIO_InitStruct.Pin = DxToPortPin[pin].pinOffset;
 //	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 //	GPIO_InitStruct.Pull = GPIO_NOPULL;
 //	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-//	HAL_GPIO_Init((GPIO_TypeDef *) (AHB1PERIPH_BASE + DxToPort[pin]), &GPIO_InitStruct);
+//	HAL_GPIO_Init((GPIO_TypeDef *) (AHB1PERIPH_BASE + DxToPortPin[pin]), &GPIO_InitStruct);
 }
 
 void bspIOPinWrite(uint8_t pin, bool value)
 {
 	GPIO_PinState bspValue = GPIO_PIN_RESET;
 	if( value ) bspValue = GPIO_PIN_SET;
-	HAL_GPIO_WritePin((GPIO_TypeDef *) (AHB1PERIPH_BASE + DxToPort[pin]), DxToPin[pin], bspValue);
+	HAL_GPIO_WritePin((GPIO_TypeDef *) (AHB1PERIPH_BASE + DxToPortPin[pin].portOffset), DxToPortPin[pin].pinOffset, bspValue);
 }
 
 bool bspIOPinRead(uint8_t pin)
 {
-	if( HAL_GPIO_ReadPin((GPIO_TypeDef *) (AHB1PERIPH_BASE + DxToPort[pin]), DxToPin[pin]) == GPIO_PIN_SET )
+	if( HAL_GPIO_ReadPin((GPIO_TypeDef *) (AHB1PERIPH_BASE + DxToPortPin[pin].portOffset), DxToPortPin[pin].pinOffset) == GPIO_PIN_SET )
 	{
 		return true;
 	}
@@ -56,5 +56,8 @@ uint32_t bspIOPinReadAnalog(uint8_t pin)
 	if(pin == A0) value = adcValues[0];
 	if(pin == A1) value = adcValues[1];
 	if(pin == A2) value = adcValues[2];
+	if(pin == A3) value = adcValues[3];
+	if(pin == A4) value = adcValues[4];
+	if(pin == A5) value = adcValues[5];
 	return value;
 }

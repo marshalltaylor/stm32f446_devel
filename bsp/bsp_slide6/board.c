@@ -1,1 +1,1 @@
-const char boardName[] = "clock";
+const char boardName[] = "slide6";

@@ -10,7 +10,7 @@
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
-  * Copyright (c) 2019 STMicroelectronics International N.V. 
+  * Copyright (c) 2020 STMicroelectronics International N.V. 
   * All rights reserved.
   *
   * Redistribution and use in source and binary forms, with or without 
@@ -79,18 +79,14 @@
 
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
-osThreadId configShellTaskHandle;
-osThreadId midiTaskHandle;
 osSemaphoreId myBinarySem01Handle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-
+   
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void const * argument);
-void configShellTaskStart(void const * argument);
-void midiTaskStart(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -126,14 +122,6 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
-  /* definition and creation of configShellTask */
-  osThreadDef(configShellTask, configShellTaskStart, osPriorityIdle, 0, 128);
-  configShellTaskHandle = osThreadCreate(osThread(configShellTask), NULL);
-
-  /* definition and creation of midiTask */
-  osThreadDef(midiTask, midiTaskStart, osPriorityIdle, 0, 128);
-  midiTaskHandle = osThreadCreate(osThread(midiTask), NULL);
-
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -162,45 +150,9 @@ void StartDefaultTask(void const * argument)
   /* USER CODE END StartDefaultTask */
 }
 
-/* USER CODE BEGIN Header_configShellTaskStart */
-/**
-* @brief Function implementing the configShellTask thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_configShellTaskStart */
-void configShellTaskStart(void const * argument)
-{
-  /* USER CODE BEGIN configShellTaskStart */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END configShellTaskStart */
-}
-
-/* USER CODE BEGIN Header_midiTaskStart */
-/**
-* @brief Function implementing the midiTask thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_midiTaskStart */
-void midiTaskStart(void const * argument)
-{
-  /* USER CODE BEGIN midiTaskStart */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END midiTaskStart */
-}
-
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-
+     
 /* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

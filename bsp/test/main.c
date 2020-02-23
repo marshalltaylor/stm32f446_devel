@@ -70,7 +70,15 @@ int main(void)
 			nextSecond = nextSecond + 1000;
 			//bspToggleLED();
 			console.write('N');
-			bspPrintf("umber = %d\n", nextSecond); 
+			bspPrintf("umber = %d\n", nextSecond);
+			bspPrintf("ADCs: 0x%04X, 0x%04X, 0x%04X, 0x%04X, 0x%04X, 0x%04X\n",
+					bspIOPinReadAnalog(A0),
+					bspIOPinReadAnalog(A1),
+					bspIOPinReadAnalog(A2),
+					bspIOPinReadAnalog(A3),
+					bspIOPinReadAnalog(A4),
+					bspIOPinReadAnalog(A5)
+			);
 		}
 		crapDelay(10);
 	}
