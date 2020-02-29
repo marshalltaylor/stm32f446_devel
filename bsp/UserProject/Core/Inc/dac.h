@@ -1,8 +1,8 @@
 /**
   ******************************************************************************
-  * File Name          : gpio.h
-  * Description        : This file contains all the functions prototypes for 
-  *                      the gpio  
+  * File Name          : DAC.h
+  * Description        : This file provides code for the configuration
+  *                      of the DAC instances.
   ******************************************************************************
   * This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -46,10 +46,9 @@
   *
   ******************************************************************************
   */
-
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __gpio_H
-#define __gpio_H
+#ifndef __dac_H
+#define __dac_H
 #ifdef __cplusplus
  extern "C" {
 #endif
@@ -62,11 +61,15 @@
 
 /* USER CODE END Includes */
 
+extern DAC_HandleTypeDef hdac;
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
 
-void MX_GPIO_Init(void);
+extern void _Error_Handler(char *, int);
+
+void MX_DAC_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 
@@ -75,7 +78,7 @@ void MX_GPIO_Init(void);
 #ifdef __cplusplus
 }
 #endif
-#endif /*__ pinoutConfig_H */
+#endif /*__ dac_H */
 
 /**
   * @}

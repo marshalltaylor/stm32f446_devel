@@ -41,6 +41,7 @@ C_SOURCES = $(C_SOURCES_COMMON) $(C_SOURCES_BOARD) \
 UserProject/Core/Src/main_cubemx.c \
 UserProject/Core/Src/gpio.c \
 UserProject/Core/Src/adc.c \
+UserProject/Core/Src/dac.c \
 UserProject/Core/Src/debugUtilities.c \
 UserProject/Core/Src/dma.c \
 UserProject/Core/Src/spi.c \
@@ -51,6 +52,8 @@ UserProject/Core/Src/stm32f4xx_hal_msp.c \
 UserProject/Core/Src/unused_int.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c \
+CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.c \
+CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c \

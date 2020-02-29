@@ -51,18 +51,11 @@
 /* Includes ------------------------------------------------------------------*/
 #include "FreeRTOS.h"
 #include "task.h"
-//#include "main_cubemx.h"
+#include "main.h"
+#include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */     
-#include "sketch.h"
-#include "bsp.h"
-#include "osTasks.h"
-
-#include "timers.h"
-#include "queue.h"
-#include "semphr.h"
-#include "event_groups.h"
 
 /* USER CODE END Includes */
 
@@ -85,21 +78,18 @@
 /* USER CODE BEGIN Variables */
 
 /* USER CODE END Variables */
-//osThreadId defaultTaskHandle;
-//osThreadId configShellTaskHandle;
-//osThreadId midiTaskHandle;
-//osThreadId hardwareTaskHandle;
-//osSemaphoreId myBinarySem01Handle;
+osThreadId defaultTaskHandle;
+osThreadId configShellTaskHandle;
+osThreadId midiTaskHandle;
+osSemaphoreId myBinarySem01Handle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-void taskHardwareStart(void const * argument);
-   
+
 /* USER CODE END FunctionPrototypes */
-extern void xPortSysTickHandler(void);
 
 void StartDefaultTask(void const * argument);
-void configShellTaskStart(void * argument);
+void configShellTaskStart(void const * argument);
 void midiTaskStart(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -111,68 +101,40 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-  //TODO: Should we check for scheduler running first?
-  bspRegisterSysTickCallback(xPortSysTickHandler);
-//
-//  /* USER CODE END Init */
-//
-//  /* USER CODE BEGIN RTOS_MUTEX */
-//  /* add mutexes, ... */
-//  /* USER CODE END RTOS_MUTEX */
-//
-//  /* Create the semaphores(s) */
-//  /* definition and creation of myBinarySem01 */
-//  osSemaphoreDef(myBinarySem01);
-//  myBinarySem01Handle = osSemaphoreCreate(osSemaphore(myBinarySem01), 1);
-//
-//  /* USER CODE BEGIN RTOS_SEMAPHORES */
-//  /* add semaphores, ... */
-//  /* USER CODE END RTOS_SEMAPHORES */
-//
-//  /* USER CODE BEGIN RTOS_TIMERS */
-//  /* start timers, add new ones, ... */
-//  /* USER CODE END RTOS_TIMERS */
-//
-//  /* Create the thread(s) */
-//  /* definition and creation of defaultTask */
-//  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-//  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
-//
-//  /* definition and creation of configShellTask */
-//  osThreadDef(configShellTask, configShellTaskStart, osPriorityNormal, 0, 2048);
-//  configShellTaskHandle = osThreadCreate(osThread(configShellTask), NULL);
+       
+  /* USER CODE END Init */
 
-// Example:
-//vStartLEDFlashTasks( mainFLASH_TASK_PRIORITY );
-//	xTaskCreate( vCompeteingIntMathTask1, "IntMath1", intgSTACK_SIZE, ( void * ) &( usTaskCheck[ 0 ] ), uxPriority, NULL );
-  xTaskCreate( configShellTaskStart, "config", 2048, (void*) 1, tskIDLE_PRIORITY, NULL);
-//
-//  /* definition and creation of midiTask */
-//  osThreadDef(midiTask, midiTaskStart, osPriorityIdle, 0, 128);
-//  midiTaskHandle = osThreadCreate(osThread(midiTask), NULL);
-//
-//  /* USER CODE BEGIN RTOS_THREADS */
-//  /* definition and creation of hardwareTask */
-//  osThreadDef(hardwareTask, taskHardwareStart, osPriorityNormal, 0, 128);
-//  hardwareTaskHandle = osThreadCreate(osThread(hardwareTask), NULL);
-//
-//  
-//    if (defaultTaskHandle == NULL)
-//	{
-//		while(1);
-//	}
-//    if (configShellTaskHandle == NULL)
-//	{
-//		while(1);
-//	}
-//    if (midiTaskHandle == NULL)
-//	{
-//		while(1);
-//	}
-//	if (hardwareTaskHandle == NULL)
-//	{
-//		while(1);
-//	}
+  /* USER CODE BEGIN RTOS_MUTEX */
+  /* add mutexes, ... */
+  /* USER CODE END RTOS_MUTEX */
+
+  /* Create the semaphores(s) */
+  /* definition and creation of myBinarySem01 */
+  osSemaphoreDef(myBinarySem01);
+  myBinarySem01Handle = osSemaphoreCreate(osSemaphore(myBinarySem01), 1);
+
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* add semaphores, ... */
+  /* USER CODE END RTOS_SEMAPHORES */
+
+  /* USER CODE BEGIN RTOS_TIMERS */
+  /* start timers, add new ones, ... */
+  /* USER CODE END RTOS_TIMERS */
+
+  /* Create the thread(s) */
+  /* definition and creation of defaultTask */
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+
+  /* definition and creation of configShellTask */
+  osThreadDef(configShellTask, configShellTaskStart, osPriorityIdle, 0, 128);
+  configShellTaskHandle = osThreadCreate(osThread(configShellTask), NULL);
+
+  /* definition and creation of midiTask */
+  osThreadDef(midiTask, midiTaskStart, osPriorityIdle, 0, 128);
+  midiTaskHandle = osThreadCreate(osThread(midiTask), NULL);
+
+  /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
 
@@ -193,11 +155,10 @@ void StartDefaultTask(void const * argument)
 
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
-	for(;;)
-	{
-		taskPanel();
-		//osDelay(1);
-	}
+  for(;;)
+  {
+    osDelay(1);
+  }
   /* USER CODE END StartDefaultTask */
 }
 
@@ -208,15 +169,14 @@ void StartDefaultTask(void const * argument)
 * @retval None
 */
 /* USER CODE END Header_configShellTaskStart */
-void configShellTaskStart(void * argument)
+void configShellTaskStart(void const * argument)
 {
   /* USER CODE BEGIN configShellTaskStart */
   /* Infinite loop */
-	for(;;)
-	{
-		taskConsole();
-		//osDelay(1);
-	}
+  for(;;)
+  {
+    osDelay(1);
+  }
   /* USER CODE END configShellTaskStart */
 }
 
@@ -231,38 +191,15 @@ void midiTaskStart(void const * argument)
 {
   /* USER CODE BEGIN midiTaskStart */
   /* Infinite loop */
-	for(;;)
-	{
-		taskMidi();
-	}
+  for(;;)
+  {
+    osDelay(1);
+  }
   /* USER CODE END midiTaskStart */
 }
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-void osInit(void)
-{
-	// Run arduino like setup lop
-	setup();
-	
-	MX_FREERTOS_Init();
-	
-	// Init other os objects
-	
-	
-	// Start os and don't come back
-	vTaskStartScheduler();
-	
-	//Old entry point:	AppEntry();
-}
-
-void taskHardwareStart(void const * argument)
-{
-	while(1)
-	{
-		taskHardware();
-	}
-}
 
 /* USER CODE END Application */
 
