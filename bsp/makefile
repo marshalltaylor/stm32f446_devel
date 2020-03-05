@@ -11,6 +11,7 @@ bsp_common/bspIO.c \
 bsp_common/bspSerial.c \
 bsp_common/bspTime.c \
 bsp_common/bspADC.c \
+bsp_common/bspDAC.c \
 bsp_common/bspPins.c
 
 ifeq ('$(board)','clock')

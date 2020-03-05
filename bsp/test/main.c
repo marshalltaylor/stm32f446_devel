@@ -20,6 +20,13 @@ uint32_t nextSecond = 0;
 static comPortInterface_t console;
 static comPortInterface_t midiSerial;
 
+static uint8_t testDACBuffer [] = {
+	255, 247, 239, 231, 223, 215, 207, 199, 191, 183, 175, 167, 159, 151, 143, 135,
+	127, 119, 111, 103, 95, 87, 79, 71, 63, 55, 47, 255, 255, 255, 0, 0,
+	0, 255, 255, 255, 47, 55, 63, 71, 79, 87, 95, 103, 111, 119, 127, 135,
+	143, 151, 159, 167, 175, 183, 191, 199, 207, 215, 223, 231, 239, 247, 255, 0 
+};
+
 int main(void)
 {
 	bspInit();
@@ -67,10 +74,14 @@ int main(void)
 		
 		if( millis() > nextSecond )
 		{
-			nextSecond = nextSecond + 1000;
+			nextSecond = nextSecond + 100;
 			//bspToggleLED();
 			console.write('N');
 			bspPrintf("umber = %d\n", nextSecond); 
+			bspPrintf("Sending DAC buffer\n"); 
+			bspIOPinWrite(D31, 0);
+			bspIOPinWrite(D31, 1);
+			bspDACSendBuffer((uint32_t*)testDACBuffer, 64);
 		}
 		crapDelay(10);
 	}

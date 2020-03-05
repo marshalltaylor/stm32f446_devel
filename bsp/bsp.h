@@ -77,6 +77,9 @@ uint32_t bspIOPinReadAnalog(uint8_t pin);
 //Dirty api.  This may be run from within the bsp or by an app...
 void bspADCConvert(void);
 
+/* dac */
+void bspDACSendBuffer(uint32_t * buffer, uint16_t len);
+
 /* Spi operations */
 void bspSPISegmentWrite(uint8_t *);
 void bspSPISegmentSend(void);
