@@ -78,7 +78,10 @@ uint32_t bspIOPinReadAnalog(uint8_t pin);
 void bspADCConvert(void);
 
 /* dac */
+void bspDACInit( void );
+
 void bspDACSendBuffer(uint32_t * buffer, uint16_t len);
+void bspDACStartDMA(void);
 
 /* Spi operations */
 void bspSPISegmentWrite(uint8_t *);

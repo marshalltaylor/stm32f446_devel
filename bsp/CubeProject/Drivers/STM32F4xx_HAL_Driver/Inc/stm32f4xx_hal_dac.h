@@ -37,6 +37,8 @@
 #ifndef __STM32F4xx_HAL_DAC_H
 #define __STM32F4xx_HAL_DAC_H
 
+#error "Do not use this file.  Change reference to custom_..."
+
 #ifdef __cplusplus
  extern "C" {
 #endif

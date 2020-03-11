@@ -53,7 +53,7 @@ UserProject/Core/Src/stm32f4xx_hal_msp.c \
 UserProject/Core/Src/unused_int.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c \
-CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.c \
+UserProject/AltDrivers/custom_stm32f4xx_hal_dac.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \

@@ -282,7 +282,7 @@
 #endif /* HAL_DMA2D_MODULE_ENABLED */
 
 #ifdef HAL_DAC_MODULE_ENABLED
-  #include "stm32f4xx_hal_dac.h"
+  #include "custom_stm32f4xx_hal_dac.h"
 #endif /* HAL_DAC_MODULE_ENABLED */
 
 #ifdef HAL_DCMI_MODULE_ENABLED

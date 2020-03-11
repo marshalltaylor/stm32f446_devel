@@ -292,6 +292,8 @@ void HAL_DAC_MspDeInit(DAC_HandleTypeDef* hdac);
 HAL_StatusTypeDef HAL_DAC_Start(DAC_HandleTypeDef* hdac, uint32_t Channel);
 HAL_StatusTypeDef HAL_DAC_Stop(DAC_HandleTypeDef* hdac, uint32_t Channel);
 HAL_StatusTypeDef HAL_DAC_Start_DMA(DAC_HandleTypeDef* hdac, uint32_t Channel, uint32_t* pData, uint32_t Length, uint32_t Alignment);
+HAL_StatusTypeDef HAL_DAC_Test_Ping_Pong(DAC_HandleTypeDef* hdac, uint32_t Channel);
+HAL_StatusTypeDef HAL_DAC_START_DOUBLE(DAC_HandleTypeDef* hdac, uint32_t Channel, uint32_t* pData, uint32_t* pDataM1, uint16_t length);
 HAL_StatusTypeDef HAL_DAC_Stop_DMA(DAC_HandleTypeDef* hdac, uint32_t Channel);
 uint32_t HAL_DAC_GetValue(DAC_HandleTypeDef* hdac, uint32_t Channel);
 /**
@@ -317,6 +319,7 @@ void HAL_DAC_IRQHandler(DAC_HandleTypeDef* hdac);
 uint32_t HAL_DAC_GetError(DAC_HandleTypeDef *hdac);
 
 void HAL_DAC_ConvCpltCallbackCh1(DAC_HandleTypeDef* hdac);
+void HAL_DAC_M1ConvCpltCallbackCh1(DAC_HandleTypeDef* hdac);
 void HAL_DAC_ConvHalfCpltCallbackCh1(DAC_HandleTypeDef* hdac);
 void HAL_DAC_ErrorCallbackCh1(DAC_HandleTypeDef *hdac);
 void HAL_DAC_DMAUnderrunCallbackCh1(DAC_HandleTypeDef *hdac);
