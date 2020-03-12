@@ -170,7 +170,7 @@ void MX_TIM6_Init(void)
   htim6.Instance = TIM6;
   htim6.Init.Prescaler = 0;
   htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim6.Init.Period = 900;
+  htim6.Init.Period = 60;
   if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
@@ -264,7 +264,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
     __HAL_RCC_TIM6_CLK_ENABLE();
 
     /* TIM6 interrupt Init */
-    HAL_NVIC_SetPriority(TIM6_DAC_IRQn, 5, 0);
+    HAL_NVIC_SetPriority(TIM6_DAC_IRQn, 15, 0);
     HAL_NVIC_EnableIRQ(TIM6_DAC_IRQn);
   /* USER CODE BEGIN TIM6_MspInit 1 */
 

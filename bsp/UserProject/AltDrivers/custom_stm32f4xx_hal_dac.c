@@ -675,7 +675,7 @@ HAL_StatusTypeDef HAL_DAC_START_DOUBLE(DAC_HandleTypeDef* hdac, uint32_t Channel
 	//hdac->DMA_Handle1->Instance->M0AR = (uint32_t)testPing;
 	//hdac->DMA_Handle1->Instance->M1AR = (uint32_t)testPong;
 	//hdac->DMA_Handle1->Instance->CR |= (DMA_SxCR_DBM);
-
+	//hdac->DMA_Handle1->Instance->CR &= ~(DMA_SxCR_HTIE & DMA_SxCR_TEIE);
     /* Set the DMA error callback for channel1 */
     hdac->DMA_Handle1->XferErrorCallback = DAC_DMAErrorCh1;
 
@@ -689,7 +689,7 @@ HAL_StatusTypeDef HAL_DAC_START_DOUBLE(DAC_HandleTypeDef* hdac, uint32_t Channel
   
   /* Enable the DMA Stream */
     /* Enable the DAC DMA underrun interrupt */
-    __HAL_DAC_ENABLE_IT(hdac, DAC_IT_DMAUDR1);
+  //  __HAL_DAC_ENABLE_IT(hdac, DAC_IT_DMAUDR1);
     
     /* Enable the DMA Stream */
     HAL_DMAEx_MultiBufferStart_IT(hdac->DMA_Handle1, (uint32_t)pData, tmpreg, (uint32_t)pDataM1, length);
