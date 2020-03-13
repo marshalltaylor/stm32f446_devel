@@ -675,7 +675,8 @@ HAL_StatusTypeDef HAL_DAC_START_DOUBLE(DAC_HandleTypeDef* hdac, uint32_t Channel
 	//hdac->DMA_Handle1->Instance->M0AR = (uint32_t)testPing;
 	//hdac->DMA_Handle1->Instance->M1AR = (uint32_t)testPong;
 	//hdac->DMA_Handle1->Instance->CR |= (DMA_SxCR_DBM);
-	//hdac->DMA_Handle1->Instance->CR &= ~(DMA_SxCR_HTIE & DMA_SxCR_TEIE);
+	//hdac->DMA_Handle1->Instance->CR &= ~(DMA_SxCR_HTIE | DMA_SxCR_TEIE);
+	hdac->DMA_Handle1->Instance->CR &= ~DMA_SxCR_TEIE;
     /* Set the DMA error callback for channel1 */
     hdac->DMA_Handle1->XferErrorCallback = DAC_DMAErrorCh1;
 

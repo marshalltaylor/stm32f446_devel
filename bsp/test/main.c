@@ -84,6 +84,7 @@ int main(void)
 			//bspIOPinWrite(D31, 1);
 			//bspDACSend/Buffer((uint32_t*)testDACBuffer, 64);
 			//bspDACStartDMA();
+			//bspDACInit();
 		}
 		crapDelay(10);
 	}
