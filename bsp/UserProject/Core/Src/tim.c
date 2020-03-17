@@ -170,7 +170,7 @@ void MX_TIM6_Init(void)
   htim6.Instance = TIM6;
   htim6.Init.Prescaler = 0;
   htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim6.Init.Period = 60;
+  htim6.Init.Period = 30;
   if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
@@ -191,11 +191,11 @@ void MX_TIM6_Init(void)
 
 void startTim4Isr(void)
 {
-  if(HAL_TIM_Base_Start_IT(&htim4) != HAL_OK)
-  {
-    /* Starting Error */
-    Error_Handler();
-  }
+  //if(HAL_TIM_Base_Start_IT(&htim4) != HAL_OK)
+  //{
+  //  /* Starting Error */
+  //  Error_Handler();
+  //}
 }
 
 void stopTim4Isr(void)

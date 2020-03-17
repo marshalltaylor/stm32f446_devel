@@ -177,7 +177,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
       _Error_Handler(__FILE__, __LINE__);
     }
 
-    __HAL_LINKDMA(uartHandle,hdmatx,hdma_usart2_tx);
+    //__HAL_LINKDMA(uartHandle,hdmatx,hdma_usart2_tx);
 
     /* USART2 interrupt Init */
     HAL_NVIC_SetPriority(USART2_IRQn, 5, 0);
@@ -222,7 +222,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
       _Error_Handler(__FILE__, __LINE__);
     }
 
-    __HAL_LINKDMA(uartHandle,hdmatx,hdma_usart6_tx);
+   // __HAL_LINKDMA(uartHandle,hdmatx,hdma_usart6_tx);
 
     /* USART6 interrupt Init */
     HAL_NVIC_SetPriority(USART6_IRQn, 5, 0);
@@ -296,13 +296,13 @@ static void uartQueueNextData(UartInstance_t * UART)
 			length = TX_BUFFER_SIZE - UART->txDataBuffer_head;
 			UART->txDataBuffer_next = 0;
 			UART->UartTxInProgress = true;
-			HAL_UART_Transmit_DMA(UART->huart, (uint8_t *)(UART->txDataBuffer + UART->txDataBuffer_head), length);
+			//HAL_UART_Transmit_DMA(UART->huart, (uint8_t *)(UART->txDataBuffer + UART->txDataBuffer_head), length);
 		}
 		else if(length > 0)
 		{
 			UART->txDataBuffer_next = UART->txDataBuffer_tail;
 			UART->UartTxInProgress = true;
-			HAL_UART_Transmit_DMA(UART->huart, (uint8_t *)(UART->txDataBuffer + UART->txDataBuffer_head), length);
+			//HAL_UART_Transmit_DMA(UART->huart, (uint8_t *)(UART->txDataBuffer + UART->txDataBuffer_head), length);
 		}			
 	}
 }
@@ -314,7 +314,7 @@ uint8_t halUartPeek(UartInstance_t * UART)
 
 void halUartWrite(uint8_t data, UartInstance_t * UART)
 {
-	while(UART->UartTxInProgress == true);
+	//while(UART->UartTxInProgress == true);
 	UART->txDataBuffer[UART->txDataBuffer_tail] = data;
 	UART->txDataBuffer_tail++;
 	if( UART->txDataBuffer_tail >= TX_BUFFER_SIZE )
@@ -329,7 +329,8 @@ void halUartWrite(uint8_t data, UartInstance_t * UART)
 			UART->txDataBuffer_tail = TX_BUFFER_SIZE - 1;
 		}
 	}
-	uartQueueNextData(UART);
+	//uartQueueNextData(UART);
+	UNUSED(uartQueueNextData);
 }
 
 uint8_t halUartRead(UartInstance_t * UART)
@@ -371,7 +372,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
     D01_UART.txDataBuffer_head = D01_UART.txDataBuffer_next;
     if(D01_UART.txDataBuffer_next != D01_UART.txDataBuffer_tail)
     {
-	    uartQueueNextData(&D01_UART);
+	    //uartQueueNextData(&D01_UART);
     }
   }
   else if(UartHandle->Instance==USART6)
@@ -381,7 +382,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
     VCP_UART.txDataBuffer_head = VCP_UART.txDataBuffer_next;
     if(VCP_UART.txDataBuffer_next != VCP_UART.txDataBuffer_tail)
     {
-	    uartQueueNextData(&VCP_UART);
+	    //uartQueueNextData(&VCP_UART);
     }
   }
  

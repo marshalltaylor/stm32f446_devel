@@ -31,50 +31,50 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	//traceWrite(VIOLET, 1);
 
-	if(htim->Instance == TIM2)
-	{
-		//fast arbitrary run time ticker
-		fastRunTimeTicks++;
-
-		//10us resolution timer
-		if(usTicks >= ( maxTimer + maxInterval ))
-		{
-			usTicks = usTicks - maxTimer;
-		}
-		else
-		{
-			usTicks = usTicks + 50;
-		}
-		usTicksLocked = 0;  //unlock
-	}
-	else if(htim->Instance == TIM3)
-	{
-		adcUsCounter += 100;
-		if(adcUsCounter > 10000)
-		{
-			//Schedule an ADC conversion
-			bspADCConvert();
-			adcUsCounter = 0;
-		}
-
-		// Call into app
-		if( timer3TickCallback != NULL )
-		{
-			timer3TickCallback();
-		}
-	}
-	else if(htim->Instance == TIM4)
-	{
-		// Call into app
-		//if( timer4TickCallback != NULL ) // Function defined locally
-		{
-			timer4TickCallback();
-		}
-	}
-	else if (htim->Instance == TIM7)
-	{
-		HAL_IncTick();
-	}
+//	if(htim->Instance == TIM2)
+//	{
+//		//fast arbitrary run time ticker
+//		fastRunTimeTicks++;
+//
+//		//10us resolution timer
+//		if(usTicks >= ( maxTimer + maxInterval ))
+//		{
+//			usTicks = usTicks - maxTimer;
+//		}
+//		else
+//		{
+//			usTicks = usTicks + 50;
+//		}
+//		usTicksLocked = 0;  //unlock
+//	}
+//	else if(htim->Instance == TIM3)
+//	{
+//		adcUsCounter += 100;
+//		if(adcUsCounter > 10000)
+//		{
+//			//Schedule an ADC conversion
+//			bspADCConvert();
+//			adcUsCounter = 0;
+//		}
+//
+//		// Call into app
+//		if( timer3TickCallback != NULL )
+//		{
+//			timer3TickCallback();
+//		}
+//	}
+//	else if(htim->Instance == TIM4)
+//	{
+//		// Call into app
+//		//if( timer4TickCallback != NULL ) // Function defined locally
+//		{
+//			timer4TickCallback();
+//		}
+//	}
+//	else if (htim->Instance == TIM7)
+//	{
+//		HAL_IncTick();
+//	}
 	//traceWrite(VIOLET, 0);
 }
 

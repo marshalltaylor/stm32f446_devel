@@ -575,64 +575,8 @@ HAL_StatusTypeDef HAL_DAC_Start_DMA(DAC_HandleTypeDef* hdac, uint32_t Channel, u
   */
 HAL_StatusTypeDef HAL_DAC_Test_Ping_Pong(DAC_HandleTypeDef* hdac, uint32_t Channel)
 {
-  uint32_t tmpreg = 0U;
-    
-  /* Check the parameters */
-  assert_param(IS_DAC_CHANNEL(Channel));
-  
-  /* Process locked */
-  __HAL_LOCK(hdac);
-  
-  /* Change DAC state */
-  hdac->State = HAL_DAC_STATE_BUSY;
-
-  if(Channel == DAC_CHANNEL_1)
-  {
-    /* Set the DMA transfer complete callback for channel1 */
-    hdac->DMA_Handle1->XferCpltCallback = DAC_DMAConvCpltCh1;
-	hdac->DMA_Handle1->XferM1CpltCallback = DAC_DMAM1ConvCpltCh1;
-
-    /* Set the DMA half transfer complete callback for channel1 */
-    //hdac->DMA_Handle1->XferHalfCpltCallback = DAC_DMAHalfConvCpltCh1;
-	//hdac->DMA_Handle1->XferM1HalfCpltCallback = DAC_DMAHalfConvCpltCh1;
-
-		/* Configure double buffering */
-	hdac->DMA_Handle1->Instance->M0AR = (uint32_t)testPing;
-	hdac->DMA_Handle1->Instance->M1AR = (uint32_t)testPong;
-	hdac->DMA_Handle1->Instance->CR |= (DMA_SxCR_DBM);
-
-    /* Set the DMA error callback for channel1 */
-    hdac->DMA_Handle1->XferErrorCallback = DAC_DMAErrorCh1;
-
-    /* Enable the selected DAC channel1 DMA request */
-    hdac->Instance->CR |= (DAC_CR_DMAEN1);
-	
-	
-    //Assume DAC_ALIGN_8B_R:
-    /* Get DHR8R1 address */
-    tmpreg = (uint32_t)&hdac->Instance->DHR8R1;
-  }
-  
-  /* Enable the DMA Stream */
-  if(Channel == DAC_CHANNEL_1)
-  {
-    /* Enable the DAC DMA underrun interrupt */
-    __HAL_DAC_ENABLE_IT(hdac, DAC_IT_DMAUDR1);
-    
-    /* Enable the DMA Stream */
-    HAL_DMAEx_MultiBufferStart_IT(hdac->DMA_Handle1, (uint32_t)testPing, tmpreg, (uint32_t)testPong, 16);
-  } 
-  else
-  {
-	  //Ignore channel 2
-  }
-  
-  /* Enable the Peripheral */
-  __HAL_DAC_ENABLE(hdac, Channel);
-  
-  /* Process Unlocked */
-  __HAL_UNLOCK(hdac);
-  
+	//This only works if you disable complete callbacks
+	HAL_DAC_START_DOUBLE(hdac, Channel, (uint32_t*)testPing, (uint32_t*)testPong, 16);
   /* Return function status */
   return HAL_OK;
 }

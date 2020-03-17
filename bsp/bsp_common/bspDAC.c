@@ -1244,14 +1244,14 @@ uint8_t testVideo[GENERIC_BUFFER_LEN];
 #define HOR_SRC_BUFFER_STAGE_LENGTH 64
 uint8_t horPorchSyncPorch[HOR_SRC_BUFFER_STAGE_LENGTH * 3];
 
-#define DAC_BUFFER_LEN 16
+#define DAC_BUFFER_LEN 32
 
 const uint16_t bufferCount_frontPorchFull = 0;
 const int16_t bufferCount_porchTipOffset = -4;
 const uint16_t bufferCount_syncTipFull = 4;
 const int16_t bufferCount_tipBackOffset = -2;
 const uint16_t bufferCount_backPorchFull = 4;
-const uint16_t bufferCount_videoData = 10;
+const uint16_t bufferCount_videoData = 5;
 
 uint16_t bufferCounter = 0;
 uint16_t scanCounter = 0;
@@ -1271,6 +1271,13 @@ void bspDACSendBuffer(uint32_t * buffer, uint16_t len)
 	//HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_8B_R, 0x00000044);
 }
 
+static uint8_t testDACBuffer [] = {
+	255, 247, 239, 231, 223, 215, 207, 199, 191, 183, 175, 167, 159, 151, 143, 135,
+	127, 119, 111, 103, 95, 87, 79, 71, 63, 55, 47, 255, 255, 255, 0, 0,
+	0, 255, 255, 255, 47, 55, 63, 71, 79, 87, 95, 103, 111, 119, 127, 135,
+	143, 151, 159, 167, 175, 183, 191, 199, 207, 215, 223, 231, 239, 247, 255, 0 
+};
+
 void bspDACStartDMA(void)
 {
 	uint8_t * pData = NULL;
@@ -1279,18 +1286,14 @@ void bspDACStartDMA(void)
 	bspDACPopState( &pDataM1 );
 	//if(HAL_DAC_Start_DMA(&hdac, DAC_CHANNEL_1, (uint32_t*)pData, len, DAC_ALIGN_8B_R) != HAL_OK)
 	//if(HAL_DAC_Test_Ping_Pong(&hdac, DAC_CHANNEL_1))
-	if(HAL_DAC_START_DOUBLE(&hdac, DAC_CHANNEL_1, (uint32_t*)pData, (uint32_t*)pDataM1, 16))
+	//if(HAL_DAC_START_DOUBLE(&hdac, DAC_CHANNEL_1, (uint32_t*)test_pattern_160x120_data, (uint32_t*)test_pattern_160x120_data, DAC_BUFFER_LEN))
+	if(HAL_DAC_START_DOUBLE(&hdac, DAC_CHANNEL_1, (uint32_t*)pData, (uint32_t*)pDataM1, DAC_BUFFER_LEN))
 	{
 		volatile char garbage = 2;
 		UNUSED(garbage);
 	}
 }
-static uint8_t testDACBuffer [] = {
-	255, 247, 239, 231, 223, 215, 207, 199, 191, 183, 175, 167, 159, 151, 143, 135,
-	127, 119, 111, 103, 95, 87, 79, 71, 63, 55, 47, 255, 255, 255, 0, 0,
-	0, 255, 255, 255, 47, 55, 63, 71, 79, 87, 95, 103, 111, 119, 127, 135,
-	143, 151, 159, 167, 175, 183, 191, 199, 207, 215, 223, 231, 239, 247, 255, 0 
-};
+
 void HAL_DAC_ConvCpltCallbackCh1(DAC_HandleTypeDef* hdac)
 {
 	uint8_t * pData = NULL;

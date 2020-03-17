@@ -45,7 +45,6 @@ UserProject/Core/Src/adc.c \
 UserProject/Core/Src/dac.c \
 UserProject/Core/Src/debugUtilities.c \
 UserProject/Core/Src/dma.c \
-UserProject/Core/Src/spi.c \
 UserProject/Core/Src/tim.c \
 UserProject/Core/Src/usart.c \
 UserProject/Core/Src/stm32f4xx_it.c \
@@ -55,7 +54,6 @@ CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c \
 UserProject/AltDrivers/custom_stm32f4xx_hal_dac.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.c \
-CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
 CubeProject/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c \
 UserProject/AltDrivers/custom_stm32f4xx_hal_uart.c \
