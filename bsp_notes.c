@@ -58,3 +58,12 @@ typedef struct
   __IO uint32_t M1AR;   /*!< DMA stream x memory 1 address register   */
   __IO uint32_t FCR;    /*!< DMA stream x FIFO control register       */
 } DMA_Stream_TypeDef;
+
+
+
+
+Screen Geometry
+
+4:3
+160:120
+

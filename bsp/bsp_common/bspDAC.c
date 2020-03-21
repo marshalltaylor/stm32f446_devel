@@ -21,6 +21,9 @@ uint8_t test_pattern_160x120_data[] = {
 	0xBA, 0xBA, 0xBA, 0xBA, 0xBA, 0xBB, 0xBA, 0x55, 0xC6, 0xBA, 0xBB, 0xBA, 0xBA, 0xBA, 0xBA, 0xBA, 
 	0xBA, 0xBA, 0xBA, 0xBA, 0xBA, 0xBB, 0xBA, 0xBB, 0xB9, 0xE6, 0xEE, 0xAA, 0x72, 0x57, 0x4B, 0x47, 
 	0x60, 0x77, 0xB6, 0xFF, 0xBE, 0xB9, 0xBB, 0xBA, 0xBB, 0xBA, 0xBA, 0xBA, 0xBA, 0xBB, 0xB9, 0x7C, 
+//Replace above lines with this one to test timing
+//	255, 255, 0, 0, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 0, 0, 255, 255, 
+//
 	0xB9, 0xFD, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFE, 0xFF, 0xA8, 0x3A, 0x52, 0x2D, 0xC0, 0x07, 
 	0xDD, 0xBB, 0x29, 0xC4, 0x18, 0x5C, 0x36, 0x99, 0xFF, 0xFD, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 
 	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x8D, 0xFE, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 
@@ -1216,12 +1219,15 @@ uint8_t test_pattern_160x120_data[] = {
 typedef enum
 {
 	CRT_STATE_VERT_SYNC = 0,
+	CRT_STATE_VERT_BACK_PORCH,
 	CRT_STATE_FRONT_PORCH,
 	CRT_STATE_FRONT_TIP_TRANSISION,
 	CRT_STATE_SYNC_TIP,
 	CRT_STATE_TIP_BACK_TRANSISION,
 	CRT_STATE_BACK_PORCH,
-	CRT_STATE_VIDEO
+	CRT_STATE_FIXED_SYNC,
+	CRT_STATE_VIDEO,
+	CRT_STATE_VERT_DUMMY
 } crtStates_t;
 
 #define CRT_PARAM_SYNC_TIP_LEN 6
@@ -1229,32 +1235,41 @@ typedef enum
 #define CRT_PARAM_VIDEO_LEN 50
 #define CRT_PARAM_FRONT_PORCH_LEN 25
 
-#define CRT_PARAM_SYNC_TIP_LEVEL 0x30
-#define CRT_PARAM_PORCH_LEVEL 0x50
+#define CRT_PARAM_SYNC_TIP_LEVEL 0x00
+#define CRT_PARAM_PORCH_LEVEL 0x65
 
 #define GENERIC_BUFFER_LEN 256
+
+#define DAC_BUFFER_LEN 32
+
 /* ... video buffers ... */
-uint8_t syncTip[GENERIC_BUFFER_LEN];
-uint8_t porch[GENERIC_BUFFER_LEN];
 //uint8_t video[640][480]; // = 307.2 kB
 //uint8_t video[320][240]; // = 76.8 kB
-uint8_t testVideo[GENERIC_BUFFER_LEN];
+uint8_t fixedSyncFrame[DAC_BUFFER_LEN];
+uint8_t testFrame[DAC_BUFFER_LEN];
+
+uint8_t fixedLine1[DAC_BUFFER_LEN*6];
+uint8_t fixedLine2[DAC_BUFFER_LEN*6];
+uint8_t fixedLine3[DAC_BUFFER_LEN*6];
 
 
 #define HOR_SRC_BUFFER_STAGE_LENGTH 64
 uint8_t horPorchSyncPorch[HOR_SRC_BUFFER_STAGE_LENGTH * 3];
 
-#define DAC_BUFFER_LEN 32
 
+const int16_t bufferCount_fixedFrontPorch = 4;
+const int16_t bufferCount_fixedBackPorch = 18;
+
+const uint16_t bufferCount_scanLine = 6;
 const uint16_t bufferCount_frontPorchFull = 0;
 const int16_t bufferCount_porchTipOffset = -4;
-const uint16_t bufferCount_syncTipFull = 4;
-const int16_t bufferCount_tipBackOffset = -2;
-const uint16_t bufferCount_backPorchFull = 4;
+const uint16_t bufferCount_syncTipFull = 1;
+const int16_t bufferCount_tipBackOffset = -0;
+const uint16_t bufferCount_backPorchFull = 1;
 const uint16_t bufferCount_videoData = 5;
 
-uint16_t bufferCounter = 0;
-uint16_t scanCounter = 0;
+int16_t bufferCounter = 0;
+int16_t scanCounter = 0;
 
 static bool bspDACPopState( uint8_t ** ppData );
 
@@ -1324,11 +1339,21 @@ void bspDACInit( void )
 	int i;
 	
 	//Early test patterns
-	for(i = 0; i < GENERIC_BUFFER_LEN; i++)
+	for(i = 0; i < DAC_BUFFER_LEN; i++)
 	{
-		syncTip[i] = CRT_PARAM_SYNC_TIP_LEVEL;
-		porch[i] = CRT_PARAM_PORCH_LEVEL;
-		testVideo[i] = 0xFF & (i*10);
+		if(i < bufferCount_fixedFrontPorch)
+		{
+			fixedSyncFrame[i] = CRT_PARAM_PORCH_LEVEL;
+		}
+		else if(i < bufferCount_fixedBackPorch)
+		{
+			fixedSyncFrame[i] = CRT_PARAM_SYNC_TIP_LEVEL;
+		}
+		else
+		{
+			fixedSyncFrame[i] = CRT_PARAM_PORCH_LEVEL;
+		}
+		testFrame[i] = 0xFF & (i*10);
 	}
 	
 	//Shared sync patterns
@@ -1347,7 +1372,50 @@ void bspDACInit( void )
 			horPorchSyncPorch[i] = CRT_PARAM_PORCH_LEVEL;
 		}
 	}
+
+	//NTSC sync patterns
+	for(i = 0; i < (DAC_BUFFER_LEN * 6); i++)
+	{
+		if(i < 89)
+		{
+			fixedLine1[i] = CRT_PARAM_SYNC_TIP_LEVEL;
+		}
+		else
+		{
+			fixedLine1[i] = CRT_PARAM_PORCH_LEVEL;
+		}
+
+		if(i < 14)
+		{
+			fixedLine2[i] = CRT_PARAM_SYNC_TIP_LEVEL;
+		}
+		else
+		{
+			fixedLine2[i] = CRT_PARAM_PORCH_LEVEL;
+		}
+
+		if(i < 14)
+		{
+			fixedLine3[i] = CRT_PARAM_SYNC_TIP_LEVEL;
+		}
+		else if(i < 97)
+		{
+			fixedLine3[i] = CRT_PARAM_PORCH_LEVEL;
+		}
+		else if(i < (97+89))
+		{
+			fixedLine3[i] = CRT_PARAM_SYNC_TIP_LEVEL;
+		}
+		else
+		{
+			fixedLine3[i] = CRT_PARAM_PORCH_LEVEL;
+		}
+	}
 	
+	for(i = 0; i < (160*120); i++)
+	{
+		test_pattern_160x120_data[i] = ((test_pattern_160x120_data[i])>>1) + CRT_PARAM_PORCH_LEVEL + 5;
+	}
 	bspDACStartDMA();
 }
 
@@ -1360,55 +1428,73 @@ static bool bspDACPopState( uint8_t ** ppData )
 		{
 			bspIOPinWrite(D31, 0);
 			bspIOPinWrite(D31, 1);
-			*ppData = &horPorchSyncPorch[HOR_SRC_BUFFER_STAGE_LENGTH];
 			scanCounter = 0;
-			if(bufferCount_frontPorchFull == 0)
+
+			*ppData = &fixedLine1[DAC_BUFFER_LEN * bufferCounter];
+			if(bufferCounter >= bufferCount_scanLine - 1)
 			{
-				//The full front porch is in the transision
-				crtState = CRT_STATE_FRONT_TIP_TRANSISION;
+				scanCounter++;
+				crtState = CRT_STATE_VERT_BACK_PORCH;
 			}
-			else
+			break;
+		}
+		case CRT_STATE_VERT_BACK_PORCH:
+		{
+			*ppData = &fixedLine2[DAC_BUFFER_LEN * bufferCounter];
+			if(bufferCounter >= bufferCount_scanLine - 1)
 			{
-				crtState = CRT_STATE_FRONT_PORCH;
+				//reset buffer counter manually when not changing states
+				bufferCounter = -1;
+				scanCounter++;
+				if(scanCounter >= 21)
+				{
+					crtState = CRT_STATE_FRONT_PORCH;
+				}
 			}
 			break;
 		}
 		case CRT_STATE_FRONT_PORCH:
 		{
 			//TODO: Doesn't allow for more than 1 buffer of full front porch
-			*ppData = &horPorchSyncPorch[0];
-			crtState = CRT_STATE_FRONT_TIP_TRANSISION;
-			break;
+			//*ppData = &horPorchSyncPorch[0];
+			//crtState = CRT_STATE_FRONT_TIP_TRANSISION;
+			//break;
 		}
 		case CRT_STATE_FRONT_TIP_TRANSISION:
 		{
-			*ppData = &horPorchSyncPorch[HOR_SRC_BUFFER_STAGE_LENGTH - bufferCount_porchTipOffset];
-			crtState = CRT_STATE_SYNC_TIP;
-			break;
+			//*ppData = &horPorchSyncPorch[HOR_SRC_BUFFER_STAGE_LENGTH + bufferCount_porchTipOffset];
+			//crtState = CRT_STATE_SYNC_TIP;
+			//break;
 		}
 		case CRT_STATE_SYNC_TIP:
 		{
-			*ppData = &horPorchSyncPorch[HOR_SRC_BUFFER_STAGE_LENGTH];
-			
-			if(bufferCounter >= bufferCount_syncTipFull)
-			{
-				crtState = CRT_STATE_TIP_BACK_TRANSISION;
-			}
-			break;
+			//*ppData = &horPorchSyncPorch[HOR_SRC_BUFFER_STAGE_LENGTH];
+			//
+			//if(bufferCounter >= bufferCount_syncTipFull)
+			//{
+			//	crtState = CRT_STATE_TIP_BACK_TRANSISION;
+			//}
+			//break;
 		}
 		case CRT_STATE_TIP_BACK_TRANSISION:
 		{
-			*ppData = &horPorchSyncPorch[(2*HOR_SRC_BUFFER_STAGE_LENGTH) - bufferCount_tipBackOffset];
-			crtState = CRT_STATE_BACK_PORCH;
-			break;
+		//	*ppData = &horPorchSyncPorch[(2*HOR_SRC_BUFFER_STAGE_LENGTH) + bufferCount_tipBackOffset];
+		//	crtState = CRT_STATE_BACK_PORCH;
+		//	break;
 		}
 		case CRT_STATE_BACK_PORCH:
 		{
-			*ppData = &horPorchSyncPorch[2*HOR_SRC_BUFFER_STAGE_LENGTH + 4];
-			if(bufferCounter >= bufferCount_backPorchFull)
-			{
-				crtState = CRT_STATE_VIDEO;
-			}
+		//	*ppData = &horPorchSyncPorch[2*HOR_SRC_BUFFER_STAGE_LENGTH + 4];
+		//	if(bufferCounter >= bufferCount_backPorchFull)
+		//	{
+		//		crtState = CRT_STATE_VIDEO;
+		//	}
+		//	break;
+		}
+		case CRT_STATE_FIXED_SYNC: //Only hit by fallthrough
+		{
+			*ppData = fixedSyncFrame;
+			crtState = CRT_STATE_VIDEO;
 			break;
 		}
 		case CRT_STATE_VIDEO:
@@ -1421,22 +1507,16 @@ static bool bspDACPopState( uint8_t ** ppData )
 			//{
 			//	//*ppData = page4 or whatever
 			//}
-			if((scanCounter >= 5)&&(scanCounter < 125))
+			if(scanCounter < 120)
 			{
-				*ppData = &test_pattern_160x120_data[((scanCounter-5) * 160) + ((uint32_t)bufferCounter << 4)];
+				*ppData = &test_pattern_160x120_data[((scanCounter-5) * 160) + ((uint32_t)bufferCounter << 5)];
 			}
-			else
-			{
-				//default porch
-				*ppData = &horPorchSyncPorch[0];
-			}
-			
 			if(bufferCounter >= bufferCount_videoData - 1)
 			{
 				scanCounter++;
-				if(scanCounter >= 130)
+				if(scanCounter >= 120)
 				{
-					crtState = CRT_STATE_VERT_SYNC;
+					crtState = CRT_STATE_VERT_DUMMY;
 				}
 				else
 				{
@@ -1444,6 +1524,21 @@ static bool bspDACPopState( uint8_t ** ppData )
 				}
 			}
 			
+			break;
+		}
+		case CRT_STATE_VERT_DUMMY:
+		{
+			*ppData = &fixedLine2[DAC_BUFFER_LEN * bufferCounter];
+			if(bufferCounter >= bufferCount_scanLine - 1)
+			{
+				//reset buffer counter manually when not changing states
+				bufferCounter = 0;
+				scanCounter++;
+				if(scanCounter >= 3)
+				{
+					crtState = CRT_STATE_VERT_SYNC;
+				}
+			}
 			break;
 		}
 		default:
