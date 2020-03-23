@@ -1219,15 +1219,14 @@ uint8_t test_pattern_160x120_data[] = {
 typedef enum
 {
 	CRT_STATE_VERT_SYNC = 0,
-	CRT_STATE_VERT_BACK_PORCH,
-	CRT_STATE_FRONT_PORCH,
-	CRT_STATE_FRONT_TIP_TRANSISION,
-	CRT_STATE_SYNC_TIP,
-	CRT_STATE_TIP_BACK_TRANSISION,
-	CRT_STATE_BACK_PORCH,
-	CRT_STATE_FIXED_SYNC,
-	CRT_STATE_VIDEO,
-	CRT_STATE_VERT_DUMMY
+	CRT_STATE_VERT_BACK_PORCH_ODD,
+	CRT_STATE_FIXED_SYNC_ODD,
+	CRT_STATE_VIDEO_ODD,
+	CRT_STATE_FIXED_FIELD_SWAP,
+	CRT_STATE_VERT_BACK_PORCH_EVEN,
+	CRT_STATE_FIXED_SYNC_EVEN,
+	CRT_STATE_VIDEO_EVEN,
+	CRT_STATE_LAST_LINE
 } crtStates_t;
 
 #define CRT_PARAM_SYNC_TIP_LEN 6
@@ -1270,6 +1269,8 @@ const uint16_t bufferCount_videoData = 5;
 
 int16_t bufferCounter = 0;
 int16_t scanCounter = 0;
+int16_t frameLineCounter = 0;
+
 
 static bool bspDACPopState( uint8_t ** ppData );
 
@@ -1426,19 +1427,15 @@ static bool bspDACPopState( uint8_t ** ppData )
 	{
 		case CRT_STATE_VERT_SYNC:
 		{
-			bspIOPinWrite(D31, 0);
-			bspIOPinWrite(D31, 1);
-			scanCounter = 0;
-
 			*ppData = &fixedLine1[DAC_BUFFER_LEN * bufferCounter];
 			if(bufferCounter >= bufferCount_scanLine - 1)
 			{
 				scanCounter++;
-				crtState = CRT_STATE_VERT_BACK_PORCH;
+				crtState = CRT_STATE_VERT_BACK_PORCH_ODD;
 			}
 			break;
 		}
-		case CRT_STATE_VERT_BACK_PORCH:
+		case CRT_STATE_VERT_BACK_PORCH_ODD:
 		{
 			*ppData = &fixedLine2[DAC_BUFFER_LEN * bufferCounter];
 			if(bufferCounter >= bufferCount_scanLine - 1)
@@ -1446,104 +1443,137 @@ static bool bspDACPopState( uint8_t ** ppData )
 				//reset buffer counter manually when not changing states
 				bufferCounter = -1;
 				scanCounter++;
-				if(scanCounter >= 21)
+				if(scanCounter >= 20)
 				{
-					crtState = CRT_STATE_FRONT_PORCH;
+					crtState = CRT_STATE_FIXED_SYNC_ODD;
+					frameLineCounter = 0;
 				}
 			}
 			break;
 		}
-		case CRT_STATE_FRONT_PORCH:
-		{
-			//TODO: Doesn't allow for more than 1 buffer of full front porch
-			//*ppData = &horPorchSyncPorch[0];
-			//crtState = CRT_STATE_FRONT_TIP_TRANSISION;
-			//break;
-		}
-		case CRT_STATE_FRONT_TIP_TRANSISION:
-		{
-			//*ppData = &horPorchSyncPorch[HOR_SRC_BUFFER_STAGE_LENGTH + bufferCount_porchTipOffset];
-			//crtState = CRT_STATE_SYNC_TIP;
-			//break;
-		}
-		case CRT_STATE_SYNC_TIP:
-		{
-			//*ppData = &horPorchSyncPorch[HOR_SRC_BUFFER_STAGE_LENGTH];
-			//
-			//if(bufferCounter >= bufferCount_syncTipFull)
-			//{
-			//	crtState = CRT_STATE_TIP_BACK_TRANSISION;
-			//}
-			//break;
-		}
-		case CRT_STATE_TIP_BACK_TRANSISION:
-		{
-		//	*ppData = &horPorchSyncPorch[(2*HOR_SRC_BUFFER_STAGE_LENGTH) + bufferCount_tipBackOffset];
-		//	crtState = CRT_STATE_BACK_PORCH;
-		//	break;
-		}
-		case CRT_STATE_BACK_PORCH:
-		{
-		//	*ppData = &horPorchSyncPorch[2*HOR_SRC_BUFFER_STAGE_LENGTH + 4];
-		//	if(bufferCounter >= bufferCount_backPorchFull)
-		//	{
-		//		crtState = CRT_STATE_VIDEO;
-		//	}
-		//	break;
-		}
-		case CRT_STATE_FIXED_SYNC: //Only hit by fallthrough
+		case CRT_STATE_FIXED_SYNC_ODD:
 		{
 			*ppData = fixedSyncFrame;
-			crtState = CRT_STATE_VIDEO;
+			crtState = CRT_STATE_VIDEO_ODD;
 			break;
 		}
-		case CRT_STATE_VIDEO:
+		case CRT_STATE_VIDEO_ODD:
 		{
-			//if( pVideoPage == NULL )
-			//{
-			//	*ppData = testVideo;
-			//}
-			//else
-			//{
-			//	//*ppData = page4 or whatever
-			//}
-			if(scanCounter < 120)
-			{
-				*ppData = &test_pattern_160x120_data[((scanCounter-5) * 160) + ((uint32_t)bufferCounter << 5)];
-			}
+			uint16_t index = (frameLineCounter * 160) + ((uint32_t)bufferCounter << 5);
+			*ppData = &test_pattern_160x120_data[index];
 			if(bufferCounter >= bufferCount_videoData - 1)
 			{
-				scanCounter++;
-				if(scanCounter >= 120)
+				if((scanCounter & 0x0001) == 0)
 				{
-					crtState = CRT_STATE_VERT_DUMMY;
+					//The line drawn is the second
+					frameLineCounter++;
 				}
 				else
 				{
-					crtState = CRT_STATE_FRONT_PORCH;
+					//We are drawing the first line
 				}
+				
+				//Choose the next state
+				if(frameLineCounter >= 120)
+				{
+					crtState = CRT_STATE_FIXED_FIELD_SWAP;
+				}
+				else
+				{
+					crtState = CRT_STATE_FIXED_SYNC_ODD;
+				}
+				
+				//Increase overall scan count
+				scanCounter++;
 			}
-			
 			break;
 		}
-		case CRT_STATE_VERT_DUMMY:
+		case CRT_STATE_FIXED_FIELD_SWAP:
+		{
+			*ppData = &fixedLine3[DAC_BUFFER_LEN * bufferCounter];
+			if(bufferCounter >= bufferCount_scanLine - 1)
+			{
+				//reset buffer counter manually when not changing states
+				bufferCounter = -1;
+				scanCounter++;
+				if(scanCounter >= 263)
+				{
+					crtState = CRT_STATE_VERT_BACK_PORCH_EVEN;
+				}
+			}
+			break;
+		}
+		case CRT_STATE_VERT_BACK_PORCH_EVEN:
 		{
 			*ppData = &fixedLine2[DAC_BUFFER_LEN * bufferCounter];
 			if(bufferCounter >= bufferCount_scanLine - 1)
 			{
 				//reset buffer counter manually when not changing states
-				bufferCounter = 0;
+				bufferCounter = -1;
 				scanCounter++;
-				if(scanCounter >= 3)
+				if(scanCounter >= 283)
 				{
-					crtState = CRT_STATE_VERT_SYNC;
+					crtState = CRT_STATE_FIXED_SYNC_EVEN;
+					frameLineCounter = 0;
 				}
+			}
+			break;
+		}
+		case CRT_STATE_FIXED_SYNC_EVEN:
+		{
+			*ppData = fixedSyncFrame;
+			crtState = CRT_STATE_VIDEO_EVEN;
+			break;
+		}
+		case CRT_STATE_VIDEO_EVEN:
+		{
+			uint16_t index = (frameLineCounter * 160) + ((uint32_t)bufferCounter << 5);
+			*ppData = &test_pattern_160x120_data[index];
+			if(bufferCounter >= bufferCount_videoData - 1)
+			{
+				if(scanCounter & 0x0001)
+				{
+					//The line drawn is the second
+					frameLineCounter++;
+				}
+				else
+				{
+					//We are drawing the first line
+				}
+				
+				//Choose the next state
+				if(frameLineCounter >= 120)
+				{
+					crtState = CRT_STATE_LAST_LINE;
+				}
+				else
+				{
+					crtState = CRT_STATE_FIXED_SYNC_EVEN;
+				}
+				
+				//Increase overall scan count
+				scanCounter++;
+			}
+			break;
+		}
+		case CRT_STATE_LAST_LINE:
+		{
+			*ppData = &fixedLine2[DAC_BUFFER_LEN * bufferCounter];
+			if(bufferCounter >= bufferCount_scanLine - 1)
+			{
+				scanCounter = -2;
+				
+				bspIOPinWrite(D31, 0);
+				bspIOPinWrite(D31, 1);
+
+				crtState = CRT_STATE_VERT_SYNC;
 			}
 			break;
 		}
 		default:
 		break;
 	}
+	
 	//General rules
 	if(crtState != previousCrtState)
 	{
