@@ -1218,59 +1218,60 @@ uint8_t test_pattern_160x120_data[] = {
 
 typedef enum
 {
-	CRT_STATE_VERT_SYNC = 0,
+	CRT_STATE_PRE_ODD_SYNC = 0,
+	CRT_STATE_VERT_SYNC,
 	CRT_STATE_VERT_BACK_PORCH_ODD,
+	CRT_STATE_BLANK_PRE_ODD,
 	CRT_STATE_FIXED_SYNC_ODD,
 	CRT_STATE_VIDEO_ODD,
-	CRT_STATE_FIXED_FIELD_SWAP,
+	CRT_STATE_PRE_EVEN_SYNC_HALF,
+	CRT_STATE_PRE_EVEN_SYNC,
+	CRT_STATE_EVEN_VERT_SYNC,
 	CRT_STATE_VERT_BACK_PORCH_EVEN,
+	CRT_STATE_BLANK_PRE_EVEN,
 	CRT_STATE_FIXED_SYNC_EVEN,
-	CRT_STATE_VIDEO_EVEN,
-	CRT_STATE_LAST_LINE
+	CRT_STATE_VIDEO_EVEN
 } crtStates_t;
 
-#define CRT_PARAM_SYNC_TIP_LEN 6
-#define CRT_PARAM_BACK_PORCH_LEN 44
-#define CRT_PARAM_VIDEO_LEN 50
-#define CRT_PARAM_FRONT_PORCH_LEN 25
-
-#define CRT_PARAM_SYNC_TIP_LEVEL 0x00
-#define CRT_PARAM_PORCH_LEVEL 0x65
-
-#define GENERIC_BUFFER_LEN 256
-
-#define DAC_BUFFER_LEN 32
 
 /* ... video buffers ... */
 //uint8_t video[640][480]; // = 307.2 kB
 //uint8_t video[320][240]; // = 76.8 kB
-uint8_t fixedSyncFrame[DAC_BUFFER_LEN];
+
+#define DAC_BUFFER_LEN 32
+
+#define CRT_PARAM_SYNC_TIP_LEVEL 0x00
+#define CRT_PARAM_PORCH_LEVEL 0x48
+
+//1 frame is DAC_BUFFER_LEN clocks long
+//3 frames per half-line,
+//6 frames per line,
 uint8_t testFrame[DAC_BUFFER_LEN];
+uint8_t fixedSyncFrame[DAC_BUFFER_LEN];
 
-uint8_t fixedLine1[DAC_BUFFER_LEN*6];
-uint8_t fixedLine2[DAC_BUFFER_LEN*6];
-uint8_t fixedLine3[DAC_BUFFER_LEN*6];
+uint8_t halfLineVSync[DAC_BUFFER_LEN*3];
+uint8_t halfLineHSyncBlackest[DAC_BUFFER_LEN*3];
 
+uint8_t fullLineHVideoBlack[DAC_BUFFER_LEN*6];
+uint8_t fullLineHVideoToSync[DAC_BUFFER_LEN*6];
 
-#define HOR_SRC_BUFFER_STAGE_LENGTH 64
-uint8_t horPorchSyncPorch[HOR_SRC_BUFFER_STAGE_LENGTH * 3];
+//The following are measuared in clocks since the start of the front porch.
+//t + n type measurement
+#define N_CLK_SYNC 6
+#define N_CLK_BACK_PORCH 18
+#define N_CLK_BACK_PORCH_SHORT_SYNC 7
+#define N_CLK_BACK_PORCH_VERT_SYNC_RISE 85
+#define N_CLK_3_FRAMES (3*DAC_BUFFER_LEN)
 
+//These are in number of frames
+#define N_FRAMES_SCAN_LINE 6
+#define N_FRAMES_HALF_SCAN_LINE 3
+#define N_FRAMES_VIDEO_DATA 5
 
-const int16_t bufferCount_fixedFrontPorch = 4;
-const int16_t bufferCount_fixedBackPorch = 18;
-
-const uint16_t bufferCount_scanLine = 6;
-const uint16_t bufferCount_frontPorchFull = 0;
-const int16_t bufferCount_porchTipOffset = -4;
-const uint16_t bufferCount_syncTipFull = 1;
-const int16_t bufferCount_tipBackOffset = -0;
-const uint16_t bufferCount_backPorchFull = 1;
-const uint16_t bufferCount_videoData = 5;
-
-int16_t bufferCounter = 0;
+int16_t frameCounter = 0;
 int16_t scanCounter = 0;
-int16_t frameLineCounter = 0;
-
+int16_t lineCounter = 0;
+int16_t loopCounter = 0;
 
 static bool bspDACPopState( uint8_t ** ppData );
 
@@ -1339,14 +1340,14 @@ void bspDACInit( void )
 	
 	int i;
 	
-	//Early test patterns
+	//NTSC sync patterns, frames
 	for(i = 0; i < DAC_BUFFER_LEN; i++)
 	{
-		if(i < bufferCount_fixedFrontPorch)
+		if(i < N_CLK_SYNC)
 		{
 			fixedSyncFrame[i] = CRT_PARAM_PORCH_LEVEL;
 		}
-		else if(i < bufferCount_fixedBackPorch)
+		else if(i < N_CLK_BACK_PORCH)
 		{
 			fixedSyncFrame[i] = CRT_PARAM_SYNC_TIP_LEVEL;
 		}
@@ -1357,100 +1358,155 @@ void bspDACInit( void )
 		testFrame[i] = 0xFF & (i*10);
 	}
 	
-	//Shared sync patterns
-	for(i = 0; i < HOR_SRC_BUFFER_STAGE_LENGTH * 3; i++)
+	//NTSC sync patterns, half lines
+	for(i = 0; i < (DAC_BUFFER_LEN * 3); i++)
 	{
-		if(i < HOR_SRC_BUFFER_STAGE_LENGTH)
+		if(i < N_CLK_SYNC)
 		{
-			horPorchSyncPorch[i] = CRT_PARAM_PORCH_LEVEL;
+			halfLineVSync[i] = CRT_PARAM_PORCH_LEVEL;
 		}
-		else if(i < HOR_SRC_BUFFER_STAGE_LENGTH * 2)
+		else if(i < N_CLK_BACK_PORCH_VERT_SYNC_RISE)
 		{
-			horPorchSyncPorch[i] = CRT_PARAM_SYNC_TIP_LEVEL;
-		}
-		else
-		{
-			horPorchSyncPorch[i] = CRT_PARAM_PORCH_LEVEL;
-		}
-	}
-
-	//NTSC sync patterns
-	for(i = 0; i < (DAC_BUFFER_LEN * 6); i++)
-	{
-		if(i < 89)
-		{
-			fixedLine1[i] = CRT_PARAM_SYNC_TIP_LEVEL;
+			halfLineVSync[i] = CRT_PARAM_SYNC_TIP_LEVEL;
 		}
 		else
 		{
-			fixedLine1[i] = CRT_PARAM_PORCH_LEVEL;
+			halfLineVSync[i] = CRT_PARAM_PORCH_LEVEL;
 		}
 
-		if(i < 14)
+		if(i < N_CLK_SYNC)
 		{
-			fixedLine2[i] = CRT_PARAM_SYNC_TIP_LEVEL;
+			halfLineHSyncBlackest[i] = CRT_PARAM_PORCH_LEVEL;
+		}
+		else if(i < N_CLK_BACK_PORCH_SHORT_SYNC)
+		{
+			halfLineHSyncBlackest[i] = CRT_PARAM_SYNC_TIP_LEVEL;
 		}
 		else
 		{
-			fixedLine2[i] = CRT_PARAM_PORCH_LEVEL;
-		}
-
-		if(i < 14)
-		{
-			fixedLine3[i] = CRT_PARAM_SYNC_TIP_LEVEL;
-		}
-		else if(i < 97)
-		{
-			fixedLine3[i] = CRT_PARAM_PORCH_LEVEL;
-		}
-		else if(i < (97+89))
-		{
-			fixedLine3[i] = CRT_PARAM_SYNC_TIP_LEVEL;
-		}
-		else
-		{
-			fixedLine3[i] = CRT_PARAM_PORCH_LEVEL;
+			halfLineHSyncBlackest[i] = CRT_PARAM_PORCH_LEVEL;
 		}
 	}
 	
+	//NTSC sync patterns, full lines
+	for(i = 0; i < (DAC_BUFFER_LEN * 6); i++)
+	{
+		if(i < N_CLK_SYNC)
+		{
+			fullLineHVideoBlack[i] = CRT_PARAM_PORCH_LEVEL;
+		}
+		else if(i < N_CLK_BACK_PORCH)
+		{
+			fullLineHVideoBlack[i] = CRT_PARAM_SYNC_TIP_LEVEL;
+		}
+		else
+		{
+			fullLineHVideoBlack[i] = CRT_PARAM_PORCH_LEVEL;
+		}
+		
+		if(i < N_CLK_SYNC)
+		{
+			fullLineHVideoToSync[i] = CRT_PARAM_PORCH_LEVEL;
+		}
+		else if(i < N_CLK_BACK_PORCH)
+		{
+			fullLineHVideoToSync[i] = CRT_PARAM_SYNC_TIP_LEVEL;
+		}
+		else if(i < N_CLK_3_FRAMES + N_CLK_SYNC)
+		{
+			fullLineHVideoToSync[i] = CRT_PARAM_PORCH_LEVEL;
+		}
+		else if(i < N_CLK_3_FRAMES + N_CLK_BACK_PORCH_SHORT_SYNC)
+		{
+			fullLineHVideoToSync[i] = CRT_PARAM_SYNC_TIP_LEVEL;
+		}
+		else
+		{
+			fullLineHVideoToSync[i] = CRT_PARAM_PORCH_LEVEL;
+		}
+	}
+	
+	//Fix test data
 	for(i = 0; i < (160*120); i++)
 	{
-		test_pattern_160x120_data[i] = ((test_pattern_160x120_data[i])>>1) + CRT_PARAM_PORCH_LEVEL + 5;
+		test_pattern_160x120_data[i] = ((test_pattern_160x120_data[i])>>2) + CRT_PARAM_PORCH_LEVEL + 0x10;
 	}
 	bspDACStartDMA();
 }
 
 static bool bspDACPopState( uint8_t ** ppData )
 {
-	crtStates_t previousCrtState = crtState;
 	switch( crtState )
 	{
+		case CRT_STATE_PRE_ODD_SYNC:
+		{
+			*ppData = &halfLineHSyncBlackest[DAC_BUFFER_LEN * frameCounter];
+			frameCounter++;
+			if(frameCounter >= N_FRAMES_HALF_SCAN_LINE)
+			{
+				frameCounter = 0;
+				loopCounter++;
+				if(loopCounter > 6)
+				{
+					loopCounter = 0;
+					crtState = CRT_STATE_VERT_SYNC;
+					//Toggle debug pin
+					bspIOPinWrite(D31, 0);
+					bspIOPinWrite(D31, 1);
+				}
+			}
+			break;
+		}
 		case CRT_STATE_VERT_SYNC:
 		{
-			*ppData = &fixedLine1[DAC_BUFFER_LEN * bufferCounter];
-			if(bufferCounter >= bufferCount_scanLine - 1)
+			*ppData = &halfLineVSync[DAC_BUFFER_LEN * frameCounter];
+			frameCounter++;
+			if(frameCounter >= N_FRAMES_HALF_SCAN_LINE)
 			{
-				scanCounter++;
-				crtState = CRT_STATE_VERT_BACK_PORCH_ODD;
+				loopCounter++;
+				frameCounter = 0;
+				if(loopCounter >= 6)
+				{
+					loopCounter = 0;
+					crtState = CRT_STATE_VERT_BACK_PORCH_ODD;
+				}
 			}
 			break;
 		}
 		case CRT_STATE_VERT_BACK_PORCH_ODD:
 		{
-			*ppData = &fixedLine2[DAC_BUFFER_LEN * bufferCounter];
-			if(bufferCounter >= bufferCount_scanLine - 1)
+			*ppData = &halfLineHSyncBlackest[DAC_BUFFER_LEN * frameCounter];
+			frameCounter++;
+			if(frameCounter >= N_FRAMES_HALF_SCAN_LINE)
 			{
-				//reset buffer counter manually when not changing states
-				bufferCounter = -1;
-				scanCounter++;
-				if(scanCounter >= 20)
+				loopCounter++;
+				frameCounter = 0;
+				if(loopCounter >= 6)
 				{
-					crtState = CRT_STATE_FIXED_SYNC_ODD;
-					frameLineCounter = 0;
+					loopCounter = 0;
+					crtState = CRT_STATE_BLANK_PRE_ODD;
 				}
 			}
 			break;
 		}
+		// Blank video scans
+		case CRT_STATE_BLANK_PRE_ODD:
+		{
+			*ppData = &fullLineHVideoBlack[DAC_BUFFER_LEN * frameCounter];
+			frameCounter++;
+			if(frameCounter >= N_FRAMES_SCAN_LINE)
+			{
+				loopCounter++;
+				frameCounter = 0;
+				if(loopCounter >= 12)
+				{
+					loopCounter = 0;
+					crtState = CRT_STATE_FIXED_SYNC_ODD;
+				}
+			}
+			break;
+		}
+		// Start of horizontal video scan
 		case CRT_STATE_FIXED_SYNC_ODD:
 		{
 			*ppData = fixedSyncFrame;
@@ -1459,14 +1515,16 @@ static bool bspDACPopState( uint8_t ** ppData )
 		}
 		case CRT_STATE_VIDEO_ODD:
 		{
-			uint16_t index = (frameLineCounter * 160) + ((uint32_t)bufferCounter << 5);
+			uint16_t index = (lineCounter * 160) + (DAC_BUFFER_LEN * frameCounter);
 			*ppData = &test_pattern_160x120_data[index];
-			if(bufferCounter >= bufferCount_videoData - 1)
+			frameCounter++;
+			if(frameCounter >= N_FRAMES_VIDEO_DATA)
 			{
-				if((scanCounter & 0x0001) == 0)
+				frameCounter = 0;
+				if((loopCounter & 0x0001) != 0)
 				{
 					//The line drawn is the second
-					frameLineCounter++;
+					lineCounter++;
 				}
 				else
 				{
@@ -1474,9 +1532,11 @@ static bool bspDACPopState( uint8_t ** ppData )
 				}
 				
 				//Choose the next state
-				if(frameLineCounter >= 120)
+				if(lineCounter >= 120)
 				{
-					crtState = CRT_STATE_FIXED_FIELD_SWAP;
+					lineCounter = 0;
+					loopCounter = 0;
+					crtState = CRT_STATE_PRE_EVEN_SYNC_HALF;
 				}
 				else
 				{
@@ -1484,20 +1544,48 @@ static bool bspDACPopState( uint8_t ** ppData )
 				}
 				
 				//Increase overall scan count
-				scanCounter++;
+				loopCounter++;
 			}
 			break;
 		}
-		case CRT_STATE_FIXED_FIELD_SWAP:
+		case CRT_STATE_PRE_EVEN_SYNC_HALF:
 		{
-			*ppData = &fixedLine3[DAC_BUFFER_LEN * bufferCounter];
-			if(bufferCounter >= bufferCount_scanLine - 1)
+			*ppData = &fullLineHVideoToSync[DAC_BUFFER_LEN * frameCounter];
+			frameCounter++;
+			if(frameCounter >= N_FRAMES_SCAN_LINE)
 			{
-				//reset buffer counter manually when not changing states
-				bufferCounter = -1;
-				scanCounter++;
-				if(scanCounter >= 263)
+				frameCounter = 0;
+				crtState = CRT_STATE_PRE_ODD_SYNC;//CRT_STATE_PRE_EVEN_SYNC;
+			}
+			break;
+		}
+		case CRT_STATE_PRE_EVEN_SYNC:
+		{
+			*ppData = &halfLineHSyncBlackest[DAC_BUFFER_LEN * frameCounter];
+			frameCounter++;
+			if(frameCounter >= N_FRAMES_HALF_SCAN_LINE)
+			{
+				frameCounter = 0;
+				loopCounter++;
+				if(loopCounter > 5)
 				{
+					loopCounter = 0;
+					crtState = CRT_STATE_EVEN_VERT_SYNC;
+				}
+			}
+			break;
+		}
+		case CRT_STATE_EVEN_VERT_SYNC:
+		{
+			*ppData = &halfLineVSync[DAC_BUFFER_LEN * frameCounter];
+			frameCounter++;
+			if(frameCounter >= N_FRAMES_HALF_SCAN_LINE)
+			{
+				loopCounter++;
+				frameCounter = 0;
+				if(loopCounter >= 6)
+				{
+					loopCounter = 0;
 					crtState = CRT_STATE_VERT_BACK_PORCH_EVEN;
 				}
 			}
@@ -1505,20 +1593,38 @@ static bool bspDACPopState( uint8_t ** ppData )
 		}
 		case CRT_STATE_VERT_BACK_PORCH_EVEN:
 		{
-			*ppData = &fixedLine2[DAC_BUFFER_LEN * bufferCounter];
-			if(bufferCounter >= bufferCount_scanLine - 1)
+			*ppData = &halfLineHSyncBlackest[DAC_BUFFER_LEN * frameCounter];
+			frameCounter++;
+			if(frameCounter >= N_FRAMES_HALF_SCAN_LINE)
 			{
-				//reset buffer counter manually when not changing states
-				bufferCounter = -1;
-				scanCounter++;
-				if(scanCounter >= 283)
+				loopCounter++;
+				frameCounter = 0;
+				if(loopCounter >= 5)
 				{
-					crtState = CRT_STATE_FIXED_SYNC_EVEN;
-					frameLineCounter = 0;
+					loopCounter = 0;
+					crtState = CRT_STATE_BLANK_PRE_EVEN;
 				}
 			}
 			break;
 		}
+		// Blank video scans
+		case CRT_STATE_BLANK_PRE_EVEN:
+		{
+			*ppData = &fullLineHVideoBlack[DAC_BUFFER_LEN * frameCounter];
+			frameCounter++;
+			if(frameCounter >= N_FRAMES_SCAN_LINE)
+			{
+				loopCounter++;
+				frameCounter = 0;
+				if(loopCounter >= 13)
+				{
+					loopCounter = 0;
+					crtState = CRT_STATE_FIXED_SYNC_EVEN;
+				}
+			}
+			break;
+		}
+		// Start of horizontal video scan
 		case CRT_STATE_FIXED_SYNC_EVEN:
 		{
 			*ppData = fixedSyncFrame;
@@ -1527,14 +1633,16 @@ static bool bspDACPopState( uint8_t ** ppData )
 		}
 		case CRT_STATE_VIDEO_EVEN:
 		{
-			uint16_t index = (frameLineCounter * 160) + ((uint32_t)bufferCounter << 5);
+			uint16_t index = (lineCounter * 160) + (DAC_BUFFER_LEN * frameCounter);
 			*ppData = &test_pattern_160x120_data[index];
-			if(bufferCounter >= bufferCount_videoData - 1)
+			frameCounter++;
+			if(frameCounter >= N_FRAMES_VIDEO_DATA)
 			{
-				if(scanCounter & 0x0001)
+				frameCounter = 0;
+				if((loopCounter & 0x0001) != 0)
 				{
 					//The line drawn is the second
-					frameLineCounter++;
+					lineCounter++;
 				}
 				else
 				{
@@ -1542,9 +1650,11 @@ static bool bspDACPopState( uint8_t ** ppData )
 				}
 				
 				//Choose the next state
-				if(frameLineCounter >= 120)
+				if(lineCounter >= 120)
 				{
-					crtState = CRT_STATE_LAST_LINE;
+					lineCounter = 0;
+					loopCounter = 0;
+					crtState = CRT_STATE_PRE_ODD_SYNC;
 				}
 				else
 				{
@@ -1552,40 +1662,14 @@ static bool bspDACPopState( uint8_t ** ppData )
 				}
 				
 				//Increase overall scan count
-				scanCounter++;
-			}
-			break;
-		}
-		case CRT_STATE_LAST_LINE:
-		{
-			*ppData = &fixedLine2[DAC_BUFFER_LEN * bufferCounter];
-			if(bufferCounter >= bufferCount_scanLine - 1)
-			{
-				scanCounter = -2;
-				
-				bspIOPinWrite(D31, 0);
-				bspIOPinWrite(D31, 1);
-
-				crtState = CRT_STATE_VERT_SYNC;
+				loopCounter++;
 			}
 			break;
 		}
 		default:
 		break;
 	}
-	
-	//General rules
-	if(crtState != previousCrtState)
-	{
-		//Restart counter
-		bufferCounter = 0;
-	}
-	else
-	{
-		//Count number of buffers during state
-		bufferCounter++;
-	}
-	//*ppData = testDACBuffer;
+
 	return true;
 }
 
