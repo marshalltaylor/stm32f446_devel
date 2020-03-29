@@ -83,6 +83,13 @@ void bspDACInit( void );
 void bspDACSendBuffer(uint32_t * buffer, uint16_t len);
 void bspDACStartDMA(void);
 
+bool bspDACGetBufferStale(uint8_t ** output);
+bool bspDACGetBufferCopy(uint8_t ** output);
+bool bspDACGetBufferBlank(uint8_t ** output);
+
+void bspDACSwapBuffers(void);
+void bspDACInterlace(bool input);
+
 /* Spi operations */
 void bspSPISegmentWrite(uint8_t *);
 void bspSPISegmentSend(void);
