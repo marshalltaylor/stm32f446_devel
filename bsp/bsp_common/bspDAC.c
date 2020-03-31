@@ -30,8 +30,9 @@ typedef enum
 #define DAC_BUFFER_LEN 64
 
 #define CRT_PARAM_SYNC_TIP_LEVEL 0
-#define CRT_PARAM_PORCH_LEVEL 120 //63
-#define CRT_PARAM_BLACK_LEVEL 191
+#define CRT_PARAM_PORCH_LEVEL 63 //63, 120 and 191 worked a bit
+#define CRT_PARAM_BLACK_LEVEL 127
+#define CRT_PARAM_STRIPE_BLACK_LEVEL 197
 #define CRT_PARAM_WHITE_LEVEL 255
 
 #define CRT_PARAM_AMP_SHIFT 2
@@ -170,6 +171,15 @@ static void initVSyncRecipe(void)
 	evenSyncHalfScanTable[29] = fullLineHVideoBlack + (DAC_BUFFER_LEN * N_FRAMES_HALF_SCAN_LINE);
 };
 
+/* ... state variables ... */
+crtStates_t crtState;
+uint16_t lineNumber = 0;
+uint8_t * pVideoPage = NULL;
+static bool evenScan = false;
+static uint8_t ditherByNext = 1;
+static uint8_t numberOfScans = 0;
+static bool onlyOddFrame = false;
+
 /* Functions -----------------------------------------------------------------*/
 void bspDACSendBuffer(uint32_t * buffer, uint16_t len)
 {
@@ -214,11 +224,6 @@ void HAL_DAC_M1ConvCpltCallbackCh1(DAC_HandleTypeDef* hdac)
 	
 	hdac->DMA_Handle1->Instance->M1AR = (uint32_t)pData;
 }
-
-/* ... state variables ... */
-crtStates_t crtState;
-uint16_t lineNumber = 0;
-uint8_t * pVideoPage = NULL;
 
 void bspDACInit( void )
 {
@@ -319,12 +324,12 @@ void bspDACInit( void )
 				}
 				else
 				{
-					fullLineHVideoStripes[j] = CRT_PARAM_BLACK_LEVEL;
+					fullLineHVideoStripes[j] = CRT_PARAM_STRIPE_BLACK_LEVEL;
 				}
 			}
 			else
 			{
-				fullLineHVideoStripes[j] = CRT_PARAM_BLACK_LEVEL;
+				fullLineHVideoStripes[j] = CRT_PARAM_STRIPE_BLACK_LEVEL;
 			}
 		}
 		
@@ -419,18 +424,13 @@ void bspDACInit( void )
 	
 	//videoOutputActive = bufferA;
 	
-	//Starte with a black frame
+	//Start with a black frame
 	uint8_t * frame;
 	bspDACGetBufferBlank(&frame); //address of pointer
 	bspDACSwapBuffers();
 	
 	bspDACStartDMA();
 }
-
-static bool evenScan = false;
-static uint8_t ditherByNext = 1;
-static uint8_t numberOfScans = 0;
-static bool onlyOddFrame = false;
 
 static bool bspDACPopState( uint8_t ** ppData )
 {
