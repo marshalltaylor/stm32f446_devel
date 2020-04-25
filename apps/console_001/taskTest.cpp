@@ -1,3 +1,6 @@
+/* Includes -- STD -----------------------------------------------------------*/
+#include <stdio.h>
+
 //FreeRTOS system
 #include "FreeRTOS.h"
 #include "task.h"
@@ -7,9 +10,6 @@
 //FreeRTOS app
 #include "taskLog.h"
 #include "taskCommon.h"
-
-//BSP
-#include "bsp.h"
 
 //state inputs, not threadsafe
 bool genTestLog = false;
@@ -22,6 +22,8 @@ extern "C" void taskTestStart(void * argument)
 
 	uint16_t stamp_ms = 0;
 	uint8_t stamp_s = 0;
+	bool testValueStateIdle = true;
+	
 	while(1)
 	{
 		// Wait for event group
@@ -35,12 +37,30 @@ extern "C" void taskTestStart(void * argument)
             pdFALSE,       /* Don't wait for both bits, either bit will do. */
             100 );/* Wait a maximum of 100ms for either bit to be set. */
 			
+		if( ( uxBits & TEST_EVENT_1 ) == TEST_EVENT_1 )
+		{
+			if( testValueStateIdle )
+			{
+				testValueStateIdle = false;
+				
+				//Print through logger
+				strMsg_t * msg = new strMsg_t();
+				msg->id = 0;
+				sprintf( msg->data, "Test flagged" );
+				if(pdPASS != xQueueSend( logQueue, &msg, 1 ))
+				{
+					//TODO: error on send
+					delete msg;
+				}
+			}
+		}
+		else
+		{
+			//Clear
+			testValueStateIdle = true;
+		}
 		if( ( uxBits & TEST_EVENT_0 ) == TEST_EVENT_0 )
 		{
-//			runTestLoop = !runTestLoop;
-//		}
-//		if(runTestLoop)
-//		{
 			// Event has triggered, run it
 			stamp_ms += 50;
 			if(stamp_ms > 999)
@@ -55,12 +75,13 @@ extern "C" void taskTestStart(void * argument)
 			strMsg_t * msg = new strMsg_t();
 			
 			msg->id = 0;
-			sprintf( msg->data, "Test: %02d:%03d\n", stamp_s, stamp_ms );
+			sprintf( msg->data, "Test: %02d:%03d", stamp_s, stamp_ms );
 			if(pdPASS != xQueueSend( logQueue, &msg, 1 ))
 			{
 				//TODO: error on send
 				delete msg;
 			}
+			
 			vTaskDelay( 50 );
 		}
 	}

@@ -3,7 +3,6 @@
 #include "task.h"
 //#include "main_cubemx.h"
 
-#include "App.h"
 #include "bsp.h"
 
 #include "timers.h"

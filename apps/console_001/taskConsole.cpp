@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 /* Includes -- BSP -----------------------------------------------------------*/
 #include "bsp.h"
@@ -37,8 +39,9 @@ Logging consoleDebug;
 static comPortInterface_t console;
 TaskStatus_t pxTaskStatusArray[5];
 
-
 void delay(uint32_t delayInput);
+__attribute__((used)) static int cmdParser( int argc, char *argv[] );
+__attribute__((used)) void taskConsolePrintHelp(void);
 
 /* Functions -----------------------------------------------------------------*/
 void delay(uint32_t delayInput)
@@ -66,9 +69,11 @@ void taskConsolePrintStats(void)
 								uxArraySize,
 								&ulTotalRunTime );
 
+	localPrintf("%d\n", ulTotalRunTime);
 	/* For percentage calculations. */
 	ulTotalRunTime /= 100UL;
 	//ulTotalRunTime = 1; //fake it
+	localPrintf("%d\n", ulTotalRunTime);
 	
 	/* Avoid divide by zero errors. */
 	if( ulTotalRunTime > 0 )
@@ -107,15 +112,6 @@ void taskConsolePrintStats(void)
 	}
 }
 
-void taskConsolePrintHelp(void)
-{
-	localPrintf("Segment Video Test Console.\n");
-	localPrintf(" h: help\n");
-	localPrintf(" i: increment value\n");
-	localPrintf(" p: start peeking\n");
-	localPrintf(" 0 - 9: graphical tests\n");
-}
-
 #define CMDBUFFERSIZE 128
 
 //strMsg_t globoMsg = {0};
@@ -139,29 +135,81 @@ extern "C" void taskConsoleStart(void * argument)
 		if(console.bytesAvailable())
 		{
 			char c = (char)console.read();
-			localPrintf("%c", c);
-			// buffer data unle
 			if((c >= 0x20)&&(c < 0x80))
 			{
+				localPrintf("%c", c);
 				cmdBuffer[cmdBufferPtr] = c;
 				if(cmdBufferPtr < CMDBUFFERSIZE - 1)
 				{
 					cmdBufferPtr++;
 				}
 			}
+			else if(c == 0x08) // Backspace
+			{
+				cmdBuffer[cmdBufferPtr] = 0x00;
+				if(cmdBufferPtr > 0)
+				{
+					localPrintf("%c", 0x08);
+					localPrintf("%c", ' ');
+					localPrintf("%c", 0x08);
+					cmdBufferPtr--;
+				}
+			}
 			else if(c == '\n')
 			{
+				localPrintf("\n");
 				// Parse buffer
 				cmdBuffer[cmdBufferPtr] = 0x00;
 				//  here, cmdBufferPtr is length of string
-				localPrintf("%s\n", cmdBuffer);
-				//  call command handler
+				//localPrintf("%s\n", cmdBuffer);  // <-- USE TO DEBUG INPUT STRING
+				//  Identify first real char
+				int firstCharIndex = 0;
+				for(firstCharIndex = 0; (cmdBuffer[firstCharIndex] == ' ') && (firstCharIndex < cmdBufferPtr); firstCharIndex++)
+				{
+				}
+				int argc = 0;
+				if(firstCharIndex < cmdBufferPtr)
+				{
+					argc = 1;
+				}
+				
+				if(argc == 1)
+				{
+					//  Count instances of " <char>" in string and build args
+					int i;
+					for(i = firstCharIndex; i < (cmdBufferPtr - 1); i++)
+					{
+						if((cmdBuffer[i] == ' ')&&(cmdBuffer[i + 1] != ' '))
+						{
+							argc++;
+						}
+						if(cmdBuffer[i] == ' ')
+						{
+							cmdBuffer[i] = 0x00;
+						}
+					}
+					//localPrintf("arg count:%d\n", argc);
+					
+					char *argv[argc];
+					argv[0] = &cmdBuffer[firstCharIndex];
+					int index = 1;
+					
+					for(i = firstCharIndex; i < (cmdBufferPtr - 1); i++)
+					{
+						if((cmdBuffer[i] == 0x00)&&(cmdBuffer[i + 1] != 0x00))
+						{
+							argv[index] = &cmdBuffer[i + 1];
+							index++;
+						}
+					}
+					//  Call command handler
+					cmdParser(argc, argv);
+					localPrintf("\n");
+				}
 				// Reset
+				localPrintf(">");
 				cmdBufferPtr = 0;
 			}
-			
-			
-
 		}
 
 		uint16_t now = xTaskGetTickCount();
@@ -183,3 +231,157 @@ extern "C" void taskConsoleStart(void * argument)
 	}
 	
 }
+
+void taskConsolePrintHelp(void)
+{
+	localPrintf("Generic Console.\n");
+	localPrintf(" 'help' -- This list\n");
+	localPrintf(" 'stat' -- CPU usage\n");
+	localPrintf(" 'xq' -- \n");
+	localPrintf(" 'hello' -- \n");
+	localPrintf(" 'delay [task|load]' -- \n");
+	localPrintf(" 'bit [set|clr] <bit num>' -- \n");
+	localPrintf(" 'log [auto|default]' -- \n");
+}
+
+int cmdParser( int argc, char *argv[] )
+{
+	//if( argc == 2 )
+	//{
+	//	localPrintf("The argument supplied is %s\n", argv[1]);
+	//}
+	//else if( argc > 2 )
+	//{
+	//	localPrintf("Too many arguments supplied.\n");
+	//}
+	//else
+	//{
+	//	localPrintf("One argument expected.\n");
+	//}
+	if( argc > 0 )
+	{
+		if(0 == strcmp((const char*)argv[0], "help"))
+		{
+			taskConsolePrintHelp();
+		}
+		else if(0 == strcmp((const char*)argv[0], "stat"))
+		{
+			taskConsolePrintStats();
+		}
+		else if(0 == strcmp((const char*)argv[0], "xq"))
+		{
+			localPrintf("3");
+			delay(300);
+			localPrintf("2");
+			delay(300);
+			localPrintf("1");
+			delay(300);
+
+			strMsg_t * msg = new strMsg_t();
+
+			msg->id = -1;
+			msg->data[0] = '\0';
+			if(pdPASS != xQueueSend( logQueue, &msg, 0 ))
+			{
+				localPrintf(".dud");
+				delete msg;
+			}
+		}
+		else if(0 == strcmp((const char*)argv[0], "hello"))
+		{
+			strMsg_t * msg = new strMsg_t();
+
+			msg->id = 0;
+			sprintf( msg->data, "Hello world!\n");
+			if(pdPASS != xQueueSend( logQueue, &msg, 0 ))
+			{
+				//TODO: error on send
+				delete msg;
+			}
+		}
+		else if(0 == strcmp((const char*)argv[0], "delay"))
+		{
+			if(0 == strcmp((const char*)argv[1], "task"))
+			{
+				//Test delay times
+				localPrintf("\n");
+				localPrintf("Start time  %dms\n", millis());
+				vTaskDelay( 1000 );
+				localPrintf("Stop time   %dms\n", millis());
+				//localPrintf("tick count     %dms\n", xTaskGetTickCount());
+			}
+			else if(0 == strcmp((const char*)argv[1], "load"))
+			{
+				//Test delay times
+				localPrintf("L");
+				delay( 333 );
+				localPrintf("O");
+				delay( 333 );
+				localPrintf("A");
+				delay( 333 );
+				localPrintf("D");
+			}
+			else
+			{
+				localPrintf("Needs 'task' or 'load'\n");
+			}
+		}
+		else if(0 == strcmp((const char*)argv[0], "bit"))
+		{
+			EventBits_t uxBits = xEventGroupGetBits(xTestEventGroup);
+			if(argc < 3)
+			{
+				localPrintf("needs arg and value\n");
+			}
+			int intArg = atoi(argv[2]);
+			if((intArg < 0)||(intArg > 7))
+			{
+				localPrintf("value 0 - 7\n");
+			}
+			else
+			{
+				uint16_t testKeyMask = 0;
+				testKeyMask = 0x0001 << intArg;
+				if(0 == strcmp((const char*)argv[1], "set"))
+				{
+					uxBits |= testKeyMask;
+					xEventGroupSetBits(xTestEventGroup, testKeyMask );
+				}
+				else if(0 == strcmp((const char*)argv[1], "clr"))
+				{
+					uxBits &= ~testKeyMask;
+					xEventGroupClearBits(xTestEventGroup, testKeyMask );
+				}
+				else
+				{
+					localPrintf("Needs 'set' or 'clr'\n");
+				}
+			}
+			for(int i = 7; i >= 0; i--)
+			{
+				localPrintf("%d", (uxBits >> i)&0x0001);
+			}
+		}
+		else if(0 == strcmp((const char*)argv[0], "log"))
+		{
+			if(0 == strcmp((const char*)argv[1], "auto"))
+			{
+				consoleDebug.setMode(LOG_MODE_AUTO);
+			}
+			else if(0 == strcmp((const char*)argv[1], "default"))
+			{
+				consoleDebug.setMode(LOG_MODE_DEFAULT);
+			}
+			else
+			{
+				localPrintf("Needs 'auto' or 'default'\n");
+			}
+		}
+		else
+		{
+			localPrintf("Command not supported.  try 'help'\n");
+		}
+	}
+	return 0;
+}
+
