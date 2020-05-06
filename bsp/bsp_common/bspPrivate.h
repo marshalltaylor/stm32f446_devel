@@ -7,6 +7,8 @@ extern "C" {
 
 #include "bsp.h"
 
+void bspPwmSampleIsr(void);
+
 //Used for uart monitoring right now
 //extern bspTimerCallback_t timer4TickCallback;
 #ifdef __cplusplus

@@ -18,8 +18,12 @@ extern uint32_t fastRunTimeTicks; //from tim.c
 /* Functions -----------------------------------------------------------------*/
 void bspInit(void)
 {
-	// Without this garbage sysTick_Handler won't be linked?
-	volatile void * trash = SysTick_Handler;
+	//*** References to non-weak functions ***
+	//Some weak functions persist, so reference the real functions once
+	//early for the linker.
+	volatile void * trash;
+	trash = SysTick_Handler;
+	trash = HAL_TIM_TriggerCallback;
 	UNUSED(trash);
 
 	main_cubemx();

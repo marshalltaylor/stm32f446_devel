@@ -1,6 +1,7 @@
 #include "bsp.h"
 #include "debugUtilities.h"
 #include "tim.h"
+#include "bspPrivate.h"
 
 uint32_t usTicks = 0;
 uint32_t fastRunTimeTicks = 0;
@@ -30,8 +31,11 @@ uint32_t adcUsCounter = 0;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	//traceWrite(VIOLET, 1);
-
-	if(htim->Instance == TIM2)
+	if(htim->Instance == TIM1)
+	{
+		bspPwmSampleIsr();
+	}
+	else if(htim->Instance == TIM2)
 	{
 		//fast arbitrary run time ticker
 		fastRunTimeTicks++;
