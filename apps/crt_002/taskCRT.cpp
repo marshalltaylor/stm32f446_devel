@@ -1,25 +1,32 @@
 /* Includes -- STD -----------------------------------------------------------*/
 #include <stdio.h>
 
-//FreeRTOS system
+/* Includes -- BSP -----------------------------------------------------------*/
+
+/* Includes -- FreeRTOS system -----------------------------------------------*/
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
 #include "event_groups.h"
+#include "os.h"
 
-//FreeRTOS app
+/* Includes -- FreeRTOS app --------------------------------------------------*/
 #include "taskLog.h"
-#include "taskCommon.h"
+#include "taskCRT.h"
 
-#include "CRTVideo.h"
+/* Includes -- modules -------------------------------------------------------*/
+
+/* References ----------------------------------------------------------------*/
+#include "game.h"
+extern game_obj ufo;
 
 //state inputs, not threadsafe
 bool genTestLog = false;
 
-/* Declare a variable to hold the created event group. */
-EventGroupHandle_t xTestEventGroup;
+CRTVideo crt;
 
-extern CRTVideo crt;
+//Ext variables
+extern EventGroupHandle_t xTestEventGroup;
 
 extern "C" void taskCRTStart(void * argument)
 {
@@ -35,23 +42,7 @@ extern "C" void taskCRTStart(void * argument)
 	{
 		crt.writeChar(str[i]);
 	}
-	//uint8_t * buf = NULL;
-	//if(crt.getBlank(&buf))
-	//{
-	//	crt.console(buf);
-	//
-	//	crt.line(buf, 94, 6, 94+17, 72, 0xA0);
-	//	crt.line(buf, 94+17, 72, 94, 138, 0xA0);
-	//	crt.line(buf, 94, 138, 94-17, 72, 0xA0);
-	//	crt.line(buf, 94-17, 72, 94, 6, 0xA0);
-	//
-	//	crt.line(buf, 94, 10, 94+15, 72, 0xFF);
-	//	crt.line(buf, 94+15, 72, 94, 134, 0xFF);
-	//	crt.line(buf, 94, 134, 94-15, 72, 0xFF);
-	//	crt.line(buf, 94-15, 72, 94, 10, 0xFF);
-	//
-	//	crt.swap();
-	//}
+
 	while(1)
 	{
 		// Wait for event group
@@ -112,7 +103,16 @@ extern "C" void taskCRTStart(void * argument)
 			
 			vTaskDelay( 50 );
 		}
+		uxBits = xEventGroupGetBits( xTestEventGroup );
+		uxBits &= (0x01 << 5);
+		if(uxBits)
+		{
+			ufo.tick(&crt);
+		}
+		else
+		{
+			crt.drawFrame();
+		}
 		vTaskDelay( 33 );
-		crt.drawFrame();
 	}
 }

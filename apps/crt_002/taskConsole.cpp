@@ -14,10 +14,11 @@
 #include "task.h"
 #include "queue.h"
 #include "event_groups.h"
+#include "os.h"
 
 /* Includes -- FreeRTOS app --------------------------------------------------*/
 #include "taskLog.h"
-#include "taskCommon.h"
+#include "taskCRT.h"
 //#include "MidiClockDisplay.h"
 
 /* Includes -- modules -------------------------------------------------------*/
@@ -25,6 +26,8 @@
 #include "CRTVideo.h"
 
 /* References ----------------------------------------------------------------*/
+extern EventGroupHandle_t xTestEventGroup;
+
 #define USE_LOGGING
 #ifdef USE_LOGGING
 // Create logging object and macro for local printf
@@ -36,8 +39,6 @@ Logging consoleDebug;
 #define localPrintf bspPrintf
 
 #endif
-
-extern CRTVideo crt;
 
 char buffer[128];
 //Send output to two devices
@@ -70,8 +71,6 @@ TaskStatus_t pxTaskStatusArray[5];
 void delay(uint32_t delayInput);
 __attribute__((used)) static int cmdParser( int argc, char *argv[] );
 __attribute__((used)) void taskConsolePrintHelp(void);
-
-CRTVideo crt;
 
 /* Functions -----------------------------------------------------------------*/
 void delay(uint32_t delayInput)
@@ -240,8 +239,16 @@ extern "C" void taskConsoleStart(void * argument)
 				localPrintf(">");
 				cmdBufferPtr = 0;
 			}
+			//Ctrl chars
+			else if(c == 0x03) // Ctrl-c
+			{
+				//if game, switch to console
+				localPrintf("ctrl-c caught\n");
+				uint16_t bitMask = 0x0001 << 5; //bit 0
+				xEventGroupClearBits(xTestEventGroup, bitMask );
+			}
 		}
-
+		
 		uint16_t now = xTaskGetTickCount();
 		if(now > nextUpdate)
 		{
@@ -251,13 +258,8 @@ extern "C" void taskConsoleStart(void * argument)
 				nextUpdate -= 0xFFFF;
 			}
 		}
-		// Clock segment driver
-		vTaskDelay( 5 );
-//		Segments.tickValueStateMachine(millis());
-
-//		Segments.processEffects();
-//		Segments.writeNextFrame();
 		
+		vTaskDelay( 5 );
 	}
 	
 }
@@ -293,6 +295,13 @@ int cmdParser( int argc, char *argv[] )
 		if(0 == strcmp((const char*)argv[0], "help"))
 		{
 			taskConsolePrintHelp();
+		}
+		else if(0 == strcmp((const char*)argv[0], "ufo"))
+		{
+			//start task
+			//set video ctrl bit
+			uint16_t bitMask = 0x0001 << 5; //bit 0
+			xEventGroupSetBits(xTestEventGroup, bitMask);
 		}
 		else if(0 == strcmp((const char*)argv[0], "stat"))
 		{

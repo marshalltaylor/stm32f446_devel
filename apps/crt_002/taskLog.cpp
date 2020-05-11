@@ -15,7 +15,6 @@
 
 /* Includes -- FreeRTOS app --------------------------------------------------*/
 #include "taskLog.h"
-#include "taskCommon.h"
 
 /* Includes -- modules -------------------------------------------------------*/
 #include "logging.h"

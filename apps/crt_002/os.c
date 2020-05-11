@@ -10,10 +10,18 @@
 #include "semphr.h"
 #include "event_groups.h"
 
-#include "taskCommon.h"
 #include "taskLog.h"
 
+/* Declare a variable to hold the created event group. */
+EventGroupHandle_t xTestEventGroup;
+
+//Tasks
+extern void taskCRTStart(void * argument);
+extern void taskConsoleStart(void * argument);
+
 extern void xPortSysTickHandler(void);
+
+extern EventGroupHandle_t xTestEventGroup;
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 

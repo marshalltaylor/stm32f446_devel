@@ -14,7 +14,8 @@ main.c \
 os.c \
 taskCRT.cpp \
 taskConsole.cpp \
-taskLog.cpp
+taskLog.cpp \
+game.cpp
 
 SOURCE_DIRS = . \
 
