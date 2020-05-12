@@ -104,12 +104,19 @@ extern "C" void taskCRTStart(void * argument)
 			vTaskDelay( 50 );
 		}
 		uxBits = xEventGroupGetBits( xTestEventGroup );
-		uxBits &= (0x01 << 5);
-		if(uxBits)
+		if(uxBits & 0x20)
 		{
 			ufo.tick(&crt);
 		}
-		else
+		else if(uxBits & 0x40)
+		{
+			uint8_t * buf = NULL;
+			if(crt.getBlank(&buf))
+			{
+				crt.swap();
+			}
+		}
+
 		{
 			crt.drawFrame();
 		}

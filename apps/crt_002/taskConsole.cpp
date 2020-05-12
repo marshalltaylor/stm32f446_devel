@@ -246,6 +246,8 @@ extern "C" void taskConsoleStart(void * argument)
 				localPrintf("ctrl-c caught\n");
 				uint16_t bitMask = 0x0001 << 5; //bit 0
 				xEventGroupClearBits(xTestEventGroup, bitMask );
+				bitMask = 0x0001 << 6; //bit 0
+				xEventGroupClearBits(xTestEventGroup, bitMask );
 			}
 		}
 		
