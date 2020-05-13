@@ -18,6 +18,9 @@
 
 /* References ----------------------------------------------------------------*/
 #include "game.h"
+#include "videoData.h"
+#include "bitmaps.h"
+
 extern game_obj ufo;
 
 //state inputs, not threadsafe
@@ -113,6 +116,24 @@ extern "C" void taskCRTStart(void * argument)
 			uint8_t * buf = NULL;
 			if(crt.getBlank(&buf))
 			{
+				Sprite mySprite;
+				mySprite.xPos = 0;
+				mySprite.yPos = 0;
+				mySprite.width = 192;
+				mySprite.height = 144;
+				mySprite.srcFile = &game_data;//testImage;
+				mySprite.prevSprite = NULL;
+				mySprite.nextSprite = NULL;
+				
+				layer_t myLayer;
+				myLayer.xOffset = 0;
+				myLayer.yOffset = 0;
+				myLayer.width = 192;
+				myLayer.height = 144;
+				myLayer.spriteLL = &mySprite;
+				
+				crt.drawLayer(buf, &myLayer);
+				
 				crt.swap();
 			}
 		}

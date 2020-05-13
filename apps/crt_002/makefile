@@ -15,7 +15,9 @@ os.c \
 taskCRT.cpp \
 taskConsole.cpp \
 taskLog.cpp \
-game.cpp
+game.cpp \
+videoData.cpp \
+game_data_001.cpp
 
 SOURCE_DIRS = . \
 

@@ -15,10 +15,11 @@
 /* Includes -- modules -------------------------------------------------------*/
 #include "CRTVideo.h"
 
-/* References ----------------------------------------------------------------*/
 #include "game.h"
+#include "videoData.h"
+#include "bitmaps.h"
 
-
+/* References ----------------------------------------------------------------*/
 game_obj ufo;
 
 game_obj::game_obj(void)
