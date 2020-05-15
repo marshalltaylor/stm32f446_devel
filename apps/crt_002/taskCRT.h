@@ -6,8 +6,9 @@ extern "C" {
 #endif
 
 #include "CRTVideo.h"
+#include "game.h"
 
-extern CRTVideo crt;
+extern graphics_obj crt;
 
 void taskCRTStart(void * argument);
 
