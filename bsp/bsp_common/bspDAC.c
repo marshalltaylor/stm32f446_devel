@@ -432,7 +432,7 @@ void bspDACInit( void )
 	
 	//Start with a black frame
 	uint8_t * frame;
-	bspDACGetBufferBlank(&frame); //address of pointer
+	bspDACGetBufferBlank(&frame, 0x00); //address of pointer
 	bspDACSwapBuffers();
 	
 	bspDACStartDMA();
@@ -678,8 +678,9 @@ bool bspDACGetBufferCopy(uint8_t ** output)
 	return true;
 }
 
-bool bspDACGetBufferBlank(uint8_t ** output)
+bool bspDACGetBufferBlank(uint8_t ** output, uint8_t fill)
 {
+	fill = (fill >> 2) + CRT_PARAM_BLACK_LEVEL;
 	if(swapPending)
 	{
 		return false;
@@ -687,12 +688,12 @@ bool bspDACGetBufferBlank(uint8_t ** output)
 	//else
 	if(frameAActive)
 	{
-		memset(frameB, CRT_PARAM_BLACK_LEVEL, PX_PER_FRAME);
+		memset(frameB, fill, PX_PER_FRAME);
 		*output = frameB;
 	}
 	else
 	{
-		memset(frameA, CRT_PARAM_BLACK_LEVEL, PX_PER_FRAME);
+		memset(frameA, fill, PX_PER_FRAME);
 		*output = frameA;
 	}
 	return true;

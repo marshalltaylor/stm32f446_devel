@@ -86,7 +86,7 @@ void bspDACStartDMA(void);
 
 bool bspDACGetBufferStale(uint8_t ** output);
 bool bspDACGetBufferCopy(uint8_t ** output);
-bool bspDACGetBufferBlank(uint8_t ** output);
+bool bspDACGetBufferBlank(uint8_t ** output, uint8_t fill);
 
 void bspDACSwapBuffers(void);
 void bspDACInterlace(bool input);

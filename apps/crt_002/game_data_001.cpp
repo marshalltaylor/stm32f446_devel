@@ -8,6 +8,7 @@
 /* Includes -- BSP -----------------------------------------------------------*/
 
 #include "bitmaps.h"
+#include "game_data_001.h"
 
 /* References ----------------------------------------------------------------*/
 
@@ -159,4 +160,97 @@ uint8_t game_data_001_map[] = {
   0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 0x6e, 
 };
 
-bitmap_file_t game_data = {192, 144, 32, 32, game_data_001_map};
+bitmap_file_t game_data_file = {192, 144, 32, 32, game_data_001_map};
+bitmap_file_t half_tile_game_data_file = {192, 144, 16, 16, game_data_001_map};
+
+GameData game_data;
+
+GameData::GameData(void)
+{
+	img_cow.type = BITMAP_1X1;
+	img_cow.srcFile = &game_data_file;
+	img_cow.data = &img_cow.tileTable;
+	img_cow.tileTable = 8;
+
+	img_cow_eat.type = BITMAP_1X1;
+	img_cow_eat.srcFile = &game_data_file;
+	img_cow_eat.data = &img_cow_eat.tileTable;
+	img_cow_eat.tileTable = 14;
+
+	img_cow_lift.type = BITMAP_1X1;
+	img_cow_lift.srcFile = &game_data_file;
+	img_cow_lift.data = &img_cow_lift.tileTable;
+	img_cow_lift.tileTable = 2;
+
+	img_bush.type = BITMAP_1X1;
+	img_bush.srcFile = &game_data_file;
+	img_bush.data = &img_bush.tileTable;
+	img_bush.tileTable = 15;
+
+	img_ufo_land.type = BITMAP_1X1;
+	img_ufo_land.srcFile = &game_data_file;
+	img_ufo_land.data = &img_ufo_land.tileTable;
+	img_ufo_land.tileTable = 18;
+
+	img_ufo_fly.type = BITMAP_1X1;
+	img_ufo_fly.srcFile = &game_data_file;
+	img_ufo_fly.data = &img_ufo_fly.tileTable;
+	img_ufo_fly.tileTable = 19;
+
+	img_ufo_left.type = BITMAP_1X1;
+	img_ufo_left.srcFile = &game_data_file;
+	img_ufo_left.data = &img_ufo_left.tileTable;
+	img_ufo_left.tileTable = 21;
+
+	img_ufo_right.type = BITMAP_1X1;
+	img_ufo_right.srcFile = &game_data_file;
+	img_ufo_right.data = &img_ufo_right.tileTable;
+	img_ufo_right.tileTable = 20;
+
+	img_star_1.type = BITMAP_1X1;
+	img_star_1.srcFile = &half_tile_game_data_file;
+	img_star_1.data = &img_star_1.tileTable;
+	img_star_1.tileTable = 57;
+
+	img_star_2.type = BITMAP_1X1;
+	img_star_2.srcFile = &half_tile_game_data_file;
+	img_star_2.data = &img_star_2.tileTable;
+	img_star_2.tileTable = 41;
+
+	img_star_3.type = BITMAP_1X1;
+	img_star_3.srcFile = &half_tile_game_data_file;
+	img_star_3.data = &img_star_3.tileTable;
+	img_star_3.tileTable = 56;
+
+	img_star_4.type = BITMAP_1X1;
+	img_star_4.srcFile = &half_tile_game_data_file;
+	img_star_4.data = &img_star_4.tileTable;
+	img_star_4.tileTable = 40;
+
+	img_path.type = BITMAP_1X1;
+	img_path.srcFile = &game_data_file;
+	img_path.data = &img_path.tileTable;
+	img_path.tileTable = 5;
+
+	img_path_jog.type = BITMAP_1X1;
+	img_path_jog.srcFile = &game_data_file;
+	img_path_jog.data = &img_path_jog.tileTable;
+	img_path_jog.tileTable = 4;
+
+	img_tree.type = BITMAP_1X2;
+	img_tree.srcFile = &game_data_file;
+	img_tree.data = img_tree.tileTable;
+	img_tree.tileTable[0] = 3;
+	img_tree.tileTable[1] = 9;
+
+	img_ufo_beam.type = BITMAP_2X3;
+	img_ufo_beam.srcFile = &game_data_file;
+	img_ufo_beam.data = img_ufo_beam.tileTable;
+	img_ufo_beam.tileTable[0] = 0;
+	img_ufo_beam.tileTable[1] = 1;
+	img_ufo_beam.tileTable[2] = 6;
+	img_ufo_beam.tileTable[3] = 7;
+	img_ufo_beam.tileTable[4] = 12;
+	img_ufo_beam.tileTable[5] = 13;
+
+}

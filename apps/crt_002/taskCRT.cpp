@@ -115,26 +115,26 @@ extern "C" void taskCRTStart(void * argument)
 		else if(uxBits & 0x40)
 		{
 			uint8_t * buf = NULL;
-			if(crt.getBlank(&buf))
+			if(crt.getBlank(&buf, 0x00))
 			{
-				Sprite mySprite;
-				mySprite.xPos = 40;
-				mySprite.yPos = 40;
-				mySprite.width = 32;
-				mySprite.height = 32;
-				mySprite.srcFile = &game_data;//testImage;
-				mySprite.index = 19;
-				mySprite.prevSprite = NULL;
-				mySprite.nextSprite = NULL;
-				
-				layer_t myLayer;
-				myLayer.xOffset = 0;
-				myLayer.yOffset = 0;
-				myLayer.width = 192;
-				myLayer.height = 144;
-				myLayer.spriteLL = &mySprite;
-				
-				crt.drawLayer(buf, &myLayer);
+				//Sprite mySprite;
+				//mySprite.xPos = 40;
+				//mySprite.yPos = 40;
+				//mySprite.width = 32;
+				//mySprite.height = 32;
+				//mySprite.srcFile = &game_data;//testImage;
+				//mySprite.index = 19;
+				//mySprite.prevSprite = NULL;
+				//mySprite.nextSprite = NULL;
+				//
+				//layer_t myLayer;
+				//myLayer.xOffset = 0;
+				//myLayer.yOffset = 0;
+				//myLayer.width = 192;
+				//myLayer.height = 144;
+				//myLayer.spriteLL = &mySprite;
+				//
+				//crt.drawLayer(buf, &myLayer);
 				
 				crt.swap();
 			}
