@@ -157,14 +157,20 @@ extern "C" void taskConsoleStart(void * argument)
 
 	taskConsolePrintHelp();
 	
+	//set video ctrl bit -- DEFAULT RUN UFO
+	uint16_t bitMask = 0x0001 << 5; //bit 0
+	xEventGroupSetBits(xTestEventGroup, bitMask);
+
 	char cmdBuffer[CMDBUFFERSIZE];
 	uint16_t cmdBufferPtr = 0;
 	uint16_t escMode = 0;
-	bool sendMsg = false;
-	
+
+	#define NUM_BUTTONS 10
+	int8_t buttonStates[NUM_BUTTONS] = {0};
 	while(1)
 	{
-		if(console.bytesAvailable())
+		int8_t buttonInput[NUM_BUTTONS] = {0};
+		while(console.bytesAvailable())
 		{
 			char c = (char)console.read();
 			EventBits_t uxBits = xEventGroupGetBits( xTestEventGroup );
@@ -203,48 +209,29 @@ extern "C" void taskConsoleStart(void * argument)
 						}
 						break;
 						case 2:
-						//localPrintf("ESC 2\n");
-						sendMsg = true;
+						//localPrintf("ESC 2\n");       buttonInput[]
+						{
+							switch(c)
+							{
+								case 'A':
+								buttonInput[0] = 1;
+								break;
+								case 'B':
+								buttonInput[1] = 1;
+								break;
+								case 'C':
+								buttonInput[2] = 1;
+								break;
+								case 'D':
+								buttonInput[3] = 1;
+								break;
+							}
+						}
 						escMode = 0;
 						break;
 						default:
 						case 0:
 						break;
-					}
-					if(sendMsg)
-					{
-						//Send to game
-						gameControlInput_t * msg = new gameControlInput_t();
-						msg->button = -1;
-						msg->state = -1;
-						switch(c)
-						{
-							case 'A':
-							msg->button = 1;
-							break;
-							case 'B':
-							msg->button = 2;
-							break;
-							case 'C':
-							msg->button = 3;
-							break;
-							case 'D':
-							msg->button = 4;
-							break;
-						}
-						if( msg->button != -1 )
-						{
-							if(pdPASS != xQueueSend( controlQueue, &msg, 0 ))
-							{
-								localPrintf(".dud");
-								delete msg;
-							}
-						}
-						else
-						{
-							delete msg;
-						}
-						sendMsg = false;
 					}
 				}
 			}
@@ -327,6 +314,23 @@ extern "C" void taskConsoleStart(void * argument)
 				}
 			}
 		}
+		for(int i = 0; i < NUM_BUTTONS; i++)
+		{
+			if(buttonInput[i] != buttonStates[i])
+			{
+				buttonStates[i] = buttonInput[i];
+				//Send to game
+				gameControlInput_t * msg = new gameControlInput_t();
+				msg->button = i;
+				msg->state = buttonStates[i];
+				if(pdPASS != xQueueSend( controlQueue, &msg, 0 ))
+				{
+					localPrintf(".dud");
+					delete msg;
+				}
+				localPrintf("button %d, %d\n", i, buttonStates[i]);
+			}
+		}
 		
 		uint16_t now = xTaskGetTickCount();
 		if(now > nextUpdate)
@@ -338,7 +342,7 @@ extern "C" void taskConsoleStart(void * argument)
 			}
 		}
 		
-		vTaskDelay( 5 );
+		vTaskDelay( 50 );
 	}
 	
 }

@@ -3,7 +3,7 @@
 //#include <stdbool.h>
 //#include <stdarg.h>
 #include <stdio.h>
-//#include <string.h>
+#include <string.h>
 #include <stdlib.h>
 
 /* Includes -- BSP -----------------------------------------------------------*/
@@ -47,10 +47,18 @@ game_obj::game_obj(void)
 {
 	theUfo.xPos = 40;
 	theUfo.yPos = 40;
-	xScreen = 40;
-	yScreen = 40;
+	theUfo.xScreen = 40;
+	theUfo.yScreen = 40;
+	theUfo.xDamping = 0.05;
+	theUfo.yGravity = 0.05;
 	
-	theUfo.bitmap = &(game_data.img_ufo_fly);
+	theUfo.bitmap = &(game_data.img_ufo_land);
+	theUfo.frames[0] = &(game_data.img_ufo_land);
+	theUfo.frames[1] = &(game_data.img_ufo_fly);
+	theUfo.frames[2] = &(game_data.img_ufo_left);
+	theUfo.frames[3] = &(game_data.img_ufo_right);
+	
+	theUfo.state = UFO_STATE_HOVER;
 
 	bush.bitmap = &(game_data.img_bush);
 
@@ -67,6 +75,8 @@ game_obj::game_obj(void)
 	scenery[0].data_pack = myTestLayer;
 	scenery[0].xOffset = 0;
 	scenery[0].yOffset = 0;
+	
+	memset(buttonStates, 0x00, NUM_BUTTONS);
 }
 
 void game_obj::tick(CRTVideo * video)
@@ -74,50 +84,37 @@ void game_obj::tick(CRTVideo * video)
 	gameControlInput_t * msg = NULL;
 	while(xQueueReceive( controlQueue, &msg, 0 ) == pdPASS)
 	{
-		//print output
-		switch( msg->button )
+		buttonStates[msg->button] = msg->state;
+		
+		if((buttonStates[0] > 0) ^ (buttonStates[1] > 0))
 		{
-			case 1:
-			theUfo.yPos -= 5;
-			yScreen -= 5;
-			break;
-			case 2:
-			theUfo.yPos += 5;
-			yScreen += 5;
-			break;
-			case 3:
-			theUfo.xPos += 5;
-			xScreen += 5;
-			break;
-			case 4:
-			theUfo.xPos -= 5;
-			xScreen -= 5;
-			break;
-			default:
+			if(buttonStates[0] > 0)
 			{
-				//localPrintf("msg button: 0x%X, state: %s\n", msg->button, msg->state);
-				break;
+				theUfo.yStick(-0.2);
+			}
+			else
+			{
+				theUfo.yStick(0.2);
 			}
 		}
-		if(xScreen < 30)
+		else
 		{
-			xScreen = 30;
-			scenery[0].xOffset = theUfo.xPos - 30;
+			theUfo.yStick(0);
 		}
-		else if(xScreen > 160)
+		if((buttonStates[2] > 0) ^ (buttonStates[3] > 0))
 		{
-			xScreen = 160;
-			scenery[0].xOffset = theUfo.xPos - 160;
+			if(buttonStates[2] > 0)
+			{
+				theUfo.xStick(0.4);
+			}
+			else
+			{
+				theUfo.xStick(-0.4);
+			}
 		}
-		if(yScreen < 30)
+		else
 		{
-			yScreen = 30;
-			scenery[0].yOffset = theUfo.yPos - 30;
-		}
-		else if(yScreen > 100)
-		{
-			yScreen = 100;
-			scenery[0].yOffset = theUfo.yPos - 100;
+			theUfo.xStick(0);
 		}
 		delete msg;
 	}
@@ -127,8 +124,11 @@ void game_obj::tick(CRTVideo * video)
 	//if(theUfo.xPos >= 192 - 32) theUfo.xPos = 0;
 	//theUfo.yPos++;
 	//if(theUfo.yPos >= 144 - 32) theUfo.yPos = 0;
+	theUfo.tick();
 	
-	
+	scenery[0].xOffset = theUfo.xView;
+	scenery[0].yOffset = theUfo.yView;
+
 /***** Draw frame *****/
 	uint8_t * buf = NULL;
 	if(video->getBlank(&buf, 0xFF))
@@ -156,7 +156,7 @@ void game_obj::tick(CRTVideo * video)
 		
 		scenery[0].draw(video, buf);
 		
-		video->drawBitmap(buf, theUfo.bitmap, xScreen, yScreen);
+		video->drawBitmap(buf, theUfo.bitmap, theUfo.xScreen, theUfo.yScreen);
 		//video->drawBitmap(buf, theUfo.bitmap, theUfo.xPos, theUfo.yPos);
 		video->swap();
 	}
@@ -191,3 +191,142 @@ void Background::draw(CRTVideo * video, uint8_t * dst)
 		}
 	}
 }
+
+void PlayerUfo::tick(void)
+{
+	impulse(xThrust, yThrust);
+	if(xVelocity == 0)
+	{
+	}
+	else if(xVelocity > 0)
+	{
+		xVelocity -= xDamping;
+		if(xVelocity < 0) xVelocity = 0;
+	}
+	else if(xVelocity < 0)
+	{
+		xVelocity += xDamping;
+		if(xVelocity > 0) xVelocity = 0;
+	}
+	//Process velo
+	xPos += xVelocity;
+	xScreen += xVelocity;
+	
+	switch(state)
+	{
+		case UFO_STATE_LANDED:
+		{
+			bitmap = frames[0];
+			if(yVelocity < 0)
+			{
+				yVelocity += yGravity;
+				state = UFO_STATE_FLYING;
+			}
+			else if(yVelocity > 0.1)
+			{
+				yVelocity *= -0.2;
+			}
+			else
+			{
+				yVelocity = 0;
+			}
+		}
+		break;
+		case UFO_STATE_HOVER:
+		{
+			if((yVelocity > 0.3)||(yVelocity < -0.3))
+			{
+				state = UFO_STATE_FLYING;
+			}
+		}
+		case UFO_STATE_FLYING:
+		{
+			if(state == UFO_STATE_HOVER)
+			{
+				yVelocity += (yGravity * 0.04);
+			}
+			else
+			{
+				yVelocity += yGravity;
+			}
+			if(xVelocity > 1)
+			{
+				bitmap = frames[3];
+			}
+			else if(xVelocity < -1)
+			{
+				bitmap = frames[2];
+			}
+			else
+			{
+				bitmap = frames[1];
+			}
+		}
+		break;
+		default:
+		state = UFO_STATE_FLYING;
+		break;
+	}
+
+	//Ground
+	yPos += yVelocity;
+	yScreen += yVelocity;
+	if(yPos > 120)
+	{
+		state = UFO_STATE_LANDED;
+	}
+
+	//Bounds
+	if(xScreen < 16)
+	{
+		xScreen = 16;
+		xView = xPos - 16;
+	}
+	else if(xScreen > 145)
+	{
+		xScreen = 145;
+		xView = xPos - 145;
+	}
+	if(yScreen < 16)
+	{
+		yScreen = 16;
+		yView = yPos - 16;
+	}
+	else if(yScreen > 100)
+	{
+		yScreen = 100;
+		yView = yPos - 100;
+	}
+}
+
+void PlayerUfo::impulse(float xMag, float yMag)
+{
+	xVelocity += xMag;
+	yVelocity += yMag;
+}
+
+void PlayerUfo::xStick(float in)
+{
+	if(in > 0)
+	{
+		if( xVelocity < -2) xVelocity = -2;
+	}
+	else if(in < 0)
+	{
+		if( xVelocity > 2) xVelocity = 2;
+	}
+	xThrust = in;
+}
+
+void PlayerUfo::yStick(float in)
+{
+	if(yPos < 100)
+	{
+		if((yVelocity < 0.30)&&(yVelocity > -0.30))
+		{
+			state = UFO_STATE_HOVER;
+		}
+	}
+	yThrust = in;
+}
+

@@ -9,12 +9,44 @@ class Sprite
 {
 public:
 	Sprite(void){};
-	uint16_t xPos;
-	uint16_t yPos;
 	virtual_bitmap_type_t * bitmap;
+//	
+//	Sprite * prevSprite = 0;
+//	Sprite * nextSprite = 0;
+};
+
+typedef enum playerUfoStates
+{
+	UFO_STATE_LANDED,
+	UFO_STATE_FLYING,
+	UFO_STATE_HOVER
+} playerUfoStates_t;
+
+class PlayerUfo : public Sprite
+{
+public:
+	void tick(void);
+	void impulse(float xMag, float yMag);
+	void xStick(float in);
+	void yStick(float in);
 	
-	Sprite * prevSprite = 0;
-	Sprite * nextSprite = 0;
+	int16_t xView;
+	int16_t yView;
+	float xPos;
+	float yPos;
+	float xScreen;
+	float yScreen;
+	float xVelocity;
+	float yVelocity;
+	float xDamping;
+	float yGravity;
+	float xThrust;
+	float yThrust;
+	virtual_bitmap_type_t * frames[4];
+	
+	playerUfoStates_t state;
+	
+private:
 };
 
 // A sprite list contains a list of xy pairs.  Set as const in table/
@@ -61,16 +93,16 @@ class graphics_obj : public CRTVideo
 public:
 //	bool drawLayer(uint8_t * dst, Layer * src);
 };
-
+#define NUM_BUTTONS 10
 class game_obj
 {
 public:
 	game_obj(void);
 	void tick(CRTVideo * video);
 	//Sprite staticTestImage;
-	Sprite theUfo;
-	int16_t xScreen;
-	int16_t yScreen;
+
+	PlayerUfo theUfo;
+
 	Sprite tree;
 	Sprite bush;
 	Sprite path[2];
@@ -79,6 +111,8 @@ public:
 	
 	Background scenery[1];
 private:
+
+	int8_t buttonStates[NUM_BUTTONS];
 };
 
 #endif
