@@ -142,6 +142,7 @@ void taskConsolePrintStats(void)
 }
 
 #define CMDBUFFERSIZE 128
+extern QueueHandle_t controlQueue;
 
 //strMsg_t globoMsg = {0};
 extern "C" void taskConsoleStart(void * argument)
@@ -158,96 +159,172 @@ extern "C" void taskConsoleStart(void * argument)
 	
 	char cmdBuffer[CMDBUFFERSIZE];
 	uint16_t cmdBufferPtr = 0;
+	uint16_t escMode = 0;
+	bool sendMsg = false;
 	
 	while(1)
 	{
 		if(console.bytesAvailable())
 		{
 			char c = (char)console.read();
-			if((c >= 0x20)&&(c < 0x80))
+			EventBits_t uxBits = xEventGroupGetBits( xTestEventGroup );
+			if(uxBits & 0x20)
 			{
-				localPrintf("%c", c);
-				cmdBuffer[cmdBufferPtr] = c;
-				if(cmdBufferPtr < CMDBUFFERSIZE - 1)
-				{
-					cmdBufferPtr++;
-				}
-			}
-			else if(c == 0x08) // Backspace
-			{
-				cmdBuffer[cmdBufferPtr] = 0x00;
-				if(cmdBufferPtr > 0)
-				{
-					localPrintf("%c", 0x08);
-					localPrintf("%c", ' ');
-					localPrintf("%c", 0x08);
-					cmdBufferPtr--;
-				}
-			}
-			else if(c == '\n')
-			{
-				localPrintf("\n");
-				// Parse buffer
-				cmdBuffer[cmdBufferPtr] = 0x00;
-				//  here, cmdBufferPtr is length of string
-				//localPrintf("%s\n", cmdBuffer);  // <-- USE TO DEBUG INPUT STRING
-				//  Identify first real char
-				int firstCharIndex = 0;
-				for(firstCharIndex = 0; (cmdBuffer[firstCharIndex] == ' ') && (firstCharIndex < cmdBufferPtr); firstCharIndex++)
-				{
-				}
-				int argc = 0;
-				if(firstCharIndex < cmdBufferPtr)
-				{
-					argc = 1;
-				}
+				//In game behavior
 				
-				if(argc == 1)
+				//Ctrl chars
+				if(c == 0x03) // Ctrl-c
 				{
-					//  Count instances of " <char>" in string and build args
-					int i;
-					for(i = firstCharIndex; i < (cmdBufferPtr - 1); i++)
-					{
-						if((cmdBuffer[i] == ' ')&&(cmdBuffer[i + 1] != ' '))
-						{
-							argc++;
-						}
-						if(cmdBuffer[i] == ' ')
-						{
-							cmdBuffer[i] = 0x00;
-						}
-					}
-					//localPrintf("arg count:%d\n", argc);
-					
-					char *argv[argc];
-					argv[0] = &cmdBuffer[firstCharIndex];
-					int index = 1;
-					
-					for(i = firstCharIndex; i < (cmdBufferPtr - 1); i++)
-					{
-						if((cmdBuffer[i] == 0x00)&&(cmdBuffer[i + 1] != 0x00))
-						{
-							argv[index] = &cmdBuffer[i + 1];
-							index++;
-						}
-					}
-					//  Call command handler
-					cmdParser(argc, argv);
-					localPrintf("\n");
+					//if game, switch to console
+					localPrintf("ctrl-c caught\n");
+					uint16_t bitMask = 0x0001 << 5; //bit 0
+					xEventGroupClearBits(xTestEventGroup, bitMask );
+					bitMask = 0x0001 << 6; //bit 0
+					xEventGroupClearBits(xTestEventGroup, bitMask );
 				}
-				// Reset
-				localPrintf(">");
-				cmdBufferPtr = 0;
+				else
+				{
+					if(c == 0x1B) //esc
+					{
+						//localPrintf("ESC GO\n");
+						escMode = 1;
+					}
+					else switch(escMode)
+					{
+						case 1:
+						//localPrintf("ESC 1\n");
+						if(c == '[')
+						{
+							escMode = 2;
+						}
+						else
+						{
+							escMode = 0;
+						}
+						break;
+						case 2:
+						//localPrintf("ESC 2\n");
+						sendMsg = true;
+						escMode = 0;
+						break;
+						default:
+						case 0:
+						break;
+					}
+					if(sendMsg)
+					{
+						//Send to game
+						gameControlInput_t * msg = new gameControlInput_t();
+						msg->button = -1;
+						msg->state = -1;
+						switch(c)
+						{
+							case 'A':
+							msg->button = 1;
+							break;
+							case 'B':
+							msg->button = 2;
+							break;
+							case 'C':
+							msg->button = 3;
+							break;
+							case 'D':
+							msg->button = 4;
+							break;
+						}
+						if( msg->button != -1 )
+						{
+							if(pdPASS != xQueueSend( controlQueue, &msg, 0 ))
+							{
+								localPrintf(".dud");
+								delete msg;
+							}
+						}
+						else
+						{
+							delete msg;
+						}
+						sendMsg = false;
+					}
+				}
 			}
-			//Ctrl chars
-			else if(c == 0x03) // Ctrl-c
+			else //console behavior
 			{
-				//if game, switch to console
-				localPrintf("ctrl-c caught\n");
-				uint16_t bitMask = 0x0001 << 5; //bit 0
-				xEventGroupClearBits(xTestEventGroup, bitMask );
-				bitMask = 0x0001 << 6; //bit 0
-				xEventGroupClearBits(xTestEventGroup, bitMask );
+				if((c >= 0x20)&&(c < 0x80))
+				{
+					localPrintf("%c", c);
+					cmdBuffer[cmdBufferPtr] = c;
+					if(cmdBufferPtr < CMDBUFFERSIZE - 1)
+					{
+						cmdBufferPtr++;
+					}
+				}
+				else if(c == 0x08) // Backspace
+				{
+					cmdBuffer[cmdBufferPtr] = 0x00;
+					if(cmdBufferPtr > 0)
+					{
+						localPrintf("%c", 0x08);
+						localPrintf("%c", ' ');
+						localPrintf("%c", 0x08);
+						cmdBufferPtr--;
+					}
+				}
+				else if(c == '\n')
+				{
+					localPrintf("\n");
+					// Parse buffer
+					cmdBuffer[cmdBufferPtr] = 0x00;
+					//  here, cmdBufferPtr is length of string
+					//localPrintf("%s\n", cmdBuffer);  // <-- USE TO DEBUG INPUT STRING
+					//  Identify first real char
+					int firstCharIndex = 0;
+					for(firstCharIndex = 0; (cmdBuffer[firstCharIndex] == ' ') && (firstCharIndex < cmdBufferPtr); firstCharIndex++)
+					{
+					}
+					int argc = 0;
+					if(firstCharIndex < cmdBufferPtr)
+					{
+						argc = 1;
+					}
+					
+					if(argc == 1)
+					{
+						//  Count instances of " <char>" in string and build args
+						int i;
+						for(i = firstCharIndex; i < (cmdBufferPtr - 1); i++)
+						{
+							if((cmdBuffer[i] == ' ')&&(cmdBuffer[i + 1] != ' '))
+							{
+								argc++;
+							}
+							if(cmdBuffer[i] == ' ')
+							{
+								cmdBuffer[i] = 0x00;
+							}
+						}
+						//localPrintf("arg count:%d\n", argc);
+						
+						char *argv[argc];
+						argv[0] = &cmdBuffer[firstCharIndex];
+						int index = 1;
+						
+						for(i = firstCharIndex; i < (cmdBufferPtr - 1); i++)
+						{
+							if((cmdBuffer[i] == 0x00)&&(cmdBuffer[i + 1] != 0x00))
+							{
+								argv[index] = &cmdBuffer[i + 1];
+								index++;
+							}
+						}
+						//  Call command handler
+						cmdParser(argc, argv);
+						localPrintf("\n");
+					}
+					// Reset
+					localPrintf(">");
+					cmdBufferPtr = 0;
+				}
 			}
 		}
 		

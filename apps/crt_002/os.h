@@ -15,6 +15,13 @@ void vConfigureTimerForRunTimeStats( void );
 //Ext Functions
 extern void xPortSysTickHandler(void);
 
+/***** Control Interface *****/
+typedef struct gameControlInput
+{
+    int8_t button;
+    int8_t state;
+} gameControlInput_t;
+
 #ifdef __cplusplus
 }
 
