@@ -76,6 +76,21 @@ game_obj::game_obj(void)
 	scenery[0].xOffset = 0;
 	scenery[0].yOffset = 0;
 	
+	//Cows
+	cow[0].xPos = 100;
+	cow[0].yPos = 80;
+	cow[0].xVelocity = 0;
+	cow[0].yVelocity = 0;
+	
+	cow[0].state = COW_STATE_VOID;
+	//   static members
+	cow[0].yGravity = 0.1;
+	cow[0].frames[0] = &(game_data.img_cow);
+	cow[0].frames[1] = &(game_data.img_eat);
+	cow[0].frames[2] = &(game_data.img_lift);
+	cowList = &cow[0];
+	
+	//Game IO
 	memset(buttonStates, 0x00, NUM_BUTTONS);
 }
 

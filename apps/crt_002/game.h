@@ -49,6 +49,35 @@ public:
 private:
 };
 
+typedef enum cowStates
+{
+	COW_STATE_VOID,
+	COW_STATE_STANDING,
+	COW_STATE_EATING,
+	COW_STATE_LIFTED
+} cowStates_t;
+
+class Cow : public Sprite
+{
+public:
+	void tick(void);
+	
+	float xPos;
+	float yPos;
+	float xVelocity;
+	float yVelocity;
+	static float yGravity;
+	
+	static virtual_bitmap_type_t * frames[3];
+	
+	cowStates_t state;
+	
+	Sprite * prevSprite = 0;
+	Sprite * nextSprite = 0;
+	
+private:
+};
+
 // A sprite list contains a list of xy pairs.  Set as const in table/
 typedef struct xy_pair
 {
@@ -94,6 +123,7 @@ public:
 //	bool drawLayer(uint8_t * dst, Layer * src);
 };
 #define NUM_BUTTONS 10
+#define NUM_MAX_COWS 10
 class game_obj
 {
 public:
@@ -108,6 +138,9 @@ public:
 	Sprite path[2];
 	
 	Sprite star[4];
+	
+	Cow cow[NUM_MAX_COWS];
+	Sprite * cowList;
 	
 	Background scenery[1];
 private:
