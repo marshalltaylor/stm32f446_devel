@@ -195,6 +195,17 @@ extern "C" void taskConsoleStart(void * argument)
 						//localPrintf("ESC GO\n");
 						escMode = 1;
 					}
+					else if(c == ' ') //esc
+					{
+						if(buttonInput[4] == 0)
+						{
+							buttonInput[4] = 1;
+						}
+						else
+						{
+							buttonInput[4] = 0;
+						}
+					}
 					else switch(escMode)
 					{
 						case 1:
@@ -328,7 +339,7 @@ extern "C" void taskConsoleStart(void * argument)
 					localPrintf(".dud");
 					delete msg;
 				}
-				localPrintf("button %d, %d\n", i, buttonStates[i]);
+				//localPrintf("button %d, %d\n", i, buttonStates[i]);
 			}
 		}
 		

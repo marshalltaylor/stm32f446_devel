@@ -1,6 +1,8 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <stdint.h>
+
 #include "CRTVideo.h"
 #include "bitmaps.h"
 
@@ -9,16 +11,17 @@ class Sprite
 {
 public:
 	Sprite(void){};
-	virtual_bitmap_type_t * bitmap;
-//	
-//	Sprite * prevSprite = 0;
-//	Sprite * nextSprite = 0;
+	virtual_bitmap_type_t * bitmap = NULL;
+	
+	Sprite * prevSprite = NULL;
+	Sprite * nextSprite = NULL;
 };
 
 typedef enum playerUfoStates
 {
 	UFO_STATE_LANDED,
 	UFO_STATE_FLYING,
+	UFO_STATE_BEAMING,
 	UFO_STATE_HOVER
 } playerUfoStates_t;
 
@@ -45,6 +48,7 @@ public:
 	virtual_bitmap_type_t * frames[4];
 	
 	playerUfoStates_t state;
+	bool beamState = false;
 	
 private:
 };
@@ -62,18 +66,15 @@ class Cow : public Sprite
 public:
 	void tick(void);
 	
-	float xPos;
-	float yPos;
-	float xVelocity;
-	float yVelocity;
+	float xPos = 0;
+	float yPos = 0;
+	float xVelocity = 0;
+	float yVelocity = 0;
 	static float yGravity;
-	
+
 	static virtual_bitmap_type_t * frames[3];
 	
-	cowStates_t state;
-	
-	Sprite * prevSprite = 0;
-	Sprite * nextSprite = 0;
+	cowStates_t state = COW_STATE_STANDING;
 	
 private:
 };
@@ -117,13 +118,27 @@ public:
 private:
 };
 
+#define NUM_MAX_COWS 10
+
+class Cowlayer : public Layer
+{
+public:
+	Cowlayer(void);
+	void tick(void);
+	void draw(CRTVideo * video, uint8_t * dst);
+
+	Cow cow[NUM_MAX_COWS];
+	Sprite * cowList;
+
+private:
+};
+
 class graphics_obj : public CRTVideo
 {
 public:
 //	bool drawLayer(uint8_t * dst, Layer * src);
 };
 #define NUM_BUTTONS 10
-#define NUM_MAX_COWS 10
 class game_obj
 {
 public:
@@ -132,6 +147,7 @@ public:
 	//Sprite staticTestImage;
 
 	PlayerUfo theUfo;
+	Sprite beam;
 
 	Sprite tree;
 	Sprite bush;
@@ -139,10 +155,9 @@ public:
 	
 	Sprite star[4];
 	
-	Cow cow[NUM_MAX_COWS];
-	Sprite * cowList;
-	
 	Background scenery[1];
+	Cowlayer cows;
+	
 private:
 
 	int8_t buttonStates[NUM_BUTTONS];

@@ -60,6 +60,8 @@ game_obj::game_obj(void)
 	
 	theUfo.state = UFO_STATE_HOVER;
 
+	beam.bitmap = &(game_data.img_ufo_beam);
+	
 	bush.bitmap = &(game_data.img_bush);
 
 	tree.bitmap = &(game_data.img_tree);
@@ -76,23 +78,9 @@ game_obj::game_obj(void)
 	scenery[0].xOffset = 0;
 	scenery[0].yOffset = 0;
 	
-	//Cows
-	cow[0].xPos = 100;
-	cow[0].yPos = 80;
-	cow[0].xVelocity = 0;
-	cow[0].yVelocity = 0;
-	
-	cow[0].state = COW_STATE_VOID;
-	//   static members
-	cow[0].yGravity = 0.1;
-	cow[0].frames[0] = &(game_data.img_cow);
-	cow[0].frames[1] = &(game_data.img_eat);
-	cow[0].frames[2] = &(game_data.img_lift);
-	cowList = &cow[0];
-	
 	//Game IO
 	memset(buttonStates, 0x00, NUM_BUTTONS);
-}
+};
 
 void game_obj::tick(CRTVideo * video)
 {
@@ -101,35 +89,67 @@ void game_obj::tick(CRTVideo * video)
 	{
 		buttonStates[msg->button] = msg->state;
 		
-		if((buttonStates[0] > 0) ^ (buttonStates[1] > 0))
+		switch(msg->button)
 		{
-			if(buttonStates[0] > 0)
+			case 0:
+			case 1:
 			{
-				theUfo.yStick(-0.2);
+				if((buttonStates[0] > 0) ^ (buttonStates[1] > 0))
+				{
+					if(buttonStates[0] > 0)
+					{
+						theUfo.yStick(-0.2);
+					}
+					else
+					{
+						theUfo.yStick(0.2);
+					}
+				}
+				else
+				{
+					theUfo.yStick(0);
+				}
 			}
-			else
+			break;
+			case 2:
+			case 3:
 			{
-				theUfo.yStick(0.2);
+				if((buttonStates[2] > 0) ^ (buttonStates[3] > 0))
+				{
+					if(buttonStates[2] > 0)
+					{
+						theUfo.xStick(0.4);
+					}
+					else
+					{
+						theUfo.xStick(-0.4);
+					}
+				}
+				else
+				{
+					theUfo.xStick(0);
+				}
 			}
-		}
-		else
-		{
-			theUfo.yStick(0);
-		}
-		if((buttonStates[2] > 0) ^ (buttonStates[3] > 0))
-		{
-			if(buttonStates[2] > 0)
+			break;
+			case 4:
 			{
-				theUfo.xStick(0.4);
+				if( buttonStates[4] == 1 )
+				{
+					//beam
+					if(theUfo.beamState == true)
+					{
+						theUfo.beamState = false;
+					}
+					else if(theUfo.state != UFO_STATE_LANDED)
+					{
+						theUfo.beamState = true;
+					}
+					
+				}
 			}
-			else
-			{
-				theUfo.xStick(-0.4);
-			}
-		}
-		else
-		{
-			theUfo.xStick(0);
+			break;
+			default:
+			break;
 		}
 		delete msg;
 	}
@@ -140,39 +160,28 @@ void game_obj::tick(CRTVideo * video)
 	//theUfo.yPos++;
 	//if(theUfo.yPos >= 144 - 32) theUfo.yPos = 0;
 	theUfo.tick();
+	cows.tick();
 	
 	scenery[0].xOffset = theUfo.xView;
 	scenery[0].yOffset = theUfo.yView;
+	cows.xOffset = theUfo.xView;
+	cows.yOffset = theUfo.yView;
 
 /***** Draw frame *****/
 	uint8_t * buf = NULL;
 	if(video->getBlank(&buf, 0xFF))
 	{
-		//video->console(buf);
-		//
-		//video->line(buf, 94, 6, 94+17, 72, 0xA0);
-		//video->line(buf, 94+17, 72, 94, 138, 0xA0);
-		//video->line(buf, 94, 138, 94-17, 72, 0xA0);
-		//video->line(buf, 94-17, 72, 94, 6, 0xA0);
-		//
-		//video->line(buf, 94, 10, 94+15, 72, 0xFF);
-		//video->line(buf, 94+15, 72, 94, 134, 0xFF);
-		//video->line(buf, 94, 134, 94-15, 72, 0xFF);
-		//video->line(buf, 94-15, 72, 94, 10, 0xFF);
-
-		//layer_t myLayer;
-		//UNUSED(myLayer);
-		//myLayer.xOffset = 0;
-		//myLayer.yOffset = 0;
-		//myLayer.width = 192;
-		//myLayer.height = 144;
-		//
-		//theUfo.draw(buf, &myLayer);
-		
 		scenery[0].draw(video, buf);
 		
+		if(theUfo.beamState)
+		{
+			video->drawBitmap(buf, beam.bitmap, theUfo.xScreen - 16, theUfo.yScreen + 10);
+		}
+
+		cows.draw(video, buf);
+
 		video->drawBitmap(buf, theUfo.bitmap, theUfo.xScreen, theUfo.yScreen);
-		//video->drawBitmap(buf, theUfo.bitmap, theUfo.xPos, theUfo.yPos);
+
 		video->swap();
 	}
 }
@@ -205,6 +214,70 @@ void Background::draw(CRTVideo * video, uint8_t * dst)
 			}
 		}
 	}
+}
+
+//   static members
+float Cow::yGravity = 0.1;
+virtual_bitmap_type_t * Cow::frames[] = {
+	&(game_data.img_cow),
+	&(game_data.img_cow_eat),
+	&(game_data.img_cow_lift)
+};
+static xy_pair_t cowInitData[NUM_MAX_COWS] =
+{
+	{ 50, 50 },
+	{ -310, 50 },
+	{ 200, 50 },
+	{ 291, 50 },
+	{ 305, 50 },
+	{ 489, 50 },
+	{ 1000, 50 },
+	{ -1101, 50 },
+	{ -1150, 50 },
+	{ 1500, 50 }
+};
+
+Cowlayer::Cowlayer(void)
+{
+	int i;
+	for(i = 0; i < NUM_MAX_COWS - 1; i++)
+	{
+		cow[i].xPos = cowInitData[i].x;
+		cow[i].yPos = cowInitData[i].y;
+		cow[i].nextSprite = &cow[i+1];
+		cow[i+1].prevSprite = &cow[i];
+	}
+	cow[i].xPos = cowInitData[i].x;
+	cow[i].yPos = cowInitData[i].y;
+
+	cowList = &cow[0];
+}
+
+void Cowlayer::tick(void)
+{
+	Cow * index = (Cow*)cowList;
+	while(index != NULL)
+	{
+		index->tick();
+		index = (Cow*)index->nextSprite;
+	}
+}
+
+void Cowlayer::draw(CRTVideo * video, uint8_t * dst)
+{
+	Cow * index = (Cow*)cowList;
+	while(index != NULL)
+	{
+		if(index->bitmap != NULL)
+		{
+			int16_t xCowOffset = index->xPos - xOffset;
+			int16_t yCowOffset = index->yPos - yOffset;
+			video->drawBitmap(dst, index->bitmap, xCowOffset, yCowOffset);
+		}
+		
+		index = (Cow*)index->nextSprite;
+	}
+
 }
 
 void PlayerUfo::tick(void)
@@ -267,9 +340,19 @@ void PlayerUfo::tick(void)
 			if(xVelocity > 1)
 			{
 				bitmap = frames[3];
+				//beam
+				if(beamState == true)
+				{
+					beamState = false;
+				}
 			}
 			else if(xVelocity < -1)
 			{
+				//beam
+				if(beamState == true)
+				{
+					beamState = false;
+				}
 				bitmap = frames[2];
 			}
 			else
@@ -289,6 +372,12 @@ void PlayerUfo::tick(void)
 	if(yPos > 120)
 	{
 		state = UFO_STATE_LANDED;
+		//beam
+		if(beamState == true)
+		{
+			beamState = false;
+		}
+
 	}
 
 	//Bounds
@@ -345,3 +434,41 @@ void PlayerUfo::yStick(float in)
 	yThrust = in;
 }
 
+void Cow::tick(void)
+{
+	//If cow in tractor...
+	
+	//
+	switch(state)
+	{
+		case COW_STATE_STANDING:
+		{
+			bitmap = frames[2];
+			yVelocity += yGravity;
+		}
+		break;
+		case COW_STATE_EATING:
+		{
+			bitmap = frames[2];
+		}
+		break;
+		case COW_STATE_LIFTED:
+		{
+			bitmap = frames[2];
+		}
+		break;
+		default:
+		state = COW_STATE_EATING;
+		break;
+	}
+
+	//Ground
+	if(yPos > 120)
+	{
+		state = COW_STATE_STANDING;
+	}
+	else
+	{
+		yPos += yVelocity;
+	}
+}
