@@ -39,7 +39,7 @@ void MX_FREERTOS_Init(void)
 
 	BaseType_t retVal;
 
-	logQueue = xQueueCreate( 10, sizeof( strMsg_t* ) );
+	logQueue = xQueueCreate( 100, sizeof( strMsg_t* ) );
 	controlQueue = xQueueCreate( 100, sizeof( gameControlInput_t* ) );
 
     /* Attempt to create the event group. */

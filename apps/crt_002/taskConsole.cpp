@@ -157,9 +157,9 @@ extern "C" void taskConsoleStart(void * argument)
 
 	taskConsolePrintHelp();
 	
-	//set video ctrl bit -- DEFAULT RUN UFO
-	uint16_t bitMask = 0x0001 << 5; //bit 0
-	xEventGroupSetBits(xTestEventGroup, bitMask);
+	////set video ctrl bit -- DEFAULT RUN UFO
+	//uint16_t bitMask = 0x0001 << 5; //bit 0
+	//xEventGroupSetBits(xTestEventGroup, bitMask);
 
 	char cmdBuffer[CMDBUFFERSIZE];
 	uint16_t cmdBufferPtr = 0;

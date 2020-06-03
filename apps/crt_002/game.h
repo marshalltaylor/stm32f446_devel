@@ -20,9 +20,7 @@ public:
 typedef enum playerUfoStates
 {
 	UFO_STATE_LANDED,
-	UFO_STATE_FLYING,
-	UFO_STATE_BEAMING,
-	UFO_STATE_HOVER
+	UFO_STATE_FLYING
 } playerUfoStates_t;
 
 class PlayerUfo : public Sprite
@@ -42,6 +40,7 @@ public:
 	float xVelocity;
 	float yVelocity;
 	float xDamping;
+	float yDamping;
 	float yGravity;
 	float xThrust;
 	float yThrust;
@@ -71,7 +70,7 @@ public:
 	float xVelocity = 0;
 	float yVelocity = 0;
 	static float yGravity;
-
+	bool inTractorBeam = false;
 	static virtual_bitmap_type_t * frames[3];
 	
 	cowStates_t state = COW_STATE_STANDING;
@@ -120,13 +119,26 @@ private:
 
 #define NUM_MAX_COWS 10
 
+typedef enum ufoBeamHitValues
+{
+	UFO_HIT_NONE,
+	UFO_HIT_BEAM,
+	UFO_HIT_TARGET,
+	UFO_HIT_ABDUCT
+} ufoBeamHitValues_t;
+
 class Cowlayer : public Layer
 {
 public:
 	Cowlayer(void);
 	void tick(void);
 	void draw(CRTVideo * video, uint8_t * dst);
-
+	bool removeCow(Sprite * pCow);
+	Cow * closestCow(PlayerUfo * ufo);
+	ufoBeamHitValues_t checkBeamHit(PlayerUfo * ufo, Cow * cow);
+	void clearTractor(void);
+	void print(void);
+	
 	Cow cow[NUM_MAX_COWS];
 	Sprite * cowList;
 
@@ -145,6 +157,8 @@ public:
 	game_obj(void);
 	void tick(CRTVideo * video);
 	//Sprite staticTestImage;
+	
+	Cow * lastDetectCow = NULL;
 
 	PlayerUfo theUfo;
 	Sprite beam;

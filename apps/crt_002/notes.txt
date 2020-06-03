@@ -1,0 +1,40 @@
+
+/* Includes -- STD -----------------------------------------------------------*/
+
+/* Includes -- BSP -----------------------------------------------------------*/
+
+/* Includes -- FreeRTOS system -----------------------------------------------*/
+
+/* Includes -- FreeRTOS app --------------------------------------------------*/
+
+/* Includes -- modules -------------------------------------------------------*/
+
+/* References ----------------------------------------------------------------*/
+
+
+
+#include "CRTVideo.h"
+
+extern CRTVideo crt;
+
+
+
+
+
+
+
+struct Book
+{
+	char bname[20];
+	int pages;
+	char author[20];
+	float price; 
+}b1[3] =
+{
+	{"Let us C",700,"YPK",300.00},
+	{"Wings of Fire",500,"APJ Abdul Kalam",350.00},
+	{"Complete C",1200,"Herbt Schildt",450.00}
+};
+
+
+
