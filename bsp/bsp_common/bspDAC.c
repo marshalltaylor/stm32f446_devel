@@ -39,15 +39,19 @@ typedef enum
 #define CRT_PARAM_PORCH_LEVEL 72 //63, 120 and 191 worked a bit
 #define CRT_PARAM_BLACK_LEVEL CRT_PARAM_PORCH_LEVEL + 26
 #define CRT_PARAM_STRIPE_BLACK_LEVEL CRT_PARAM_PORCH_LEVEL + 26
-#define CRT_PARAM_WHITE_LEVEL CRT_PARAM_STRIPE_BLACK_LEVEL + 128
+#define CRT_PARAM_WHITE_LEVEL CRT_PARAM_STRIPE_BLACK_LEVEL + 64 //128
 
 #define CRT_PARAM_AMP_SHIFT 2
 
 //The following are measuared in clocks since the start of the front porch.
 //t + n type measurement
-#define N_CLK_SYNC 6
-#define N_CLK_BACK_PORCH 30 //25
-#define N_CLK_BLACK 45
+//#define N_CLK_SYNC 6
+//#define N_CLK_BACK_PORCH 30
+//#define N_CLK_BLACK 45
+
+#define N_CLK_SYNC 10
+#define N_CLK_BACK_PORCH 34
+#define N_CLK_BLACK 49
 
 #define N_CLK_BACK_PORCH_SHORT_SYNC 15
 //#define N_CLK_BACK_PORCH_SHORT_VIDEO 26
@@ -66,7 +70,7 @@ typedef enum
 
 #define N_LINES_TOTAL 255 //262
 #define N_LINES_SYNC_BLANK 10
-#define N_LINES_PRE_BLANK 19
+#define N_LINES_PRE_BLANK 16//19
 #define N_LINES_ACTIVE 216 //216
 #define N_LINES_POST_BLANK (N_LINES_TOTAL - N_LINES_SYNC_BLANK - N_LINES_PRE_BLANK - N_LINES_ACTIVE)
 #define N_LINES_EVEN_OFFSET -1
@@ -88,6 +92,8 @@ uint8_t fullLineHVideoBlack[DAC_BUFFER_LEN*N_FRAMES_SCAN_LINE];
 uint8_t fullLineHVideoStripes[DAC_BUFFER_LEN*N_FRAMES_SCAN_LINE];
 uint8_t fullLineHVideoToSync[DAC_BUFFER_LEN*N_FRAMES_SCAN_LINE];
 uint8_t fullLineHPorchToVideo[DAC_BUFFER_LEN*N_FRAMES_SCAN_LINE];
+
+uint8_t fullLineNonVideoTestSignal[DAC_BUFFER_LEN*N_FRAMES_SCAN_LINE];
 
 int16_t frameCounter = 0;
 int16_t scanCounter = 0;
@@ -391,6 +397,16 @@ void bspDACInit( void )
 			fullLineHPorchToVideo[j] = CRT_PARAM_BLACK_LEVEL;
 		}
 		
+		//fullLineNonVideoTestSignal
+		if(i < 2)
+		{
+			fullLineNonVideoTestSignal[i] = (i % 2) * 255;
+		}
+		else
+		{
+			fullLineNonVideoTestSignal[i] = 0;
+		}
+		
 		//Chores
 		j++;
 		if(j >= (DAC_BUFFER_LEN * N_FRAMES_SCAN_LINE))
@@ -636,7 +652,7 @@ static bool bspDACPopState( uint8_t ** ppData )
 		default:
 		break;
 	}
-
+	//*ppData = fullLineNonVideoTestSignal;
 	return true;
 }
 

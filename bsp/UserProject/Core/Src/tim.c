@@ -170,7 +170,7 @@ void MX_TIM6_Init(void)
   htim6.Instance = TIM6;
   htim6.Init.Prescaler = 0;
   htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
-  //22 for composite
+  //21 for composite
   //20 for mini CRT
   htim6.Init.Period = 21;
   if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
