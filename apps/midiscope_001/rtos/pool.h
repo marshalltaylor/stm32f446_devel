@@ -13,6 +13,7 @@ public:
     float used(void);
 
 private:
+    int getIndexFromPointer(T *p);
     uint8_t index[POOL_SIZE_ELEMENTS] = {0};
     T poolData[POOL_SIZE_ELEMENTS] = {0};
 };
