@@ -12,6 +12,7 @@ endif
 C_SOURCES =  \
 main.c \
 rtos/os.c \
+rtos/pool.cpp \
 rtos/taskCRT.cpp \
 rtos/taskConsole.cpp \
 rtos/taskLog.cpp \
@@ -92,4 +93,4 @@ gdb:
 info:
 	@echo "***** ***** ***** DEBUG ***** ***** *****"
 	@echo $(addprefix $(BUILD_DIR)/obj/, $(OBJECTS))
-	#@echo $(C_INCLUDES) 
+	@echo $(C_SOURCES) 

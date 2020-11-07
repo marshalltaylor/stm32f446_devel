@@ -5,6 +5,8 @@
  extern "C" {
 #endif
 
+#define UNUSED(x) (void)x
+
 #define TEST_EVENT_0	( 1 << 0 )
 #define TEST_EVENT_1	( 1 << 1 )
 

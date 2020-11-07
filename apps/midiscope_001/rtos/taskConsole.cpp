@@ -15,6 +15,7 @@
 #include "queue.h"
 #include "event_groups.h"
 #include "os.h"
+#include "pool.h"
 
 /* Includes -- FreeRTOS app --------------------------------------------------*/
 #include "taskLog.h"
@@ -39,6 +40,8 @@ Logging consoleDebug;
 #define localPrintf bspPrintf
 
 #endif
+
+static void test_pool(void);
 
 char buffer[128];
 //Send output to two devices
@@ -510,6 +513,10 @@ int cmdParser( int argc, char *argv[] )
 				localPrintf("Needs 'auto' or 'default'\n");
 			}
 		}
+		else if(0 == strcmp((const char*)argv[0], "pool"))
+		{
+            test_pool();
+		}
 		else
 		{
 			localPrintf("Command not supported.  try 'help'\n");
@@ -518,3 +525,56 @@ int cmdParser( int argc, char *argv[] )
 	return 0;
 }
 
+void test_pool(void)
+{
+    Pool<uint16_t> unit(20);
+    for(int i = 0; i < unit.sz; i++)
+    {
+        localPrintf("%d", unit.inUseRead(i));
+    }
+    localPrintf("\n");
+
+    unit.inUseWrite(3, 1);
+    unit.inUseWrite(4, 1);
+    unit.inUseWrite(14, 1);
+    localPrintf("Bits: ");
+    for(int i = 0; i < unit.sz; i++)
+    {
+        localPrintf("%d", unit.inUseRead(i));
+    }
+    localPrintf("\n");
+    
+    //change something
+    uint16_t * pThingA = unit.palloc();
+    if(pThingA == 0) localPrintf("FAILA\n");
+    uint16_t * pThingB = unit.palloc();
+    if(pThingB == 0) localPrintf("FAILB\n");
+    uint16_t * pThingC = unit.palloc();
+    if(pThingC == 0) localPrintf("FAILC\n");
+    UNUSED(pThingA);
+    UNUSED(pThingB);
+    UNUSED(pThingC);
+
+    //print again
+    localPrintf("Bits: ");
+    for(int i = 0; i < unit.sz; i++)
+    {
+        localPrintf("%d", unit.inUseRead(i));
+    }
+    localPrintf("\n");
+
+    //Floats not working
+    localPrintf("Usage %d.%d\n", (uint16_t)unit.used(), (uint16_t)((unit.used() - ((uint16_t)unit.used()))* 10));//unit.used());
+
+    unit.free(pThingB);
+    unit.free(pThingC);
+
+    //print again
+    localPrintf("Bits: ");
+    for(int i = 0; i < unit.sz; i++)
+    {
+        localPrintf("%d", unit.inUseRead(i));
+    }
+    localPrintf("\n");
+
+}

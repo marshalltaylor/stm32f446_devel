@@ -1,21 +1,24 @@
 #ifndef POOL_H
 #define POOL_H
 
-#define POOL_SIZE_ELEMENTS 10
+#include <stdint.h>
 
-template <typename T, int SIZE>
+template <class T>
 class Pool
 {
 public:
-    Pool(void);
+    Pool(int size);
     T *palloc(void);
-    void free(T *p);
+    void free(T *p);//void free(T *p);
     float used(void);
 
-private:
+//private:
+    void inUseWrite(int index, bool used);
+    bool inUseRead(int index);
     int getIndexFromPointer(T *p);
-    uint8_t index[POOL_SIZE_ELEMENTS] = {0};
-    T poolData[POOL_SIZE_ELEMENTS] = {0};
+    uint8_t * inUseBits;
+    T * poolData;
+    int sz;
 };
 
 #endif
