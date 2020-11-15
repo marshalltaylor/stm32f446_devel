@@ -26,6 +26,6 @@ typedef struct gameControlInput
 
 #ifdef __cplusplus
 }
-
 #endif
+
 #endif

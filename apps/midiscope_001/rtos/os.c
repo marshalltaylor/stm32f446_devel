@@ -9,12 +9,17 @@
 #include "queue.h"
 #include "semphr.h"
 #include "event_groups.h"
+#include "semphr.h"
 
 #include "os.h"
+
 #include "taskLog.h"
+#include "taskSystem.h"
 
 /* Declare a variable to hold the created event group. */
 EventGroupHandle_t xTestEventGroup;
+
+extern void globalsInit(void);
 
 //Tasks
 extern void taskCRTStart(void * argument);
@@ -25,6 +30,7 @@ extern void xPortSysTickHandler(void);
 extern EventGroupHandle_t xTestEventGroup;
 
 QueueHandle_t controlQueue = NULL;
+SemaphoreHandle_t xSerCtrl;
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -41,6 +47,10 @@ void MX_FREERTOS_Init(void)
 
 	logQueue = xQueueCreate( 100, sizeof( strMsg_t* ) );
 	controlQueue = xQueueCreate( 100, sizeof( gameControlInput_t* ) );
+
+    /* Create a mutex type semaphore. */
+    xSerCtrl = xSemaphoreCreateMutex();
+
 
     /* Attempt to create the event group. */
     xTestEventGroup = xEventGroupCreate();
@@ -71,17 +81,22 @@ void MX_FREERTOS_Init(void)
 		while(1);
 	}
 
+	retVal = xTaskCreate( taskSystemStart, "system", 128, (void*) 1, tskIDLE_PRIORITY, NULL);
+    if (retVal != pdPASS)
+	{
+		while(1);
+	}
+
 }
 
 void osInit(void)
 {
-	// Possibly setup activities here, might be architected elsewhere
+	// Init other os objects
+    globalsInit();
+
 	
 	MX_FREERTOS_Init();
-	
-	// Init other os objects
-	
-	
+
 	// Start os and don't come back
 	vTaskStartScheduler();
 }

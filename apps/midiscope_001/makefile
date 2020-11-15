@@ -10,26 +10,34 @@ endif
 endif
 
 C_SOURCES =  \
+globals.cpp \
 main.c \
 rtos/os.c \
 rtos/pool.cpp \
+rtos/poolTest.cpp \
+storage/storage.cpp \
+storage/storageTest.cpp \
 rtos/taskCRT.cpp \
 rtos/taskConsole.cpp \
 rtos/taskLog.cpp \
+rtos/taskSystem.cpp \
 
 SOURCE_DIRS = . \
 rtos \
+storage\
 
 # TODO: Not all these should be included maybe
 # TODO: FreeRTOSConfig.h location?
-C_INCLUDES = \
+C_INCLUDES = . \
 rtos \
+storage \
 $(SYNTH_COMMON_ROOT)/FreeRTOS/Source/portable/GCC/ARM_CM4F \
 $(SYNTH_COMMON_ROOT)/FreeRTOS \
 $(SYNTH_COMMON_ROOT)/FreeRTOS/Source/include \
 $(REPO_ROOT)/bsp \
 $(SYNTH_COMMON_ROOT)/modules/logging \
 $(SYNTH_COMMON_ROOT)/modules/midi47fx \
+$(SYNTH_COMMON_ROOT)/modules/midiUtils \
 $(SYNTH_COMMON_ROOT)/modules/uCModules
 
 #$(SYNTH_COMMON_ROOT)/modules/CRTVideo \
@@ -37,6 +45,8 @@ $(SYNTH_COMMON_ROOT)/modules/uCModules
 STATIC_LIBS = \
 $(SYNTH_COMMON_ROOT)/FreeRTOS/build/FreeRTOS.a \
 $(SYNTH_COMMON_ROOT)/modules/logging/build/logging.a \
+$(SYNTH_COMMON_ROOT)/modules/midiUtils/build/midiUtils.a \
+$(SYNTH_COMMON_ROOT)/modules/midi47fx/build/midi47fx.a \
 $(REPO_ROOT)/bsp/build/bsp_$(board).a
 
 #$(SYNTH_COMMON_ROOT)/modules/CRTVideo/build/CRTVideo.a \

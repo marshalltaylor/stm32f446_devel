@@ -16,11 +16,14 @@
 #include "event_groups.h"
 #include "os.h"
 #include "pool.h"
+#include "storage.h"
+#include "semphr.h"
 
 /* Includes -- FreeRTOS app --------------------------------------------------*/
 #include "taskLog.h"
 #include "taskCRT.h"
 //#include "MidiClockDisplay.h"
+#include "globals.h"
 
 /* Includes -- modules -------------------------------------------------------*/
 #include "logging.h"
@@ -40,8 +43,6 @@ Logging consoleDebug;
 #define localPrintf bspPrintf
 
 #endif
-
-static void test_pool(void);
 
 char buffer[128];
 //Send output to two devices
@@ -67,6 +68,14 @@ static void localPrintf(const char* fmt, ...)
 	va_end(args);
 	
 }
+
+
+void handleNoteOn(byte channel, byte pitch, byte velocity)
+{
+	localPrintf("Note on: 0x%02X, 0x%02X, 0x%02X\n", channel, pitch, velocity);
+}
+
+
 
 static comPortInterface_t console;
 TaskStatus_t pxTaskStatusArray[5];
@@ -146,6 +155,7 @@ void taskConsolePrintStats(void)
 
 #define CMDBUFFERSIZE 128
 extern QueueHandle_t controlQueue;
+extern SemaphoreHandle_t xSerCtrl;
 
 //strMsg_t globoMsg = {0};
 extern "C" void taskConsoleStart(void * argument)
@@ -170,195 +180,200 @@ extern "C" void taskConsoleStart(void * argument)
 
 	#define NUM_BUTTONS 10
 	int8_t buttonStates[NUM_BUTTONS] = {0};
-	while(1)
-	{
-		int8_t buttonInput[NUM_BUTTONS] = {0};
-		while(console.bytesAvailable())
-		{
-			char c = (char)console.read();
-			EventBits_t uxBits = xEventGroupGetBits( xTestEventGroup );
-			if(uxBits & 0x20)
-			{
-				//In game behavior
-				
-				//Ctrl chars
-				if(c == 0x03) // Ctrl-c
-				{
-					//if game, switch to console
-					localPrintf("ctrl-c caught\n");
-					uint16_t bitMask = 0x0001 << 5; //bit 0
-					xEventGroupClearBits(xTestEventGroup, bitMask );
-					bitMask = 0x0001 << 6; //bit 0
-					xEventGroupClearBits(xTestEventGroup, bitMask );
-				}
-				else
-				{
-					if(c == 0x1B) //esc
-					{
-						//localPrintf("ESC GO\n");
-						escMode = 1;
-					}
-					else if(c == ' ') //esc
-					{
-						if(buttonInput[4] == 0)
-						{
-							buttonInput[4] = 1;
-						}
-						else
-						{
-							buttonInput[4] = 0;
-						}
-					}
-					else switch(escMode)
-					{
-						case 1:
-						//localPrintf("ESC 1\n");
-						if(c == '[')
-						{
-							escMode = 2;
-						}
-						else
-						{
-							escMode = 0;
-						}
-						break;
-						case 2:
-						//localPrintf("ESC 2\n");       buttonInput[]
-						{
-							switch(c)
-							{
-								case 'A':
-								buttonInput[0] = 1;
-								break;
-								case 'B':
-								buttonInput[1] = 1;
-								break;
-								case 'C':
-								buttonInput[2] = 1;
-								break;
-								case 'D':
-								buttonInput[3] = 1;
-								break;
-							}
-						}
-						escMode = 0;
-						break;
-						default:
-						case 0:
-						break;
-					}
-				}
-			}
-			else //console behavior
-			{
-				if((c >= 0x20)&&(c < 0x80))
-				{
-					localPrintf("%c", c);
-					cmdBuffer[cmdBufferPtr] = c;
-					if(cmdBufferPtr < CMDBUFFERSIZE - 1)
-					{
-						cmdBufferPtr++;
-					}
-				}
-				else if(c == 0x08) // Backspace
-				{
-					cmdBuffer[cmdBufferPtr] = 0x00;
-					if(cmdBufferPtr > 0)
-					{
-						localPrintf("%c", 0x08);
-						localPrintf("%c", ' ');
-						localPrintf("%c", 0x08);
-						cmdBufferPtr--;
-					}
-				}
-				else if(c == '\n')
-				{
-					localPrintf("\n");
-					// Parse buffer
-					cmdBuffer[cmdBufferPtr] = 0x00;
-					//  here, cmdBufferPtr is length of string
-					//localPrintf("%s\n", cmdBuffer);  // <-- USE TO DEBUG INPUT STRING
-					//  Identify first real char
-					int firstCharIndex = 0;
-					for(firstCharIndex = 0; (cmdBuffer[firstCharIndex] == ' ') && (firstCharIndex < cmdBufferPtr); firstCharIndex++)
-					{
-					}
-					int argc = 0;
-					if(firstCharIndex < cmdBufferPtr)
-					{
-						argc = 1;
-					}
-					
-					if(argc == 1)
-					{
-						//  Count instances of " <char>" in string and build args
-						int i;
-						for(i = firstCharIndex; i < (cmdBufferPtr - 1); i++)
-						{
-							if((cmdBuffer[i] == ' ')&&(cmdBuffer[i + 1] != ' '))
-							{
-								argc++;
-							}
-							if(cmdBuffer[i] == ' ')
-							{
-								cmdBuffer[i] = 0x00;
-							}
-						}
-						//localPrintf("arg count:%d\n", argc);
-						
-						char *argv[argc];
-						argv[0] = &cmdBuffer[firstCharIndex];
-						int index = 1;
-						
-						for(i = firstCharIndex; i < (cmdBufferPtr - 1); i++)
-						{
-							if((cmdBuffer[i] == 0x00)&&(cmdBuffer[i + 1] != 0x00))
-							{
-								argv[index] = &cmdBuffer[i + 1];
-								index++;
-							}
-						}
-						//  Call command handler
-						cmdParser(argc, argv);
-						localPrintf("\n");
-					}
-					// Reset
-					localPrintf(">");
-					cmdBufferPtr = 0;
-				}
-			}
-		}
-		for(int i = 0; i < NUM_BUTTONS; i++)
-		{
-			if(buttonInput[i] != buttonStates[i])
-			{
-				buttonStates[i] = buttonInput[i];
-				//Send to game
-				gameControlInput_t * msg = new gameControlInput_t();
-				msg->button = i;
-				msg->state = buttonStates[i];
-				if(pdPASS != xQueueSend( controlQueue, &msg, 0 ))
-				{
-					localPrintf(".dud");
-					delete msg;
-				}
-				//localPrintf("button %d, %d\n", i, buttonStates[i]);
-			}
-		}
-		
-		uint16_t now = xTaskGetTickCount();
-		if(now > nextUpdate)
-		{
-			nextUpdate = nextUpdate + 33;
-			while(nextUpdate > 0xFFFF)
-			{
-				nextUpdate -= 0xFFFF;
-			}
-		}
-		
-		vTaskDelay( 50 );
+    
+    while(1)
+    {
+        if(xSemaphoreTake( xSerCtrl, 10 )) //try for 10 ticks
+        {
+            vTaskDelay( 5 );
+            int8_t buttonInput[NUM_BUTTONS] = {0};
+            while(console.bytesAvailable())
+            {
+                char c = (char)console.read();
+                EventBits_t uxBits = xEventGroupGetBits( xTestEventGroup );
+                if(uxBits & 0x20)
+                {
+                    //In game behavior
+                    
+                    //Ctrl chars
+                    if(c == 0x03) // Ctrl-c
+                    {
+                        //if game, switch to console
+                        localPrintf("ctrl-c caught\n");
+                        uint16_t bitMask = 0x0001 << 5; //bit 0
+                        xEventGroupClearBits(xTestEventGroup, bitMask );
+                        bitMask = 0x0001 << 6; //bit 0
+                        xEventGroupClearBits(xTestEventGroup, bitMask );
+                    }
+                    else
+                    {
+                        if(c == 0x1B) //esc
+                        {
+                            //localPrintf("ESC GO\n");
+                            escMode = 1;
+                        }
+                        else if(c == ' ') //esc
+                        {
+                            if(buttonInput[4] == 0)
+                            {
+                                buttonInput[4] = 1;
+                            }
+                            else
+                            {
+                                buttonInput[4] = 0;
+                            }
+                        }
+                        else switch(escMode)
+                        {
+                            case 1:
+                            //localPrintf("ESC 1\n");
+                            if(c == '[')
+                            {
+                                escMode = 2;
+                            }
+                            else
+                            {
+                                escMode = 0;
+                            }
+                            break;
+                            case 2:
+                            //localPrintf("ESC 2\n");       buttonInput[]
+                            {
+                                switch(c)
+                                {
+                                    case 'A':
+                                    buttonInput[0] = 1;
+                                    break;
+                                    case 'B':
+                                    buttonInput[1] = 1;
+                                    break;
+                                    case 'C':
+                                    buttonInput[2] = 1;
+                                    break;
+                                    case 'D':
+                                    buttonInput[3] = 1;
+                                    break;
+                                }
+                            }
+                            escMode = 0;
+                            break;
+                            default:
+                            case 0:
+                            break;
+                        }
+                    }
+                }
+                else //console behavior
+                {
+                    if((c >= 0x20)&&(c < 0x80))
+                    {
+                        localPrintf("%c", c);
+                        cmdBuffer[cmdBufferPtr] = c;
+                        if(cmdBufferPtr < CMDBUFFERSIZE - 1)
+                        {
+                            cmdBufferPtr++;
+                        }
+                    }
+                    else if(c == 0x08) // Backspace
+                    {
+                        cmdBuffer[cmdBufferPtr] = 0x00;
+                        if(cmdBufferPtr > 0)
+                        {
+                            localPrintf("%c", 0x08);
+                            localPrintf("%c", ' ');
+                            localPrintf("%c", 0x08);
+                            cmdBufferPtr--;
+                        }
+                    }
+                    else if(c == '\n')
+                    {
+                        localPrintf("\n");
+                        // Parse buffer
+                        cmdBuffer[cmdBufferPtr] = 0x00;
+                        //  here, cmdBufferPtr is length of string
+                        //localPrintf("%s\n", cmdBuffer);  // <-- USE TO DEBUG INPUT STRING
+                        //  Identify first real char
+                        int firstCharIndex = 0;
+                        for(firstCharIndex = 0; (cmdBuffer[firstCharIndex] == ' ') && (firstCharIndex < cmdBufferPtr); firstCharIndex++)
+                        {
+                        }
+                        int argc = 0;
+                        if(firstCharIndex < cmdBufferPtr)
+                        {
+                            argc = 1;
+                        }
+                        
+                        if(argc == 1)
+                        {
+                            //  Count instances of " <char>" in string and build args
+                            int i;
+                            for(i = firstCharIndex; i < (cmdBufferPtr - 1); i++)
+                            {
+                                if((cmdBuffer[i] == ' ')&&(cmdBuffer[i + 1] != ' '))
+                                {
+                                    argc++;
+                                }
+                                if(cmdBuffer[i] == ' ')
+                                {
+                                    cmdBuffer[i] = 0x00;
+                                }
+                            }
+                            //localPrintf("arg count:%d\n", argc);
+                            
+                            char *argv[argc];
+                            argv[0] = &cmdBuffer[firstCharIndex];
+                            int index = 1;
+                            
+                            for(i = firstCharIndex; i < (cmdBufferPtr - 1); i++)
+                            {
+                                if((cmdBuffer[i] == 0x00)&&(cmdBuffer[i + 1] != 0x00))
+                                {
+                                    argv[index] = &cmdBuffer[i + 1];
+                                    index++;
+                                }
+                            }
+                            //  Call command handler
+                            cmdParser(argc, argv);
+                            localPrintf("\n");
+                        }
+                        // Reset
+                        localPrintf(">");
+                        cmdBufferPtr = 0;
+                    }
+                }
+            }
+            for(int i = 0; i < NUM_BUTTONS; i++)
+            {
+                if(buttonInput[i] != buttonStates[i])
+                {
+                    buttonStates[i] = buttonInput[i];
+                    //Send to game
+                    gameControlInput_t * msg = new gameControlInput_t();
+                    msg->button = i;
+                    msg->state = buttonStates[i];
+                    if(pdPASS != xQueueSend( controlQueue, &msg, 0 ))
+                    {
+                        localPrintf(".dud");
+                        delete msg;
+                    }
+                    //localPrintf("button %d, %d\n", i, buttonStates[i]);
+                }
+            }
+            
+            uint16_t now = xTaskGetTickCount();
+            if(now > nextUpdate)
+            {
+                nextUpdate = nextUpdate + 33;
+                while(nextUpdate > 0xFFFF)
+                {
+                    nextUpdate -= 0xFFFF;
+                }
+            }
+            
+            xSemaphoreGive( xSerCtrl );
+            vTaskDelay( 50 );
+        }
 	}
-	
 }
 
 void taskConsolePrintHelp(void)
@@ -372,6 +387,8 @@ void taskConsolePrintHelp(void)
 	localPrintf(" 'bit [set|clr] <bit num>' -- \n");
 	localPrintf(" 'log [auto|default]' -- \n");
 }
+
+uint8_t fakeData = 0x00;
 
 int cmdParser( int argc, char *argv[] )
 {
@@ -513,68 +530,66 @@ int cmdParser( int argc, char *argv[] )
 				localPrintf("Needs 'auto' or 'default'\n");
 			}
 		}
+		else if(0 == strcmp((const char*)argv[0], "sto"))
+		{
+			if(0 == strcmp((const char*)argv[1], "test"))
+			{
+                test_storage();
+			}
+			else if(0 == strcmp((const char*)argv[1], "rec"))
+			{
+                if(0 == strcmp((const char*)argv[2], "0"))
+                {
+                    trace1.record(false);
+                }
+                else
+                {
+                    trace1.record(true);
+                }
+			}
+			else if(0 == strcmp((const char*)argv[1], "cir"))
+			{
+                if(0 == strcmp((const char*)argv[2], "0"))
+                {
+                    trace1.circularMode(false);
+                }
+                else
+                {
+                    trace1.circularMode(true);
+                }
+			}
+			else if(0 == strcmp((const char*)argv[1], "dump"))
+			{
+                trace1.dumpVars();
+            }
+			else if(0 == strcmp((const char*)argv[1], "w"))
+			{
+                
+                uint8_t nBytes = atoi(argv[2]);
+                for(int i = 0; i < nBytes; i++)
+                {
+                    trace1.write(fakeData++);
+                }
+            }
+			else
+			{
+				localPrintf("params not given\n");
+			}
+		}
 		else if(0 == strcmp((const char*)argv[0], "pool"))
 		{
             test_pool();
 		}
+		else if(0 == strcmp((const char*)argv[0], "midi"))
+		{
+            MIDI.setHandleNoteOn(handleNoteOn);
+            //MIDI.setHandleNoteOff(handleNoteOff);
+            MIDI.begin(MIDI_CHANNEL_OMNI);
+        }
 		else
 		{
 			localPrintf("Command not supported.  try 'help'\n");
 		}
 	}
 	return 0;
-}
-
-void test_pool(void)
-{
-    Pool<uint16_t> unit(20);
-    for(int i = 0; i < unit.sz; i++)
-    {
-        localPrintf("%d", unit.inUseRead(i));
-    }
-    localPrintf("\n");
-
-    unit.inUseWrite(3, 1);
-    unit.inUseWrite(4, 1);
-    unit.inUseWrite(14, 1);
-    localPrintf("Bits: ");
-    for(int i = 0; i < unit.sz; i++)
-    {
-        localPrintf("%d", unit.inUseRead(i));
-    }
-    localPrintf("\n");
-    
-    //change something
-    uint16_t * pThingA = unit.palloc();
-    if(pThingA == 0) localPrintf("FAILA\n");
-    uint16_t * pThingB = unit.palloc();
-    if(pThingB == 0) localPrintf("FAILB\n");
-    uint16_t * pThingC = unit.palloc();
-    if(pThingC == 0) localPrintf("FAILC\n");
-    UNUSED(pThingA);
-    UNUSED(pThingB);
-    UNUSED(pThingC);
-
-    //print again
-    localPrintf("Bits: ");
-    for(int i = 0; i < unit.sz; i++)
-    {
-        localPrintf("%d", unit.inUseRead(i));
-    }
-    localPrintf("\n");
-
-    //Floats not working
-    localPrintf("Usage %d.%d\n", (uint16_t)unit.used(), (uint16_t)((unit.used() - ((uint16_t)unit.used()))* 10));//unit.used());
-
-    unit.free(pThingB);
-    unit.free(pThingC);
-
-    //print again
-    localPrintf("Bits: ");
-    for(int i = 0; i < unit.sz; i++)
-    {
-        localPrintf("%d", unit.inUseRead(i));
-    }
-    localPrintf("\n");
-
 }

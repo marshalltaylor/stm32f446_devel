@@ -3,13 +3,16 @@
 
 #include <stdint.h>
 
+//in poolTest.cpp
+extern void test_pool(void);
+
 template <class T>
 class Pool
 {
 public:
     Pool(int size);
     T *palloc(void);
-    void free(T *p);//void free(T *p);
+    bool free(T *p);//void free(T *p);
     float used(void);
 
 //private:

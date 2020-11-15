@@ -29,11 +29,17 @@ T *Pool<T>::palloc(void)
 }
 
 template <class T>
-void Pool<T>::free(T *p)
+bool Pool<T>::free(T *p)
 {
     //Calculate index
     int index = p - poolData;
+    if(inUseRead(index) == 0)
+    {
+        //Wasn't used
+        return false;
+    }
     inUseWrite(index, 0);
+    return true;
 }
 
 template <class T>

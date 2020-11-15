@@ -14,19 +14,16 @@
 #include "main.h"
 #include "os.h"
 
-/* Private variables ---------------------------------------------------------*/
+/* References ----------------------------------------------------------------*/
 
-/* Private variables ---------------------------------------------------------*/
-
-/* Private function prototypes -----------------------------------------------*/
+/* Prototypes ----------------------------------------------------------------*/
 void SystemClock_Config(void);
 
-/* Private function prototypes -----------------------------------------------*/
-
+/* Functions -----------------------------------------------------------------*/
 int main(void)
 {
 	bspInit();
-	
+
 	//Init and run operating system.  This starts all tasks
 	osInit();
 	
